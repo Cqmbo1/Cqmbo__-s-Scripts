@@ -1,0 +1,746 @@
+// ==UserScript==
+// @name         Cqmbo Client for YT! 1.0.4
+// @namespace    http://tampermonkey.net/
+// @version      1.0.4
+// @description  Anti - Adblocker Removal, Download Video, Auto Like & More!
+// @author       Cqmbo__
+// @match        https://www.youtube.com/*
+// @icon     https://yt3.googleusercontent.com/ofXbHpiwGc4bYnwwljjZJo53E7JRODr-SG32NPV1W6QiUnGUtVAYDwTP2NMz2pUPGnt99Juh5w=s160-c-k-c0x00ffffff-no-rj
+// @grant        none
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    var removalInterval;
+    var isRemoving = false;
+    var removeAdsInterval
+    var isRemovingAds = false;
+    var autoLikeInterval;
+    var isAutoLiking = false;
+    var autoDislikeInterval;
+    var isAutoDisliking = false;
+    var repeatVideoInterval;
+    var isRepeating = false;
+    var autoSubscribeInterval;
+    var isAutoSubscribing = false;
+    var ishidden = false;
+
+function toggleelements(){
+    const elements = [
+        'download-button',
+        'screenshot-button',
+        'thumbnail-button',
+        'repeat-button',
+        'youtubelabel',
+        'youtubeinput',
+        'auto-subscribe-button',
+        'colored-ui-button',
+        'auto-dislike-button',
+        'auto-like-button',
+        'removeads-button',
+        'removal-button',
+        ];
+
+            elements.forEach(id => {
+            const toggleableelement = document.getElementById(id);
+            if (toggleableelement) {
+                toggleableelement.style.display = toggleableelement.style.display === 'none' ? 'block' : 'none';
+            }
+        });
+    }
+
+
+    var toggleelementbutton = document.createElement('button');
+    toggleelementbutton.id = 'toggle-element-button';
+    toggleelementbutton.textContent = 'Hide Menu';
+    toggleelementbutton.style.position = 'fixed';
+    toggleelementbutton.style.top = '520px';
+    toggleelementbutton.style.right = '10px';
+    toggleelementbutton.style.zIndex = '10000';
+    toggleelementbutton.title = 'Toggle Menu/Functions';
+
+    toggleelementbutton.addEventListener('click', function() {
+        if (!ishidden) {
+            toggleelementbutton.textContent = 'Show Menu';
+             toggleelements();
+             ishidden = true;
+        } else {
+            toggleelementbutton.textContent = 'Hide Menu';
+            toggleelements();
+            ishidden = false;
+        }
+    });
+
+    document.body.appendChild(toggleelementbutton);
+
+
+    function startRemovingElement() {
+        removalInterval = setInterval(function() {
+            var element1 = document.querySelector('.style-scope.yt-playability-error-supported-renderers');
+            if (element1) {
+                element1.remove();
+            }
+        }, 100);
+        isRemoving = true;
+    }
+
+    function stopRemovingElement() {
+        clearInterval(removalInterval);
+        isRemoving = false;
+    }
+
+    var removalButton = document.createElement('button');
+    removalButton.id = 'removal-button';
+    removalButton.textContent = 'Remove Anti-Adblocker (Disabled)';
+    removalButton.style.position = 'fixed';
+    removalButton.style.top = '160px';
+    removalButton.style.right = '10px';
+    removalButton.style.zIndex = '10000';
+    removalButton.title = 'Remove Anti-Adblocker';
+
+    removalButton.addEventListener('click', function() {
+        if (!isRemoving) {
+            removalButton.textContent = 'Remove Anti-Adblocker (Enabled)';
+            startRemovingElement();
+        } else {
+            removalButton.textContent = 'Remove Anti-Adblocker (Disabled)';
+            stopRemovingElement();
+        }
+    });
+
+    document.body.appendChild(removalButton);
+
+
+function adOverlay(){
+const ad = document.querySelector(".ytp-ad-text");
+const video = document.querySelector("video");
+if (ad){
+video.currentTime = video.duration;
+}
+let btn = document.querySelector(".ytp-ad-skip-button-icon-modern");
+if(btn){document.querySelector(".ytp-ad-skip-button-icon-modern").click();console.log("Skipped Video Ad");}
+}
+
+
+function removeVideoAds() {
+const ads = document.querySelectorAll('.ad-showing');
+ads.forEach(ad => ad.remove());
+}
+
+
+function removePopUpAds() {
+const popupads = document.querySelectorAll('.style-scope ytd-enforcement-message-view-model');
+popupads.forEach(PopUpAds => PopUpAds.remove());
+}
+
+
+function removePageAds() {
+const pageAds = document.querySelectorAll('.style-scope.ytd-display-ad-renderer');
+pageAds.forEach(pagead => pagead.remove());
+}
+
+
+function removeSupport()
+{
+try
+{
+if (document.getElementById("support").innerText.includes("Ad") == true)
+{
+document.getElementsByClassName("ytd-rich-item-renderer")[0].innerHTML = ""
+console.log('Sponsor Ad removed!');
+}
+}
+catch(e)
+{
+return;
+}
+}
+
+
+var Ads = {
+"AdsWithIds":["masthead-ad","player-ads","top-container","offer-module","pyv-watch-related-dest-url","ytd-promoted-video-renderer","sparkles-container","fulfilled-layout"],
+"AdsWithClasses":["style-scope ytd-search-pyv-renderer","ytd-compact-promoted-video-renderer","style-scope ytd-carousel-ad-renderer","ytp-ad-overlay-container","ytp-ad-message-container"],
+"AdsWithTags":["ytd-promoted-sparkles-text-search-renderer"],
+"videoAd":["ytp-ad-text ytp-ad-preview-text","ytp-ad-skip-button ytp-button"],
+"removeByID":function(){this.AdsWithIds.forEach(i=>{ let AdId = document.querySelector(i);if(AdId) AdId.remove();})},
+"removeByClassName":function(){this.AdsWithClasses.forEach(c=>{ let AdClass = document.getElementsByClassName(c);if(AdClass[0]) AdClass[0].remove();})},
+"removeByTagName":function(){this.AdsWithTags.forEach(t=>{ let AdTag = document.getElementsByTagName(t);if(AdTag[0]) AdTag[0].remove();})},
+"removeVideoAd":function(){this.videoAd.forEach(v=>{let AdVdo = document.getElementsByClassName(v)[0];if(AdVdo) {AdVdo.click(); console.log("Skipped a clickable Ad")}})} //handles skippable video Ad
+}
+
+
+function killAd()
+{
+Ads.removeByID();
+Ads.removeByClassName();
+Ads.removeByTagName();
+Ads.removeVideoAd();
+removeSupport();
+adOverlay();
+removeVideoAds();
+removePopUpAds();
+removePageAds();
+}
+
+
+function startRemovingAds(){
+removeAdsInterval = setInterval(killAd, 100);
+isRemovingAds = true;
+}
+
+
+function stopRemovingAds(){
+clearInterval (removeAdsInterval);
+isRemovingAds = false;
+}
+
+
+var removeAdsButton = document.createElement('button');
+removeAdsButton.id = 'removeads-button';
+removeAdsButton.textContent = 'Adblocker (Disabled)';
+removeAdsButton.style.position = 'fixed';
+removeAdsButton.style.top = '140px';
+removeAdsButton.style.right = '10px';
+removeAdsButton.style.zIndex = '10000';
+removeAdsButton.title = 'Remove Anti-Adblocker';
+
+removeAdsButton.addEventListener('click', function() {
+    if (!isRemovingAds) {
+        removeAdsButton.textContent = 'Adblocker (Enabled)';
+        startRemovingAds();
+    } else {
+        removeAdsButton.textContent = 'Adblocker (Disabled)';
+        stopRemovingAds();
+    }
+});
+
+document.body.appendChild(removeAdsButton);
+
+
+    var autoLikeButton = document.createElement('button');
+    autoLikeButton.id = 'auto-like-button';
+    autoLikeButton.textContent = 'Auto Like (Disabled)';
+    autoLikeButton.style.position = 'fixed';
+    autoLikeButton.style.top = '410px';
+    autoLikeButton.style.right = '10px';
+    autoLikeButton.style.zIndex = '10000';
+    autoLikeButton.title = 'Automatically like video every 10 seconds';
+
+    autoLikeButton.addEventListener('click', function() {
+        if (!isAutoLiking) {
+            autoLikeButton.textContent = 'Auto Like (Enabled)';
+            startAutoLiking();
+        } else {
+            autoLikeButton.textContent = 'Auto Like (Disabled)';
+            stopAutoLiking();
+        }
+    });
+
+    document.body.appendChild(autoLikeButton);
+
+    function startAutoLiking() {
+        clickLikeButton(); // Click immediately when enabled
+        autoLikeInterval = setInterval(clickLikeButton, 10000);
+        isAutoLiking = true;
+    }
+
+    function stopAutoLiking() {
+        clearInterval(autoLikeInterval);
+        isAutoLiking = false;
+    }
+
+
+        function clickLikeButton() {
+        var dislikeButton = document.querySelector('.yt-spec-button-shape-next.yt-spec-button-shape-next--tonal.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--size-m.yt-spec-button-shape-next--icon-button.yt-spec-button-shape-next--segmented-end');
+        var likeButton = document.querySelector('.yt-spec-button-shape-next.yt-spec-button-shape-next--tonal.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--size-m.yt-spec-button-shape-next--icon-leading.yt-spec-button-shape-next--segmented-start');
+        if (likeButton && likeButton.getAttribute('aria-pressed') === 'false' && !isAutoDisliking && dislikeButton && dislikeButton.getAttribute('aria-pressed') === 'false') {
+            likeButton.click();
+        }
+        var ShortsdislikeButton = document.querySelector('[aria-label="Dislike this video"]');
+        var ShortslikeButton = document.querySelector('.yt-spec-button-shape-next.yt-spec-button-shape-next--tonal.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--size-l.yt-spec-button-shape-next--icon-button');
+        var DislikeButtonConfirmer = document.querySelector('.yt-spec-button-shape-next.yt-spec-button-shape-next--filled.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--size-l.yt-spec-button-shape-next--icon-button');
+        if (ShortslikeButton && ShortslikeButton.getAttribute('aria-pressed') === 'false' && !isAutoDisliking && ShortsdislikeButton && !DislikeButtonConfirmer) {
+            ShortslikeButton.click();
+        }
+    }
+
+    var autoDislikeButton = document.createElement('button');
+    autoDislikeButton.id = 'auto-dislike-button';
+    autoDislikeButton.textContent = 'Auto Dislike (Disabled)';
+    autoDislikeButton.style.position = 'fixed';
+    autoDislikeButton.style.top = '500px';
+    autoDislikeButton.style.right = '10px';
+    autoDislikeButton.style.zIndex = '10000';
+    autoDislikeButton.title = 'Automatically dislike video every 10 seconds';
+
+    autoDislikeButton.addEventListener('click', function() {
+        if (!isAutoDisliking) {
+            autoDislikeButton.textContent = 'Auto Dislike (Enabled)';
+            startAutoDisliking();
+        } else {
+            autoDislikeButton.textContent = 'Auto Dislike (Disabled)';
+            stopAutoDisliking();
+        }
+    });
+
+    document.body.appendChild(autoDislikeButton);
+
+    function startAutoDisliking() {
+        clickDislikeButton(); // Click immediately when enabled
+        autoDislikeInterval = setInterval(clickDislikeButton, 10000);
+        isAutoDisliking = true;
+    }
+
+    function stopAutoDisliking() {
+        clearInterval(autoDislikeInterval);
+        isAutoDisliking = false;
+    }
+
+    function clickDislikeButton() {
+        var dislikeButton = document.querySelector('.yt-spec-button-shape-next.yt-spec-button-shape-next--tonal.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--size-m.yt-spec-button-shape-next--icon-button.yt-spec-button-shape-next--segmented-end');
+        var likeButton = document.querySelector('.yt-spec-button-shape-next.yt-spec-button-shape-next--tonal.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--size-m.yt-spec-button-shape-next--icon-leading.yt-spec-button-shape-next--segmented-start');
+        if (dislikeButton && dislikeButton.getAttribute('aria-pressed') === 'false' && !isAutoLiking && likeButton && likeButton.getAttribute('aria-pressed') === 'false') {
+            dislikeButton.click();
+        }
+        var ShortsdislikeButton = document.querySelector('[aria-label="Dislike this video"]');
+        var ShortslikeButton = document.querySelector('.yt-spec-button-shape-next.yt-spec-button-shape-next--tonal.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--size-l.yt-spec-button-shape-next--icon-button');
+        var DislikeButtonConfirmer = document.querySelector('.yt-spec-button-shape-next.yt-spec-button-shape-next--filled.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--size-l.yt-spec-button-shape-next--icon-button');
+        if (ShortsdislikeButton && !isAutoLiking && ShortslikeButton && ShortslikeButton.getAttribute('aria-pressed') === 'false' && !DislikeButtonConfirmer) {
+            ShortsdislikeButton.click();
+        }
+    }
+
+    var validButtons = true;
+    var MenuButtons = `
+        <div class="containerButtons">
+            <button id="download-button" style="position: fixed; top: 200px; right: 10px; z-index: 10000; background-color: #2196f3; color: white;" title="Download Video">
+                <img src="data:image/jpeg;base64,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" alt="Download" style="width: 24px; height: 24px;">
+            </button>
+            <button id="screenshot-button" style="position: fixed; top: 240px; right: 10px; z-index: 10000; background-color: #4caf50; color: white;" title="Screenshot Video at Current Timestamp">
+                <img src="https://static-00.iconduck.com/assets.00/screenshot-icon-512x512-hmhvvh50.png" alt="Screenshot" style="width: 24px; height: 24px;">
+            </button>
+            <button id="thumbnail-button" style="position: fixed; top: 280px; right: 10px; z-index: 10000; background-color: #ff5722; color: white;" title="Download Video Thumbnail">
+                <img src="https://th.bing.com/th/id/R.5d0756cfcc115698fa5571019979269b?rik=CyyaHNz7YvDWyQ&pid=ImgRaw&r=0" alt="Thumbnail" style="width: 24px; height: 24px;">
+            </button>
+            <button id="repeat-button" style="position: fixed; top: 320px; right: 10px; z-index: 10000; background-color: #ffff00; color: white;" title="Repeat Video">
+                <img src="https://img.favpng.com/20/15/5/repeat-icon-png-favpng-0wgvCV1bKvFXHzqDPGBXh1Jae.jpg" alt="Repeat" style="width: 24px; height: 24px;">
+            </button>
+        </div>
+    `;
+
+    function renderizarContenido() {
+        if (validButtons) {
+            validButtons = false;
+document.body.insertAdjacentHTML('beforeend', MenuButtons);
+
+            // Attach event listeners for buttons
+            attachButtonListeners();
+        }
+    }
+
+// Repeat icon: https://images.rawpixel.com/image_png_800/cHJpdmF0ZS9sci9pbWFnZXMvd2Vic2l0ZS8yMDIzLTAyL3Zwcm9qZWN0b2xkMS1hdW0tMzI5LWpvYjE3MjItcC5wbmc.png
+// or: https://img.favpng.com/20/15/5/repeat-icon-png-favpng-0wgvCV1bKvFXHzqDPGBXh1Jae.jpg
+
+    function attachButtonListeners() {
+        const screenShotButton = document.getElementById('screenshot-button');
+        if (screenShotButton) {
+            screenShotButton.onclick = () => {
+                const video = document.querySelector('video');
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const context = canvas.getContext('2d');
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imagenURL = canvas.toDataURL('image/png');
+                const linkDownload = document.createElement('a');
+                linkDownload.href = imagenURL;
+                const titleVideo = document.querySelector('h1.style-scope.ytd-watch-metadata').innerText;
+                linkDownload.download = `${video.currentTime.toFixed(0)}s_${titleVideo}.png`;
+                linkDownload.click();
+            };
+        }
+
+        const downloadButton = document.getElementById('download-button');
+        if (downloadButton) {
+            downloadButton.onclick = () => {
+                const CutURL = new URLSearchParams(window.location.search);
+                let enlace = CutURL.get('v');
+                if (enlace) {
+                    window.open(
+                        `https://www.y2mate.com/en/convert-youtube/${enlace}`,
+                        'popUpWindow',
+                        'height=800,width=1000,left=50%,top=100,resizable=no,scrollbars=yes,toolbar=no,menubar=yes,location=no,directories=yes,status=no'
+                    );
+                } else {
+                    alert('No video ID found in the URL.');
+                }
+            };
+        }
+
+        const thumbnailButton = document.getElementById('thumbnail-button');
+        if (thumbnailButton) {
+            thumbnailButton.onclick = () => {
+                const CutURL = new URLSearchParams(window.location.search);
+                let enlace = CutURL.get('v');
+
+                if (enlace) {
+                    const maxResImageUrl = `https://i1.ytimg.com/vi/${enlace}/maxresdefault.jpg`;
+                    const highQualityImageUrl = `https://i1.ytimg.com/vi/${enlace}/hqdefault.jpg`;
+
+                    fetchImage(maxResImageUrl)
+                        .catch(() => fetchImage(highQualityImageUrl))
+                        .catch((error) => {
+                            alert('No image found');
+                            console.error('Error getting image:', error);
+                        });
+                }
+            };
+        }
+    }
+
+
+    function fetchImage(imageUrl) {
+        return fetch(imageUrl)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.blob();
+            })
+            .then((blob) => {
+                const imageSizeKB = blob.size / 1024;
+
+                if (imageSizeKB >= 20) {
+                    window.open(
+                        imageUrl,
+                        'popUpWindow',
+                        'height=500,width=400,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes'
+                    );
+
+                    const imageUrlObject = URL.createObjectURL(blob);
+                    const linkDownload = document.createElement('a');
+                    linkDownload.href = imageUrlObject;
+                    const titleVideo = document.querySelector('h1.style-scope.ytd-watch-metadata').innerText;
+                    linkDownload.download = `thumbnail_${titleVideo}.jpg`;
+                    linkDownload.click();
+                } else {
+                    alert('No image found');
+                    throw new Error('No image found');
+                }
+            });
+    }
+
+
+
+    function observeDOM() {
+        const observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                if (mutation.type === 'childList' && mutation.addedNodes.length) {
+                    renderizarContenido();
+                }
+            });
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    observeDOM();
+
+    var coloredElements = ['video-title', 'style-scope ytd-watch-metadata'];
+    var whiteElements = ['primary'];
+
+    const rainbowColors = ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#9400d3'];
+
+    let currentColor = 'black'; // Default color
+    let savedCustomColor = 'black'; // Save custom color to restore it later
+    let isCustomColorEnabled = false;
+    let isRainbowEnabled = false;
+    let isColoredUIEnabled = false;
+    let rainbowFlashInterval;
+
+    function toggleColoredUI() {
+        const button = document.getElementById('colored-ui-button');
+        if (!isColoredUIEnabled) {
+            isColoredUIEnabled = true;
+            button.textContent = 'Colored UI (Enabled)';
+            createColoredUIDropdown();
+            if (isCustomColorEnabled) {
+                applyCustomColor(savedCustomColor);
+            } else if (isRainbowEnabled) {
+                startRainbowFlash();
+            } else {
+                applyCustomColor(currentColor);
+            }
+        } else {
+            isColoredUIEnabled = false;
+            button.textContent = 'Colored UI (Disabled)';
+            removeColoredUIDropdown();
+            applyCustomColor('black');
+            stopRainbowFlash();
+        }
+    }
+
+    function createColoredUIDropdown() {
+        const dropdown = document.createElement('div');
+        dropdown.id = 'colored-ui-dropdown';
+        dropdown.style.position = 'fixed';
+        dropdown.style.top = '360px';
+        dropdown.style.right = '10px';
+        dropdown.style.zIndex = '10000';
+
+        const label = document.createElement('div');
+        label.textContent = 'Select Color:';
+        dropdown.appendChild(label);
+
+        const defaultOption = createOptionElement('Black (Default)', 'black');
+        const customOption = createOptionElement('Custom Color', 'custom');
+        const rainbowOption = createOptionElement('Rainbow Flash', 'rainbow');
+        const dropdownMenu = document.createElement('select');
+        dropdownMenu.id = 'colored-ui-dropdown-menu';
+        dropdownMenu.appendChild(defaultOption);
+        dropdownMenu.appendChild(customOption);
+        dropdownMenu.appendChild(rainbowOption);
+        dropdown.appendChild(dropdownMenu);
+
+        if (isCustomColorEnabled) {
+            dropdownMenu.value = 'custom';
+        } else if (isRainbowEnabled) {
+            dropdownMenu.value = 'rainbow';
+        } else {
+            dropdownMenu.value = currentColor;
+        }
+
+        dropdownMenu.addEventListener('change', function() {
+            const selectedColor = this.value;
+            if (selectedColor === 'custom') {
+                isCustomColorEnabled = true;
+                stopRainbowFlash();
+                openCustomColorPicker();
+            } else if (selectedColor === 'rainbow') {
+                isRainbowEnabled = true;
+                isCustomColorEnabled = false;
+                startRainbowFlash();
+            } else {
+                isCustomColorEnabled = false;
+                stopRainbowFlash();
+                applyCustomColor(selectedColor);
+            }
+        });
+
+        document.body.appendChild(dropdown);
+    }
+
+    function removeColoredUIDropdown() {
+        const dropdown = document.getElementById('colored-ui-dropdown');
+        if (dropdown) {
+            dropdown.remove();
+        }
+    }
+
+    function createOptionElement(text, value) {
+        const option = document.createElement('option');
+        option.text = text;
+        option.value = value;
+        return option;
+    }
+
+    function openCustomColorPicker() {
+        if (document.getElementById('custom-color-picker')) {
+            return;
+        }
+
+        const customColorPicker = document.createElement('input');
+        customColorPicker.type = 'color';
+        customColorPicker.id = 'custom-color-picker';
+        customColorPicker.style.position = 'fixed';
+        customColorPicker.style.top = '395px';
+        customColorPicker.style.right = '10px';
+        customColorPicker.style.zIndex = '10000';
+
+        customColorPicker.addEventListener('input', function() {
+            const selectedColor = this.value;
+            currentColor = selectedColor;
+            savedCustomColor = selectedColor;
+            applyCustomColor(selectedColor);
+        });
+
+        document.body.appendChild(customColorPicker);
+    }
+
+    function applyCustomColor(color) {
+        coloredElements.forEach(elementId => {
+            const elements = document.getElementsByClassName(elementId);
+            for (let element of elements) {
+                element.style.color = color;
+            }
+        });
+
+        whiteElements.forEach(elementId => {
+            const elements = document.getElementsByClassName(elementId);
+            for (let element of elements) {
+                element.style.color = (isColoredUIEnabled && (isCustomColorEnabled || isRainbowEnabled)) ? color : 'white';
+            }
+        });
+
+        currentColor = color;
+    }
+
+    function startRainbowFlash() {
+        if (rainbowFlashInterval) {
+            clearInterval(rainbowFlashInterval);
+        }
+        let currentIndex = 0;
+
+        rainbowFlashInterval = setInterval(() => {
+            const currentColor = rainbowColors[currentIndex];
+            applyCustomColor(currentColor);
+            currentIndex = (currentIndex + 1) % rainbowColors.length;
+        }, 500);
+    }
+
+    function stopRainbowFlash() {
+        clearInterval(rainbowFlashInterval);
+        isRainbowEnabled = false;
+        if (!isColoredUIEnabled) {
+            applyCustomColor('black');
+        } else if (isCustomColorEnabled) {
+            applyCustomColor(savedCustomColor);
+        } else {
+            applyCustomColor(currentColor);
+        }
+    }
+
+    function toggleElement() {
+        const elementToToggle = [
+            'custom-color-picker'
+        ];
+
+        elementToToggle.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.style.display = element.style.display === 'none' ? 'block' : 'none';
+            }
+        });
+    }
+
+    function createColoredUIButton() {
+        if (document.getElementById('colored-ui-button')) {
+            return;
+        }
+
+        const button = document.createElement('button');
+        button.id = 'colored-ui-button';
+        button.textContent = 'Colored UI (Disabled)';
+        button.style.position = 'fixed';
+        button.style.top = '480px';
+        button.style.right = '10px';
+        button.title = 'Color Selected Elements';
+        button.style.zIndex = '10000';
+
+        button.addEventListener('click', toggleElement);
+        button.addEventListener('click', toggleColoredUI);
+
+        document.body.appendChild(button);
+    }
+
+    createColoredUIButton();
+
+    // New background function
+    function createBackgroundFunctionality() {
+        const youtubeLabel = document.createElement('label');
+        youtubeLabel.textContent = 'Background Image:';
+        youtubeLabel.style.position = 'fixed';
+        youtubeLabel.style.top = '430px';
+        youtubeLabel.style.right = '10px';
+        youtubeLabel.style.zIndex = '10000';
+        youtubeLabel.id = 'youtubelabel';
+        youtubeLabel.style.color = 'red';
+
+        const youtubeInput = document.createElement('input');
+        youtubeInput.type = 'text';
+        youtubeInput.placeholder = 'Paste image URL here...';
+        youtubeInput.style.position = 'fixed';
+        youtubeInput.style.top = '460px';
+        youtubeInput.style.right = '10px';
+        youtubeInput.style.zIndex = '10000';
+        youtubeInput.id = 'youtubeinput';
+
+        youtubeInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                const url = youtubeInput.value;
+                console.log('URL Entered:', url); // Debugging line
+                if (url) {
+                    setBackground(url);
+                } else {
+                    clearBackground();
+                }
+            }
+        });
+
+        document.body.appendChild(youtubeLabel);
+        document.body.appendChild(youtubeInput);
+    }
+
+    function setBackground(url) {
+        const primaryInner = document.getElementById('primary-inner');
+        console.log('Setting background for primary-inner with URL:', url); // Debugging line
+        if (primaryInner) {
+            primaryInner.style.backgroundImage = `url(${url})`;
+            primaryInner.style.backgroundSize = 'cover';
+            primaryInner.style.backgroundPosition = 'center';
+        }
+    }
+
+    function clearBackground() {
+        const primaryInner = document.getElementById('primary-inner');
+        console.log('Clearing background for primary-inner'); // Debugging line
+        if (primaryInner) {
+            primaryInner.style.backgroundImage = '';
+        }
+    }
+
+    createBackgroundFunctionality();
+
+    var autoSubscribeButton = document.createElement('button');
+    autoSubscribeButton.id = 'auto-subscribe-button';
+    autoSubscribeButton.textContent = 'Auto Subscribe (Disabled)';
+    autoSubscribeButton.style.position = 'fixed';
+    autoSubscribeButton.style.top = '120px';
+    autoSubscribeButton.style.right = '10px';
+    autoSubscribeButton.style.zIndex = '10000';
+    autoSubscribeButton.title = 'Automatically subscribe to channels';
+
+    autoSubscribeButton.addEventListener('click', function() {
+        if (!isAutoSubscribing) {
+            autoSubscribeButton.textContent = 'Auto Subscribe (Enabled)';
+            startAutoSubscribing();
+        } else {
+            autoSubscribeButton.textContent = 'Auto Subscribe (Disabled)';
+            stopAutoSubscribing();
+        }
+    });
+
+    document.body.appendChild(autoSubscribeButton);
+
+    function startAutoSubscribing() {
+        clickSubscribeButton(); // Click immediately when enabled
+        autoSubscribeInterval = setInterval(clickSubscribeButton, 10000);
+        isAutoSubscribing = true;
+    }
+
+    function stopAutoSubscribing() {
+        clearInterval(autoSubscribeInterval);
+        isAutoSubscribing = false;
+    }
+
+    function clickSubscribeButton() {
+        var subscribeButton = document.querySelector('[aria-label^="Subscribe to"]');
+        if (subscribeButton && subscribeButton.textContent.includes('Subscribe')) {
+            subscribeButton.click();
+        }
+    }
+
+
+})();
+
