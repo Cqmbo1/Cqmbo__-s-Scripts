@@ -1,0 +1,791 @@
+var removalInterval;
+    var isRemoving = false;
+    var removeAdsInterval
+    var isRemovingAds = false;
+    var autoLikeInterval;
+    var isAutoLiking = false;
+    var autoDislikeInterval;
+    var isAutoDisliking = false;
+    var repeatVideoInterval;
+    var isRepeating = false;
+    var autoSubscribeInterval;
+    var isAutoSubscribing = false;
+    var ishidden = false;
+ 
+function toggleelements(){
+    const elements = [
+        'download-button',
+        'screenshot-button',
+        'thumbnail-button',
+        'repeat-button',
+        'youtubelabel',
+        'youtubeinput',
+        'auto-subscribe-button',
+        'colored-ui-button',
+        'auto-dislike-button',
+        'auto-like-button',
+        'removeads-button',
+        'removal-button',
+        ];
+ 
+            elements.forEach(id => {
+            const toggleableelement = document.getElementById(id);
+            if (toggleableelement) {
+                toggleableelement.style.display = toggleableelement.style.display === 'none' ? 'block' : 'none';
+            }
+        });
+    }
+ 
+ 
+    var toggleelementbutton = document.createElement('button');
+    toggleelementbutton.id = 'toggle-element-button';
+    toggleelementbutton.textContent = 'Hide Menu';
+    toggleelementbutton.style.position = 'fixed';
+    toggleelementbutton.style.top = '520px';
+    toggleelementbutton.style.right = '10px';
+    toggleelementbutton.style.zIndex = '10000';
+    toggleelementbutton.title = 'Toggle Menu/Functions';
+ 
+    toggleelementbutton.addEventListener('click', function() {
+        if (!ishidden) {
+            toggleelementbutton.textContent = 'Show Menu';
+             toggleelements();
+             ishidden = true;
+        } else {
+            toggleelementbutton.textContent = 'Hide Menu';
+            toggleelements();
+            ishidden = false;
+        }
+    });
+ 
+    document.body.appendChild(toggleelementbutton);
+ 
+ 
+    function startRemovingElement() {
+        removalInterval = setInterval(function() {
+            var element1 = document.querySelector('.style-scope.yt-playability-error-supported-renderers');
+            if (element1) {
+                element1.remove();
+            }
+        }, 100);
+        isRemoving = true;
+    }
+ 
+    function stopRemovingElement() {
+        clearInterval(removalInterval);
+        isRemoving = false;
+    }
+ 
+    var removalButton = document.createElement('button');
+    removalButton.id = 'removal-button';
+    removalButton.textContent = 'Remove Anti-Adblocker (Disabled)';
+    removalButton.style.position = 'fixed';
+    removalButton.style.top = '160px';
+    removalButton.style.right = '10px';
+    removalButton.style.zIndex = '10000';
+    removalButton.title = 'Remove Anti-Adblocker';
+ 
+    removalButton.addEventListener('click', function() {
+        if (!isRemoving) {
+            removalButton.textContent = 'Remove Anti-Adblocker (Enabled)';
+            startRemovingElement();
+        } else {
+            removalButton.textContent = 'Remove Anti-Adblocker (Disabled)';
+            stopRemovingElement();
+        }
+    });
+ 
+    document.body.appendChild(removalButton);
+ 
+ 
+function adOverlay(){
+const ad = document.querySelector(".ytp-ad-text");
+const video = document.querySelector("video");
+if (ad){
+video.currentTime = video.duration;
+}
+let btn = document.querySelector(".ytp-ad-skip-button-icon-modern");
+if(btn){document.querySelector(".ytp-ad-skip-button-icon-modern").click();console.log("Skipped Video Ad");}
+}
+ 
+ 
+function removeVideoAds() {
+const ads = document.querySelectorAll('.ad-showing');
+ads.forEach(ad => ad.remove());
+}
+ 
+ 
+function removePopUpAds() {
+const popupads = document.querySelectorAll('.style-scope ytd-enforcement-message-view-model');
+popupads.forEach(PopUpAds => PopUpAds.remove());
+}
+ 
+ 
+function removePageAds() {
+const pageAds = document.querySelectorAll('.style-scope.ytd-display-ad-renderer');
+pageAds.forEach(pagead => pagead.remove());
+}
+ 
+ 
+function removeSupport()
+{
+try
+{
+if (document.getElementById("support").innerText.includes("Ad") == true)
+{
+document.getElementsByClassName("ytd-rich-item-renderer")[0].innerHTML = ""
+console.log('Sponsor Ad removed!');
+}
+}
+catch(e)
+{
+return;
+}
+}
+ 
+ 
+var Ads = {
+"AdsWithIds":["masthead-ad","player-ads","top-container","offer-module","pyv-watch-related-dest-url","ytd-promoted-video-renderer","sparkles-container","fulfilled-layout"],
+"AdsWithClasses":["style-scope ytd-search-pyv-renderer","ytd-compact-promoted-video-renderer","style-scope ytd-carousel-ad-renderer","ytp-ad-overlay-container","ytp-ad-message-container"],
+"AdsWithTags":["ytd-promoted-sparkles-text-search-renderer"],
+"videoAd":["ytp-ad-text ytp-ad-preview-text","ytp-ad-skip-button ytp-button"],
+"removeByID":function(){this.AdsWithIds.forEach(i=>{ let AdId = document.querySelector(i);if(AdId) AdId.remove();})},
+"removeByClassName":function(){this.AdsWithClasses.forEach(c=>{ let AdClass = document.getElementsByClassName(c);if(AdClass[0]) AdClass[0].remove();})},
+"removeByTagName":function(){this.AdsWithTags.forEach(t=>{ let AdTag = document.getElementsByTagName(t);if(AdTag[0]) AdTag[0].remove();})},
+"removeVideoAd":function(){this.videoAd.forEach(v=>{let AdVdo = document.getElementsByClassName(v)[0];if(AdVdo) {AdVdo.click(); console.log("Skipped a clickable Ad")}})} //handles skippable video Ad
+}
+ 
+ 
+function killAd()
+{
+Ads.removeByID();
+Ads.removeByClassName();
+Ads.removeByTagName();
+Ads.removeVideoAd();
+removeSupport();
+adOverlay();
+removeVideoAds();
+removePopUpAds();
+removePageAds();
+}
+ 
+ 
+function startRemovingAds(){
+removeAdsInterval = setInterval(killAd, 100);
+isRemovingAds = true;
+}
+ 
+ 
+function stopRemovingAds(){
+clearInterval (removeAdsInterval);
+isRemovingAds = false;
+}
+ 
+ 
+var removeAdsButton = document.createElement('button');
+removeAdsButton.id = 'removeads-button';
+removeAdsButton.textContent = 'Adblocker (Disabled)';
+removeAdsButton.style.position = 'fixed';
+removeAdsButton.style.top = '140px';
+removeAdsButton.style.right = '10px';
+removeAdsButton.style.zIndex = '10000';
+removeAdsButton.title = 'Remove Anti-Adblocker';
+ 
+removeAdsButton.addEventListener('click', function() {
+    if (!isRemovingAds) {
+        removeAdsButton.textContent = 'Adblocker (Enabled)';
+        startRemovingAds();
+    } else {
+        removeAdsButton.textContent = 'Adblocker (Disabled)';
+        stopRemovingAds();
+    }
+});
+ 
+document.body.appendChild(removeAdsButton);
+ 
+ 
+    var autoLikeButton = document.createElement('button');
+    autoLikeButton.id = 'auto-like-button';
+    autoLikeButton.textContent = 'Auto Like (Disabled)';
+    autoLikeButton.style.position = 'fixed';
+    autoLikeButton.style.top = '410px';
+    autoLikeButton.style.right = '10px';
+    autoLikeButton.style.zIndex = '10000';
+    autoLikeButton.title = 'Automatically like video every 10 seconds';
+ 
+    autoLikeButton.addEventListener('click', function() {
+        if (!isAutoLiking) {
+            autoLikeButton.textContent = 'Auto Like (Enabled)';
+            startAutoLiking();
+        } else {
+            autoLikeButton.textContent = 'Auto Like (Disabled)';
+            stopAutoLiking();
+        }
+    });
+ 
+    document.body.appendChild(autoLikeButton);
+ 
+    function startAutoLiking() {
+        clickLikeButton(); // Click immediately when enabled
+        autoLikeInterval = setInterval(clickLikeButton, 10000);
+        isAutoLiking = true;
+    }
+ 
+    function stopAutoLiking() {
+        clearInterval(autoLikeInterval);
+        isAutoLiking = false;
+    }
+ 
+ 
+        function clickLikeButton() {
+        var dislikeButton = document.querySelector('.yt-spec-button-shape-next.yt-spec-button-shape-next--tonal.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--size-m.yt-spec-button-shape-next--icon-button.yt-spec-button-shape-next--segmented-end');
+        var likeButton = document.querySelector('.yt-spec-button-shape-next.yt-spec-button-shape-next--tonal.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--size-m.yt-spec-button-shape-next--icon-leading.yt-spec-button-shape-next--segmented-start');
+        if (likeButton && likeButton.getAttribute('aria-pressed') === 'false' && !isAutoDisliking && dislikeButton && dislikeButton.getAttribute('aria-pressed') === 'false') {
+            likeButton.click();
+        }
+        var ShortsdislikeButton = document.querySelector('[aria-label="Dislike this video"]');
+        var ShortslikeButton = document.querySelector('.yt-spec-button-shape-next.yt-spec-button-shape-next--tonal.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--size-l.yt-spec-button-shape-next--icon-button');
+        var DislikeButtonConfirmer = document.querySelector('.yt-spec-button-shape-next.yt-spec-button-shape-next--filled.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--size-l.yt-spec-button-shape-next--icon-button');
+        if (ShortslikeButton && ShortslikeButton.getAttribute('aria-pressed') === 'false' && !isAutoDisliking && ShortsdislikeButton && !DislikeButtonConfirmer) {
+            ShortslikeButton.click();
+        }
+    }
+ 
+    var autoDislikeButton = document.createElement('button');
+    autoDislikeButton.id = 'auto-dislike-button';
+    autoDislikeButton.textContent = 'Auto Dislike (Disabled)';
+    autoDislikeButton.style.position = 'fixed';
+    autoDislikeButton.style.top = '500px';
+    autoDislikeButton.style.right = '10px';
+    autoDislikeButton.style.zIndex = '10000';
+    autoDislikeButton.title = 'Automatically dislike video every 10 seconds';
+ 
+    autoDislikeButton.addEventListener('click', function() {
+        if (!isAutoDisliking) {
+            autoDislikeButton.textContent = 'Auto Dislike (Enabled)';
+            startAutoDisliking();
+        } else {
+            autoDislikeButton.textContent = 'Auto Dislike (Disabled)';
+            stopAutoDisliking();
+        }
+    });
+ 
+    document.body.appendChild(autoDislikeButton);
+ 
+    function startAutoDisliking() {
+        clickDislikeButton(); // Click immediately when enabled
+        autoDislikeInterval = setInterval(clickDislikeButton, 10000);
+        isAutoDisliking = true;
+    }
+ 
+    function stopAutoDisliking() {
+        clearInterval(autoDislikeInterval);
+        isAutoDisliking = false;
+    }
+ 
+    function clickDislikeButton() {
+        var dislikeButton = document.querySelector('.yt-spec-button-shape-next.yt-spec-button-shape-next--tonal.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--size-m.yt-spec-button-shape-next--icon-button.yt-spec-button-shape-next--segmented-end');
+        var likeButton = document.querySelector('.yt-spec-button-shape-next.yt-spec-button-shape-next--tonal.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--size-m.yt-spec-button-shape-next--icon-leading.yt-spec-button-shape-next--segmented-start');
+        if (dislikeButton && dislikeButton.getAttribute('aria-pressed') === 'false' && !isAutoLiking && likeButton && likeButton.getAttribute('aria-pressed') === 'false') {
+            dislikeButton.click();
+        }
+        var ShortsdislikeButton = document.querySelector('[aria-label="Dislike this video"]');
+        var ShortslikeButton = document.querySelector('.yt-spec-button-shape-next.yt-spec-button-shape-next--tonal.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--size-l.yt-spec-button-shape-next--icon-button');
+        var DislikeButtonConfirmer = document.querySelector('.yt-spec-button-shape-next.yt-spec-button-shape-next--filled.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--size-l.yt-spec-button-shape-next--icon-button');
+        if (ShortsdislikeButton && !isAutoLiking && ShortslikeButton && ShortslikeButton.getAttribute('aria-pressed') === 'false' && !DislikeButtonConfirmer) {
+            ShortsdislikeButton.click();
+        }
+    }
+ 
+    var validButtons = true;
+    // Create the screenshot button
+    const screenshotButton = document.createElement('button');
+    screenshotButton.id = 'screenshot-button';
+    screenshotButton.title = 'Screenshot Video at Current Timestamp';
+    screenshotButton.style.position = 'fixed';
+    screenshotButton.style.top = '240px';
+    screenshotButton.style.right = '10px';
+    screenshotButton.style.zIndex = '10000';
+    screenshotButton.style.backgroundColor = '#4caf50';
+    screenshotButton.style.color = 'white';
+ 
+    // Create and append the screenshot icon
+    const screenshotIcon = document.createElement('img');
+    screenshotIcon.src = 'https://static-00.iconduck.com/assets.00/screenshot-icon-512x512-hmhvvh50.png';
+    screenshotIcon.alt = 'Screenshot';
+    screenshotIcon.style.width = '24px';
+    screenshotIcon.style.height = '24px';
+    screenshotButton.appendChild(screenshotIcon);
+ 
+    // Create the thumbnail button
+    const thumbnailButton = document.createElement('button');
+    thumbnailButton.id = 'thumbnail-button';
+    thumbnailButton.title = 'Download Video Thumbnail';
+    thumbnailButton.style.position = 'fixed';
+    thumbnailButton.style.top = '280px';
+    thumbnailButton.style.right = '10px';
+    thumbnailButton.style.zIndex = '10000';
+    thumbnailButton.style.backgroundColor = '#ff5722';
+    thumbnailButton.style.color = 'white';
+ 
+    // Create and append the thumbnail icon
+    const thumbnailIcon = document.createElement('img');
+    thumbnailIcon.src = 'https://th.bing.com/th/id/R.5d0756cfcc115698fa5571019979269b?rik=CyyaHNz7YvDWyQ&pid=ImgRaw&r=0';
+    thumbnailIcon.alt = 'Thumbnail';
+    thumbnailIcon.style.width = '24px';
+    thumbnailIcon.style.height = '24px';
+    thumbnailButton.appendChild(thumbnailIcon);
+ 
+    // Create the repeat button
+    const repeatButton = document.createElement('button');
+    repeatButton.id = 'repeat-button';
+    repeatButton.title = 'Repeat Video';
+    repeatButton.style.position = 'fixed';
+    repeatButton.style.top = '320px';
+    repeatButton.style.right = '10px';
+    repeatButton.style.zIndex = '10000';
+    repeatButton.style.backgroundColor = '#ffff00';
+    repeatButton.style.color = 'white';
+ 
+    // Create and append the repeat icon
+    const repeatIcon = document.createElement('img');
+    repeatIcon.src = 'https://img.favpng.com/20/15/5/repeat-icon-png-favpng-0wgvCV1bKvFXHzqDPGBXh1Jae.jpg';
+    repeatIcon.alt = 'Repeat';
+    repeatIcon.style.width = '24px';
+    repeatIcon.style.height = '24px';
+    repeatButton.appendChild(repeatIcon);
+ 
+    // Create the download button
+    const downloadButton = document.createElement('button');
+    downloadButton.id = 'download-button';
+    downloadButton.title = 'Download Video';
+    downloadButton.style.position = 'fixed';
+    downloadButton.style.top = '360px';
+    downloadButton.style.right = '10px';
+    downloadButton.style.zIndex = '10000';
+    downloadButton.style.backgroundColor = '#2196F3';
+    downloadButton.style.color = 'white';
+ 
+    // Create and append the download icon
+    const downloadIcon = document.createElement('img');
+    downloadIcon.src = 'https://th.bing.com/th/id/OIP.tdSxNLAn5NVt39tvjk9tIAHaHa?w=159&h=180&c=7&r=0&o=5&pid=1.7';
+    downloadIcon.alt = 'Download';
+    downloadIcon.style.width = '24px';
+    downloadIcon.style.height = '24px';
+    downloadButton.appendChild(downloadIcon);
+ 
+ 
+ 
+    function renderizarContenido() {
+        if (validButtons) {
+            validButtons = false;
+    // Append the buttons to the body
+    document.body.appendChild(screenshotButton);
+    document.body.appendChild(thumbnailButton);
+    document.body.appendChild(repeatButton);
+    document.body.appendChild(downloadButton);
+ 
+            // Attach event listeners for buttons
+            attachButtonListeners();
+        }
+    }
+ 
+    function attachButtonListeners() {
+        const screenShotButton = document.getElementById('screenshot-button');
+        if (screenShotButton) {
+            screenShotButton.onclick = () => {
+                const video = document.querySelector('video');
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const context = canvas.getContext('2d');
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imagenURL = canvas.toDataURL('image/png');
+                const linkDownload = document.createElement('a');
+                linkDownload.href = imagenURL;
+                const titleVideo = document.querySelector('h1.style-scope.ytd-watch-metadata').innerText;
+                linkDownload.download = `${video.currentTime.toFixed(0)}s_${titleVideo}.png`;
+                linkDownload.click();
+            };
+        }
+ 
+        const downloadButton = document.getElementById('download-button');
+        if (downloadButton) {
+            downloadButton.onclick = () => {
+                const CutURL = new URLSearchParams(window.location.search);
+                let enlace = CutURL.get('v');
+                if (enlace) {
+                    window.open(
+                        `https://www.y2mate.com/en/convert-youtube/${enlace}`,
+                        'popUpWindow',
+                        'height=800,width=1000,left=50%,top=100,resizable=no,scrollbars=yes,toolbar=no,menubar=yes,location=no,directories=yes,status=no'
+                    );
+                } else {
+                    alert('No video ID found in the URL.');
+                }
+            };
+        }
+ 
+        const thumbnailButton = document.getElementById('thumbnail-button');
+        if (thumbnailButton) {
+            thumbnailButton.onclick = () => {
+                const CutURL = new URLSearchParams(window.location.search);
+                let enlace = CutURL.get('v');
+ 
+                if (enlace) {
+                    const maxResImageUrl = `https://i1.ytimg.com/vi/${enlace}/maxresdefault.jpg`;
+                    const highQualityImageUrl = `https://i1.ytimg.com/vi/${enlace}/hqdefault.jpg`;
+ 
+                    fetchImage(maxResImageUrl)
+                        .catch(() => fetchImage(highQualityImageUrl))
+                        .catch((error) => {
+                            alert('No image found');
+                            console.error('Error getting image:', error);
+                        });
+                }
+            };
+        }
+    }
+ 
+ 
+    function fetchImage(imageUrl) {
+        return fetch(imageUrl)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.blob();
+            })
+            .then((blob) => {
+                const imageSizeKB = blob.size / 1024;
+ 
+                if (imageSizeKB >= 20) {
+                    window.open(
+                        imageUrl,
+                        'popUpWindow',
+                        'height=500,width=400,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes'
+                    );
+ 
+                    const imageUrlObject = URL.createObjectURL(blob);
+                    const linkDownload = document.createElement('a');
+                    linkDownload.href = imageUrlObject;
+                    const titleVideo = document.querySelector('h1.style-scope.ytd-watch-metadata').innerText;
+                    linkDownload.download = `thumbnail_${titleVideo}.jpg`;
+                    linkDownload.click();
+                } else {
+                    alert('No image found');
+                    throw new Error('No image found');
+                }
+            });
+    }
+ 
+ 
+ 
+    function observeDOM() {
+        const observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                if (mutation.type === 'childList' && mutation.addedNodes.length) {
+                    renderizarContenido();
+                }
+            });
+        });
+ 
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+ 
+    observeDOM();
+ 
+    var coloredElements = ['video-title', 'style-scope ytd-watch-metadata'];
+    var whiteElements = ['primary'];
+ 
+    const rainbowColors = ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#9400d3'];
+ 
+    let currentColor = 'black'; // Default color
+    let savedCustomColor = 'black'; // Save custom color to restore it later
+    let isCustomColorEnabled = false;
+    let isRainbowEnabled = false;
+    let isColoredUIEnabled = false;
+    let rainbowFlashInterval;
+ 
+    function toggleColoredUI() {
+        const button = document.getElementById('colored-ui-button');
+        if (!isColoredUIEnabled) {
+            isColoredUIEnabled = true;
+            button.textContent = 'Colored UI (Enabled)';
+            createColoredUIDropdown();
+            if (isCustomColorEnabled) {
+                applyCustomColor(savedCustomColor);
+            } else if (isRainbowEnabled) {
+                startRainbowFlash();
+            } else {
+                applyCustomColor(currentColor);
+            }
+        } else {
+            isColoredUIEnabled = false;
+            button.textContent = 'Colored UI (Disabled)';
+            removeColoredUIDropdown();
+            applyCustomColor('black');
+            stopRainbowFlash();
+        }
+    }
+ 
+    function createColoredUIDropdown() {
+        const dropdown = document.createElement('div');
+        dropdown.id = 'colored-ui-dropdown';
+        dropdown.style.position = 'fixed';
+        dropdown.style.top = '360px';
+        dropdown.style.right = '10px';
+        dropdown.style.zIndex = '10000';
+ 
+        const label = document.createElement('div');
+        label.textContent = 'Select Color:';
+        dropdown.appendChild(label);
+ 
+        const defaultOption = createOptionElement('Black (Default)', 'black');
+        const customOption = createOptionElement('Custom Color', 'custom');
+        const rainbowOption = createOptionElement('Rainbow Flash', 'rainbow');
+        const dropdownMenu = document.createElement('select');
+        dropdownMenu.id = 'colored-ui-dropdown-menu';
+        dropdownMenu.appendChild(defaultOption);
+        dropdownMenu.appendChild(customOption);
+        dropdownMenu.appendChild(rainbowOption);
+        dropdown.appendChild(dropdownMenu);
+ 
+        if (isCustomColorEnabled) {
+            dropdownMenu.value = 'custom';
+        } else if (isRainbowEnabled) {
+            dropdownMenu.value = 'rainbow';
+        } else {
+            dropdownMenu.value = currentColor;
+        }
+ 
+        dropdownMenu.addEventListener('change', function() {
+            const selectedColor = this.value;
+            if (selectedColor === 'custom') {
+                isCustomColorEnabled = true;
+                stopRainbowFlash();
+                openCustomColorPicker();
+            } else if (selectedColor === 'rainbow') {
+                isRainbowEnabled = true;
+                isCustomColorEnabled = false;
+                startRainbowFlash();
+            } else {
+                isCustomColorEnabled = false;
+                stopRainbowFlash();
+                applyCustomColor(selectedColor);
+            }
+        });
+ 
+        document.body.appendChild(dropdown);
+    }
+ 
+    function removeColoredUIDropdown() {
+        const dropdown = document.getElementById('colored-ui-dropdown');
+        if (dropdown) {
+            dropdown.remove();
+        }
+    }
+ 
+    function createOptionElement(text, value) {
+        const option = document.createElement('option');
+        option.text = text;
+        option.value = value;
+        return option;
+    }
+ 
+    function openCustomColorPicker() {
+        if (document.getElementById('custom-color-picker')) {
+            return;
+        }
+ 
+        const customColorPicker = document.createElement('input');
+        customColorPicker.type = 'color';
+        customColorPicker.id = 'custom-color-picker';
+        customColorPicker.style.position = 'fixed';
+        customColorPicker.style.top = '395px';
+        customColorPicker.style.right = '10px';
+        customColorPicker.style.zIndex = '10000';
+ 
+        customColorPicker.addEventListener('input', function() {
+            const selectedColor = this.value;
+            currentColor = selectedColor;
+            savedCustomColor = selectedColor;
+            applyCustomColor(selectedColor);
+        });
+ 
+        document.body.appendChild(customColorPicker);
+    }
+ 
+    function applyCustomColor(color) {
+        coloredElements.forEach(elementId => {
+            const elements = document.getElementsByClassName(elementId);
+            for (let element of elements) {
+                element.style.color = color;
+            }
+        });
+ 
+        whiteElements.forEach(elementId => {
+            const elements = document.getElementsByClassName(elementId);
+            for (let element of elements) {
+                element.style.color = (isColoredUIEnabled && (isCustomColorEnabled || isRainbowEnabled)) ? color : 'white';
+            }
+        });
+ 
+        currentColor = color;
+    }
+ 
+    function startRainbowFlash() {
+        if (rainbowFlashInterval) {
+            clearInterval(rainbowFlashInterval);
+        }
+        let currentIndex = 0;
+ 
+        rainbowFlashInterval = setInterval(() => {
+            const currentColor = rainbowColors[currentIndex];
+            applyCustomColor(currentColor);
+            currentIndex = (currentIndex + 1) % rainbowColors.length;
+        }, 500);
+    }
+ 
+    function stopRainbowFlash() {
+        clearInterval(rainbowFlashInterval);
+        isRainbowEnabled = false;
+        if (!isColoredUIEnabled) {
+            applyCustomColor('black');
+        } else if (isCustomColorEnabled) {
+            applyCustomColor(savedCustomColor);
+        } else {
+            applyCustomColor(currentColor);
+        }
+    }
+ 
+    function toggleElement() {
+        const elementToToggle = [
+            'custom-color-picker'
+        ];
+ 
+        elementToToggle.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.style.display = element.style.display === 'none' ? 'block' : 'none';
+            }
+        });
+    }
+ 
+    function createColoredUIButton() {
+        if (document.getElementById('colored-ui-button')) {
+            return;
+        }
+ 
+        const button = document.createElement('button');
+        button.id = 'colored-ui-button';
+        button.textContent = 'Colored UI (Disabled)';
+        button.style.position = 'fixed';
+        button.style.top = '480px';
+        button.style.right = '10px';
+        button.title = 'Color Selected Elements';
+        button.style.zIndex = '10000';
+ 
+        button.addEventListener('click', toggleElement);
+        button.addEventListener('click', toggleColoredUI);
+ 
+        document.body.appendChild(button);
+    }
+ 
+    createColoredUIButton();
+ 
+    // New background function
+    function createBackgroundFunctionality() {
+        const youtubeLabel = document.createElement('label');
+        youtubeLabel.textContent = 'Background Image:';
+        youtubeLabel.style.position = 'fixed';
+        youtubeLabel.style.top = '430px';
+        youtubeLabel.style.right = '10px';
+        youtubeLabel.style.zIndex = '10000';
+        youtubeLabel.id = 'youtubelabel';
+        youtubeLabel.style.color = 'red';
+ 
+        const youtubeInput = document.createElement('input');
+        youtubeInput.type = 'text';
+        youtubeInput.placeholder = 'Paste image URL here...';
+        youtubeInput.style.position = 'fixed';
+        youtubeInput.style.top = '460px';
+        youtubeInput.style.right = '10px';
+        youtubeInput.style.zIndex = '10000';
+        youtubeInput.id = 'youtubeinput';
+ 
+        youtubeInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                const url = youtubeInput.value;
+                console.log('URL Entered:', url); // Debugging line
+                if (url) {
+                    setBackground(url);
+                } else {
+                    clearBackground();
+                }
+            }
+        });
+ 
+        document.body.appendChild(youtubeLabel);
+        document.body.appendChild(youtubeInput);
+    }
+ 
+    function setBackground(url) {
+        const primaryInner = document.getElementById('primary-inner');
+        console.log('Setting background for primary-inner with URL:', url); // Debugging line
+        if (primaryInner) {
+            primaryInner.style.backgroundImage = `url(${url})`;
+            primaryInner.style.backgroundSize = 'cover';
+            primaryInner.style.backgroundPosition = 'center';
+        }
+    }
+ 
+    function clearBackground() {
+        const primaryInner = document.getElementById('primary-inner');
+        console.log('Clearing background for primary-inner'); // Debugging line
+        if (primaryInner) {
+            primaryInner.style.backgroundImage = '';
+        }
+    }
+ 
+    createBackgroundFunctionality();
+ 
+    var autoSubscribeButton = document.createElement('button');
+    autoSubscribeButton.id = 'auto-subscribe-button';
+    autoSubscribeButton.textContent = 'Auto Subscribe (Disabled)';
+    autoSubscribeButton.style.position = 'fixed';
+    autoSubscribeButton.style.top = '120px';
+    autoSubscribeButton.style.right = '10px';
+    autoSubscribeButton.style.zIndex = '10000';
+    autoSubscribeButton.title = 'Automatically subscribe to channels';
+ 
+    autoSubscribeButton.addEventListener('click', function() {
+        if (!isAutoSubscribing) {
+            autoSubscribeButton.textContent = 'Auto Subscribe (Enabled)';
+            startAutoSubscribing();
+        } else {
+            autoSubscribeButton.textContent = 'Auto Subscribe (Disabled)';
+            stopAutoSubscribing();
+        }
+    });
+ 
+    document.body.appendChild(autoSubscribeButton);
+ 
+    function startAutoSubscribing() {
+        clickSubscribeButton(); // Click immediately when enabled
+        autoSubscribeInterval = setInterval(clickSubscribeButton, 10000);
+        isAutoSubscribing = true;
+    }
+ 
+    function stopAutoSubscribing() {
+        clearInterval(autoSubscribeInterval);
+        isAutoSubscribing = false;
+    }
+ 
+    function clickSubscribeButton() {
+        var subscribeButton = document.querySelector('[aria-label^="Subscribe to"]');
+        if (subscribeButton && subscribeButton.textContent.includes('Subscribe')) {
+            subscribeButton.click();
+        }
+    }
+ 
