@@ -303,7 +303,7 @@ document.body.appendChild(removeAdsButton);
     screenshotButton.id = 'screenshot-button';
     screenshotButton.title = 'Screenshot Video at Current Timestamp';
     screenshotButton.style.position = 'fixed';
-    screenshotButton.style.top = '240px';
+    screenshotButton.style.top = '220px';
     screenshotButton.style.right = '10px';
     screenshotButton.style.zIndex = '10000';
     screenshotButton.style.backgroundColor = '#4caf50';
