@@ -125,43 +125,28 @@ function removePageAds() {
 const pageAds = document.querySelectorAll('.style-scope.ytd-display-ad-renderer');
 pageAds.forEach(pagead => pagead.remove());
 }
- 
- 
-function removeSupport()
-{
-try
-{
-if (document.getElementById("support").innerText.includes("Ad") == true)
-{
-document.getElementsByClassName("ytd-rich-item-renderer")[0].innerHTML = ""
-console.log('Sponsor Ad removed!');
-}
-}
-catch(e)
-{
-return;
-}
-}
- 
- 
-var Ads = {
-"AdsWithIds":["masthead-ad","player-ads","top-container","offer-module","pyv-watch-related-dest-url","ytd-promoted-video-renderer","sparkles-container","fulfilled-layout"],
-"AdsWithClasses":["style-scope ytd-search-pyv-renderer","ytd-compact-promoted-video-renderer","style-scope ytd-carousel-ad-renderer","ytp-ad-overlay-container","ytp-ad-message-container"],
-"AdsWithTags":["ytd-promoted-sparkles-text-search-renderer"],
-"videoAd":["ytp-ad-text ytp-ad-preview-text","ytp-ad-skip-button ytp-button"],
-"removeByID":function(){this.AdsWithIds.forEach(i=>{ let AdId = document.querySelector(i);if(AdId) AdId.remove();})},
-"removeByClassName":function(){this.AdsWithClasses.forEach(c=>{ let AdClass = document.getElementsByClassName(c);if(AdClass[0]) AdClass[0].remove();})},
-"removeByTagName":function(){this.AdsWithTags.forEach(t=>{ let AdTag = document.getElementsByTagName(t);if(AdTag[0]) AdTag[0].remove();})},
-"removeVideoAd":function(){this.videoAd.forEach(v=>{let AdVdo = document.getElementsByClassName(v)[0];if(AdVdo) {AdVdo.click(); console.log("Skipped a clickable Ad")}})} //handles skippable video Ad
-}
+  
+var Ads = [
+    `#masthead-ad`, //Banner ad at the top of the homepage.
+    `ytd-rich-item-renderer.style-scope.ytd-rich-grid-row #content: has(.ytd-display-ad-renderer)`, //Video layout ad at the homepage.
+    `.video-ads.ytp-ad-module`, //Ad at the bottom of the player.
+    `tp-yt-paper-dialog: has(yt-mealbar-promo-renderer)`, //Member promotion ad at the playback page.
+    `ytd-engagement-panel-section-list-renderer[target-id="engagement-panel-ads"]`, //Recommended ad at the top right of the playback page.
+    `#related #player-ads`, //Promotion ad at the right side of the comment area at the playback page.
+    `#related ytd-ad-slot-renderer`, //Video layout ad at the right side of the comment area at the playback page.
+    `ytd-ad-slot-renderer`, //Search page ads.
+    `yt-mealbar-promo-renderer`, //Playback page member recommended ads.
+    `ytd-popup-container: has(a[href="/premium"])`, //Member blocked ads
+    `ad-slot-renderer`, //M Playback page third-party recommended ads
+    `ytm-companion-ad-renderer`, //M Skippable video ad link
+    ];
  
  
 function killAd()
 {
-Ads.removeByID();
-Ads.removeByClassName();
-Ads.removeByTagName();
-Ads.removeVideoAd();
+Ads.forEach((Ad) => {
+    Ad.remove();
+});
 removeSupport();
 adOverlay();
 removeVideoAds();
