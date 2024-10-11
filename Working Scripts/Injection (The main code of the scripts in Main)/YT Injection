@@ -303,7 +303,7 @@ document.body.appendChild(removeAdsButton);
     screenshotButton.id = 'screenshot-button';
     screenshotButton.title = 'Screenshot Video at Current Timestamp';
     screenshotButton.style.position = 'fixed';
-    screenshotButton.style.top = '220px';
+    screenshotButton.style.top = '210px';
     screenshotButton.style.right = '10px';
     screenshotButton.style.zIndex = '10000';
     screenshotButton.style.backgroundColor = '#4caf50';
@@ -322,7 +322,7 @@ document.body.appendChild(removeAdsButton);
     thumbnailButton.id = 'thumbnail-button';
     thumbnailButton.title = 'Download Video Thumbnail';
     thumbnailButton.style.position = 'fixed';
-    thumbnailButton.style.top = '280px';
+    thumbnailButton.style.top = '255px';
     thumbnailButton.style.right = '10px';
     thumbnailButton.style.zIndex = '10000';
     thumbnailButton.style.backgroundColor = '#ff5722';
@@ -336,31 +336,12 @@ document.body.appendChild(removeAdsButton);
     thumbnailIcon.style.height = '24px';
     thumbnailButton.appendChild(thumbnailIcon);
  
-    // Create the repeat button
-    const repeatButton = document.createElement('button');
-    repeatButton.id = 'repeat-button';
-    repeatButton.title = 'Repeat Video';
-    repeatButton.style.position = 'fixed';
-    repeatButton.style.top = '320px';
-    repeatButton.style.right = '10px';
-    repeatButton.style.zIndex = '10000';
-    repeatButton.style.backgroundColor = '#ffff00';
-    repeatButton.style.color = 'white';
- 
-    // Create and append the repeat icon
-    const repeatIcon = document.createElement('img');
-    repeatIcon.src = 'https://img.favpng.com/20/15/5/repeat-icon-png-favpng-0wgvCV1bKvFXHzqDPGBXh1Jae.jpg';
-    repeatIcon.alt = 'Repeat';
-    repeatIcon.style.width = '24px';
-    repeatIcon.style.height = '24px';
-    repeatButton.appendChild(repeatIcon);
- 
     // Create the download button
     const downloadButton = document.createElement('button');
     downloadButton.id = 'download-button';
     downloadButton.title = 'Download Video';
     downloadButton.style.position = 'fixed';
-    downloadButton.style.top = '360px';
+    downloadButton.style.top = '300px';
     downloadButton.style.right = '10px';
     downloadButton.style.zIndex = '10000';
     downloadButton.style.backgroundColor = '#2196F3';
@@ -374,6 +355,25 @@ document.body.appendChild(removeAdsButton);
     downloadIcon.style.height = '24px';
     downloadButton.appendChild(downloadIcon);
  
+     
+    // Create the repeat button
+    const repeatButton = document.createElement('button');
+    repeatButton.id = 'repeat-button';
+    repeatButton.title = 'Repeat Video';
+    repeatButton.style.position = 'fixed';
+    repeatButton.style.top = '345px';
+    repeatButton.style.right = '10px';
+    repeatButton.style.zIndex = '10000';
+    repeatButton.style.backgroundColor = '#ffff00';
+    repeatButton.style.color = 'white';
+ 
+    // Create and append the repeat icon
+    const repeatIcon = document.createElement('img');
+    repeatIcon.src = 'https://img.favpng.com/20/15/5/repeat-icon-png-favpng-0wgvCV1bKvFXHzqDPGBXh1Jae.jpg';
+    repeatIcon.alt = 'Repeat';
+    repeatIcon.style.width = '24px';
+    repeatIcon.style.height = '24px';
+    repeatButton.appendChild(repeatIcon);
  
  
     function renderizarContenido() {
