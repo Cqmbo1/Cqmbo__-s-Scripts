@@ -344,6 +344,7 @@ function toggleelements(){
 function startRemovingAds(){
 removeAdsInterval = setInterval(killAd, 100);
 clearInterval(removeAdsInterval);
+removeAdsInterval = setInterval(killAd, 100);
 isRemovingAds = true;
 }
  
