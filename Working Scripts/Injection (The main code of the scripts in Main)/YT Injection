@@ -296,7 +296,7 @@ function toggleelements(){
         skipButton.click();//PC
         nativeTouch.call(skipButton);//Phone
         log(`Button skip ad`);
-        }else if(shortAdMsg){
+        }if(shortAdMsg){
         video.currentTime = video.duration;//Mandatory
         log(`Forced end of the ad`);
         }
