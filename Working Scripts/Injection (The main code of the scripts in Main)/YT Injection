@@ -98,80 +98,252 @@ function toggleelements(){
     document.body.appendChild(removalButton);
  
  
-function adOverlay(){
-const ad = document.querySelector(".ytp-ad-text");
-const video = document.querySelector("video");
-if (ad){
-video.currentTime = video.duration;
-}
-let btn = document.querySelector(".ytp-ad-skip-button-icon-modern");
-if(btn){document.querySelector(".ytp-ad-skip-button-icon-modern").click();console.log("Skipped Video Ad");}
-}
- 
- 
-function removeVideoAds() {
-const ads = document.querySelectorAll('.ad-showing');
-ads.forEach(ad => ad.remove());
-}
- 
- 
-function removePopUpAds() {
-const popupads = document.querySelectorAll('.style-scope ytd-enforcement-message-view-model');
-popupads.forEach(PopUpAds => PopUpAds.remove());
-}
- 
- 
-function removePageAds() {
-const pageAds = document.querySelectorAll('.style-scope.ytd-display-ad-renderer');
-pageAds.forEach(pagead => pagead.remove());
-}
- 
- 
-function removeSupport()
-{
-try
-{
-if (document.getElementById("support").innerText.includes("Ad") == true)
-{
-document.getElementsByClassName("ytd-rich-item-renderer")[0].innerHTML = ""
-console.log('Sponsor Ad removed!');
-}
-}
-catch(e)
-{
-return;
-}
-}
- 
- 
-var Ads = {
-"AdsWithIds":["masthead-ad","player-ads","top-container","offer-module","pyv-watch-related-dest-url","ytd-promoted-video-renderer","sparkles-container","fulfilled-layout"],
-"AdsWithClasses":["style-scope ytd-search-pyv-renderer","ytd-compact-promoted-video-renderer","style-scope ytd-carousel-ad-renderer","ytp-ad-overlay-container","ytp-ad-message-container"],
-"AdsWithTags":["ytd-promoted-sparkles-text-search-renderer"],
-"videoAd":["ytp-ad-text ytp-ad-preview-text","ytp-ad-skip-button ytp-button"],
-"removeByID":function(){this.AdsWithIds.forEach(i=>{ let AdId = document.querySelector(i);if(AdId) AdId.remove();})},
-"removeByClassName":function(){this.AdsWithClasses.forEach(c=>{ let AdClass = document.getElementsByClassName(c);if(AdClass[0]) AdClass[0].remove();})},
-"removeByTagName":function(){this.AdsWithTags.forEach(t=>{ let AdTag = document.getElementsByTagName(t);if(AdTag[0]) AdTag[0].remove();})},
-"removeVideoAd":function(){this.videoAd.forEach(v=>{let AdVdo = document.getElementsByClassName(v)[0];if(AdVdo) {AdVdo.click(); console.log("Skipped a clickable Ad")}})} //handles skippable video Ad
-}
- 
- 
-function killAd()
-{
-Ads.removeByID();
-Ads.removeByClassName();
-Ads.removeByTagName();
-Ads.removeVideoAd();
-removeSupport();
-adOverlay();
-removeVideoAds();
-removePopUpAds();
-removePageAds();
-}
+    function killAd(){
+        let video;
+        //Interface ad selector
+        const cssSelectorArr = [
+        `#masthead-ad`, //Banner ad at the top of the homepage.
+        `ytd-rich-item-renderer.style-scope.ytd-rich-grid-row #content: has(.ytd-display-ad-renderer)`, //Homepage video layout ad.
+        `.video-ads.ytp-ad-module`, //Player bottom ad.
+        `tp-yt-paper-dialog: has(yt-mealbar-promo-renderer)`, //Player page member promotion ad.
+        `ytd-engagement-panel-section-list-renderer[target-id="engagement-panel-ads"]`, //Recommended ad at the top right of the play page.
+        `#related #player-ads`, //Promotion ad at the right side of the play page comment area.
+        `#related ytd-ad-slot-renderer`, //Video layout ads on the right side of the comment area on the play page.
+        `ytd-ad-slot-renderer`, //Search page ads.
+        `yt-mealbar-promo-renderer`, //Play page member recommendation ads.
+        `ytd-popup-container:has(a[href="/premium"])`, //Member block ads
+        `ad-slot-renderer`, //M third-party recommended ads on the play page
+        `ytm-companion-ad-renderer`, //M skippable video ad link
+        ];
+        window.dev=false; //Development and use
+        
+        /**
+        * Format standard time
+        * @param {Date} time standard time
+        * @param {String} format format
+        * @return {String}
+        */
+        function moment(time) {
+        // Get year, month, day, hour, minute, second
+        let y = time.getFullYear();
+        let m = (time.getMonth() + 1).toString().padStart(2, `0`); let d = time.getDate().toString().padStart(2, `0`); let h = time.getHours().toString().padStart(2, `0`); let min = time.getMinutes().toString().padStart(2 , `0`); let s = time.getSeconds().toString().padStart(2, `0`); return `${y}-${m}-${d} ${h}:${min}:${s}` } /** * Output information * @param {String} msg information * @return {undefined} */ function log(msg) { if(!window.dev){ return false; } console.log (window.location.href); console.log(`${moment(new Date())} ${msg}`);
+        }
+        
+        /**
+        * Set the run flag
+        * @param {String} name
+        * @return {undefined}
+        */
+        function setRunFlag(name){
+        let style = document.createElement(`style`);
+        style.id = name;
+        (document.head || document.body).appendChild(style);//Append the node to HTML.
+        }
+        
+        /**
+        * Get the run flag
+        * @param {String} name
+        * @return {undefined|Element}
+        */
+        function getRunFlag(name){
+        return document.getElementById(name);
+        }
+        
+        /**
+        * Check if the run flag is set
+        * @param {String} name
+        * @return {Boolean}
+        */
+        function checkRunFlag(name){
+        if(getRunFlag(name)){
+        return true;
+        }else{
+        setRunFlag(name)
+        return false;
+        }
+        }
+        
+        /**
+        * Generate a CSS element style for removing ads and attach it to the HTML node
+        * @param {String} styles style text
+        * @return {undefined}
+        */
+        function generateRemoveADHTMLElement(id) {
+        //If it has been set, exit.
+        if (checkRunFlag(id)) {
+        log(`Blocking page ad node has been generated`);
+        return false
+        }
+        
+        //Set the removal ad style.
+        let style = document.createElement(`style`);//Create a style element.
+        (document.head || document.body).appendChild(style);//Append the node to HTML.
+        style.appendChild(document.createTextNode(generateRemoveADCssText(cssSelectorArr)));//Append the style node to the element node.
+        log(`Generate blocking page ad node successfully`);
+        }
+        
+        /**
+        * Generate CSS text for removing ads
+        * @param {Array} cssSelectorArr CSS selector array to be set
+        * @return {String}
+        */
+        function generateRemoveADCssText(cssSelectorArr){
+        cssSelectorArr.forEach((selector,index)=>{
+        cssSelectorArr[index]=`${selector}{display:none!important}`;//Traverse and set the style.
+        });
+        return cssSelectorArr.join(` `);//Concatenate into a string.
+        }
+        
+        /**
+        * Touch event
+        * @return {undefined}
+        */
+        function nativeTouch(){
+        // Create Touch object
+        let touch = new Touch({
+        identifier: Date.now(),
+        target: this,
+        clientX: 12,
+        clientY: 34,
+        radiusX: 56,
+        radiusY: 78,
+        rotationAngle: 0,
+        force: 1
+        });
+        
+        // Create TouchEvent object
+        let touchStartEvent = new TouchEvent(`touchstart`, {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+        touches: [touch],
+        targetTouches: [touch],
+        changedTouches: [touch]
+        });
+        
+        // Dispatching touchstart event to target element
+        this.dispatchEvent(touchStartEvent);
+        
+        // Create TouchEvent object
+        let touchEndEvent = new TouchEvent(`touchend`, {
+        bubbles: true,
+        cancelable: true,
+        view: window,
+        touches: [],
+        targetTouches: [],
+        changedTouches: [touch]
+        });
+        
+        // Dispatching touchend event to target element
+        this.dispatchEvent(touchEndEvent);
+        }
+        
+        /**
+        * Get dom
+        * @return {undefined}
+        */
+        function getVideoDom(){
+        video = document.querySelector(`.ad-showing video`) || document.querySelector(`video`);
+        }
+        
+        /**
+        * Autoplay
+        * @return {undefined}
+        */
+        function playAfterAd(){
+        if(video.paused && video.currentTime<1){
+        video.play();
+        log(`Autoplay video`);
+        }
+        }
+        
+        /**
+        * Remove YT blocking ad blocking pop-up window and close the closing mask layer
+        * @return {undefined}
+        */
+        function closeOverlay(){
+        //Remove YT blocking ad blocking pop-up window
+        const premiumContainers = [...document.querySelectorAll(`ytd-popup-container`)];
+        const matchingContainers = premiumContainers.filter(container => container.querySelector(`a[href="/premium"]`));
+        
+        if(matchingContainers.length>0){
+        matchingContainers.forEach(container => container.remove());
+        log(`Remove YT Interceptor`);
+        }
+        
+        // Get all elements with the specified tag
+        const backdrops = document.querySelectorAll(`tp-yt-iron-overlay-backdrop`);
+        // Find elements with a specific style
+        const targetBackdrop = Array.from(backdrops).find(
+        (backdrop) => backdrop.style.zIndex === `2201`
+        );
+        // If the element is found, clear its class and remove the open attribute
+        if (targetBackdrop) {
+        targetBackdrop.className = ``; // Clear all classes
+        targetBackdrop.removeAttribute(`opened`); // Remove the open attribute
+        log(`Close mask layer`); } } /** * Skip ads * @return {undefined} */ function skipAd(mutationsList, observer) { const skipButton = document.querySelector(`.ytp-ad-skip-button`) || document.querySelector(`.ytp-skip-ad-button`) || document.querySelector(`.ytp-ad-skip-button-modern`); const shortAdMsg = document.querySelector(`.video-ads.ytp-ad-module .ytp-ad-player-overlay`) || document.querySelector(`.ytp-ad-button-icon`); if((skipButton || shortAdMsg) && window.location.href.indexOf(`https://m.youtube.com/`) === -1){ //Mobile mute has a bug
+        video.muted = true;
+        }
+        
+        if(skipButton){
+        const delayTime = 0.5;
+        setTimeout(skipAd,delayTime*1000);//If click and call do not skip changes, change the ad time directly
+        if(video.currentTime>delayTime){
+        video.currentTime = video.duration;//Mandatory
+        log(`Special account skip button ad`);
+        return;
+        }
+        skipButton.click();//PC
+        nativeTouch.call(skipButton);//Phone
+        log(`Button skip ad`);
+        }else if(shortAdMsg){
+        video.currentTime = video.duration;//Mandatory
+        log(`Forced end of the ad`);
+        }
+        
+        }
+        
+        /**
+        * Remove the playing ad
+        * @return {undefined}
+        */
+        function removePlayerAD(id){
+        //If it is already running, exit.
+        if (checkRunFlag(id)) {
+        log(`The function of removing ads in playback is already running`);
+        return false
+        }
+        
+        //Monitor and process ads in the video
+        const targetNode = document.body;//Directly monitor changes in body
+        const config = {childList: true, subtree: true };//Monitor changes in the target node itself and the nodes under the subtree
+        const observer = new MutationObserver(()=>{getVideoDom();closeOverlay();skipAd();playAfterAd();});//Process video ads
+        observer.observe(targetNode, config);//Start observing ad nodes with the above configuration
+        log(`Run the function of removing ads in playback successfully`);
+        }
+        
+        /**
+        * main function
+        */
+        function main(){
+        generateRemoveADHTMLElement(`removeADHTMLElement`);//Remove ads in the interface.
+        removePlayerAD(`removePlayerAD`);//Remove ads in playback.
+        }
+        
+        if (document.readyState === `loading`) {
+        document.addEventListener(`DOMContentLoaded`, main); // Loading is not complete at this time
+        log(`YouTube ad removal script is about to be called:`);
+        } else {
+        main(); // At this time, `DOMContentLoaded` has been triggered
+        log(`YouTube ad removal script is quickly called:`);
+        }
+        }
+        
  
  
 function startRemovingAds(){
 removeAdsInterval = setInterval(killAd, 100);
+clearInterval(removeAdsInterval);
 isRemovingAds = true;
 }
  
