@@ -1,0 +1,491 @@
+    var calculatorVisible = false;
+    var unitConverterVisible = false;
+
+    var Buttons = `
+        <div class="containerButtons">
+            <button id="calculator-button" style="position: fixed; top: 200px; right: 10px; z-index: 10000; background-color: #2196f3; color: white;" title="Show/Hide Calculator">
+                <img src="https://th.bing.com/th/id/OIP.fljCTsp0o0y5HVKLBrU1dwHaHa?w=182&h=182&c=7&r=0&o=5&pid=1.7" alt="Calculator" style="width: 24px; height: 24px;">
+            </button>
+            <div id="calculator" style="display: none; position: fixed; top: 250px; right: 10px; z-index: 10000; background-color: #ffffff; border: 1px solid #ddd; padding: 10px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);">
+                <input type="text" id="calc-display" style="width: 90%; padding: 10px; font-size: 18px; text-align: right;" disabled>
+                <div class="calc-buttons" style="display: grid; grid-template-columns: repeat(4, 50px); gap: 5px; margin-top: 10px;">
+                    <button class="calc-btn">7</button>
+                    <button class="calc-btn">8</button>
+                    <button class="calc-btn">9</button>
+                    <button class="calc-btn">/</button>
+                    <button class="calc-btn">4</button>
+                    <button class="calc-btn">5</button>
+                    <button class="calc-btn">6</button>
+                    <button class="calc-btn">*</button>
+                    <button class="calc-btn">1</button>
+                    <button class="calc-btn">2</button>
+                    <button class="calc-btn">3</button>
+                    <button class="calc-btn">-</button>
+                    <button class="calc-btn">0</button>
+                    <button class="calc-btn">.</button>
+                    <button class="calc-btn">+</button>
+                    <button class="calc-btn">√</button>
+                    <button class="calc-btn">(</button>
+                    <button class="calc-btn">)</button>
+                    <button class="calc-btn">^</button>
+                    <button class="calc-btn" data-value="!">!</button> <!-- Factorial Button -->
+                    <!-- Fraction button styled as a/b with a line between -->
+                    <button class="calc-btn fraction-btn" style="font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center;" data-value="/">
+                        <span style="font-size: 10px; line-height: 8px;">a</span>
+                        <span style="border-top: 1px solid black; width: 10px;"></span>
+                        <span style="font-size: 10px; line-height: 8px;">b</span>
+                    </button>
+                    <button class="calc-btn" style="grid-column: span 4; background-color: #f44336; color: white;">C</button>
+                    <button class="calc-btn" style="grid-column: span 3; background-color: #7DDA58; color: white; margin-left: 55px;">=</button>
+                    <button class="calc-btn fraction-btn" style="grid-column: span 2; background-color: #7DDA58; color: white;">-> Fraction</button>
+                    <button class="calc-btn backspace-btn" style=" background-color: #f9a825; color: white;"><img src="https://i.imgur.com/YkaU0mb.png" alt="Backspace" style="width: 24px; height: 24px;"></button> <!-- Backspace Button -->
+                    <button class="calc-btn unit-converter" style="grid-column: span 4; background-color: #f9a825; color: white;">Unit Converter</button> <!-- Unit Converter Button -->
+                </div>
+         <div id="unit-converter-menu" style="margin-top: 10px; grid-column: span 4;">
+                    <select id="input-unit" style="width: 100%; padding: 5px;">
+                           <!-- Time Category -->
+        <optgroup label="Time (365 Day Format)">
+        <option value="ms365">ms(365 Day)</option>
+        <option value="second365">second(365 Day)</option>
+        <option value="minute365">minute(365 Day)</option>
+        <option value="hour365">hour(365 Day)</option>
+        <option value="day365">day(365 Day)</option>
+        <option value="week365">week(365 Day)</option>
+        <option value="month365">month(365 Day)</option>
+        <option value="year365">year(365 Day)</option>
+         </optgroup>
+         <optgroup label="Time (365.25 Day Format)">
+        <option value="ms365.25">ms(365.25 Day)</option>
+        <option value="second365.25">second(365.25 Day)</option>
+        <option value="minute365.25">minute(365.25 Day)</option>
+        <option value="hour365.25">hour(365.25 Day)</option>
+        <option value="day365.25">day(365.25 Day)</option>
+        <option value="week365.25">week(365.25 Day)</option>
+        <option value="month365.25">month(365.25 Day)</option>
+        <option value="year365.25">year(365.25 Day)</option>
+         </optgroup>
+        <optgroup label="Time (366 Day Format)">
+        <option value="ms366">ms(366 Day)</option>
+        <option value="second366">second(366 Day)</option>
+        <option value="minute366">minute(366 Day)</option>
+        <option value="hour366">hour(366 Day)</option>
+        <option value="day366">day(366 Day)</option>
+        <option value="week366">week(366 Day)</option>
+        <option value="month366">month(366 Day)</option>
+        <option value="year366">year(366 Day)</option>
+      </optgroup>
+
+    <!-- Weight Category -->
+    <optgroup label="Weight">
+        <option value="lbs">lbs</option>
+        <option value="tons">tons</option>
+        <option value="oz">oz</option>
+        <option value="kg">kg</option>
+        <option value="g">g</option>
+        <option value="mg">mg</option>
+    </optgroup>
+
+    <!-- Volume Category -->
+    <optgroup label="Volume">
+        <option value="ml">ml</option>
+        <option value="gal">gal</option>
+        <option value="quart">quart</option>
+        <option value="pint">pint</option>
+        <option value="cups">cups</option>
+        <option value="fl.oz">fl.oz</option>
+    </optgroup>
+
+    <!-- Length Category -->
+    <optgroup label="Length">
+        <option value="mile">mile</option>
+        <option value="km">km</option>
+        <option value="m">m</option>
+        <option value="ft">ft</option>
+        <option value="inch">inch</option>
+        <option value="cm">cm</option>
+        <option value="mm">mm</option>
+    </optgroup>
+                        <!-- Add more units as needed -->
+                    </select>
+                    <input type="text" id="input-value" style="width: 90%; padding: 10px; font-size: 18px; text-align: right; margin-top: 5px;">
+                    <select id="output-unit" style="width: 100%; padding: 5px; margin-top: 5px;">
+   <!-- Time Category -->
+          <optgroup label="Time (365 Day Format)">
+        <option value="ms365">ms(365 Day)</option>
+        <option value="second365">second(365 Day)</option>
+        <option value="minute365">minute(365 Day)</option>
+        <option value="hour365">hour(365 Day)</option>
+        <option value="day365">day(365 Day)</option>
+        <option value="week365">week(365 Day)</option>
+        <option value="month365">month(365 Day)</option>
+        <option value="year365">year(365 Day)</option>
+         </optgroup>
+         <optgroup label="Time (365.25 Day Format)">
+        <option value="ms365.25">ms(365.25 Day)</option>
+        <option value="second365.25">second(365.25 Day)</option>
+        <option value="minute365.25">minute(365.25 Day)</option>
+        <option value="hour365.25">hour(365.25 Day)</option>
+        <option value="day365.25">day(365.25 Day)</option>
+        <option value="week365.25">week(365.25 Day)</option>
+        <option value="month365.25">month(365.25 Day)</option>
+        <option value="year365.25">year(365.25 Day)</option>
+         </optgroup>
+        <optgroup label="Time (366 Day Format)">
+        <option value="ms366">ms(366 Day)</option>
+        <option value="second366">second(366 Day)</option>
+        <option value="minute366">minute(366 Day)</option>
+        <option value="hour366">hour(366 Day)</option>
+        <option value="day366">day(366 Day)</option>
+        <option value="week366">week(366 Day)</option>
+        <option value="month366">month(366 Day)</option>
+        <option value="year366">year(366 Day)</option>
+      </optgroup>
+
+
+
+    <!-- Weight Category -->
+    <optgroup label="Weight">
+        <option value="lbs">lbs</option>
+        <option value="tons">tons</option>
+        <option value="oz">oz</option>
+        <option value="kg">kg</option>
+        <option value="g">g</option>
+        <option value="mg">mg</option>
+    </optgroup>
+
+    <!-- Volume Category -->
+    <optgroup label="Volume">
+        <option value="ml">ml</option>
+        <option value="gal">gal</option>
+        <option value="quart">quart</option>
+        <option value="pint">pint</option>
+        <option value="cups">cups</option>
+        <option value="fl.oz">fl.oz</option>
+    </optgroup>
+
+    <!-- Length Category -->
+    <optgroup label="Length">
+        <option value="mile">mile</option>
+        <option value="km">km</option>
+        <option value="m">m</option>
+        <option value="ft">ft</option>
+        <option value="inch">inch</option>
+        <option value="cm">cm</option>
+        <option value="mm">mm</option>
+    </optgroup>
+                        <!-- Add more units as needed -->
+                    </select>
+                    <input type="text" id="output-value" style="width: 90%; padding: 10px; font-size: 18px; text-align: right; margin-top: 5px;" disabled>
+                    <button id="convert-button" style="width: 100%; padding: 10px; background-color: #4CAF50; color: white; margin-top: 10px;">Convert</button>
+
+                </div>
+            </div>
+        </div>
+    `;
+
+
+window.onload = function() {
+    const sliderForUnitConvert = document.createElement('div');
+    sliderForUnitConvert.innerHTML = `
+    <div>
+        <label for="maxNumbersAllowedAfterDecimalSignSlider">Decimal Places (1 - 20):</label>
+        <input type="range" id="maxNumbersAllowedAfterDecimalSignSlider" min="1" max="20" value="10">
+        <output id="maxNumbersAllowedAfterDecimalSignIntervalValue">10</output>
+    </div>
+    `;
+
+    const unitConverterMenu = document.getElementById('unit-converter-menu');
+    if (unitConverterMenu) {
+        unitConverterMenu.appendChild(sliderForUnitConvert);
+    }
+
+    const slider = document.getElementById('maxNumbersAllowedAfterDecimalSignSlider');
+    if (slider) {
+        slider.addEventListener('input', function() {
+            const sliderValue = slider.value;
+            const sliderText = document.getElementById('maxNumbersAllowedAfterDecimalSignIntervalValue');
+            sliderText.textContent = sliderValue;
+        });
+    } else {
+        console.error('Element not found: maxNumbersAllowedAfterDecimalSignSlider');
+    }
+};
+
+
+
+
+    function showCalculatorButton() {
+        if (!calculatorVisible) {
+            calculatorVisible = true;
+            document.body.insertAdjacentHTML('beforeend', Buttons);
+            attachButtonListeners();
+        }
+    }
+
+function handlePaste(event) {
+    const pastedData = event.clipboardData.getData('Text');
+    const display = document.getElementById('calc-display');
+    const inputvalue = document.getElementById('input-value');
+    const calculator = document.getElementById('calculator');
+    const unitconvertermenu = document.getElementById('unit-converter-menu');
+    unitconvertermenu.setAttribute('tabindex', '-1'); // Make it focusable
+
+    // Optionally, validate the pasted data to only allow valid characters
+    const validCharacters = /^[0-9+\-*/.^() ]+$/;
+
+    if (!validCharacters.test(pastedData)) {
+        // If pasted data is invalid, show an error
+        if (calculator.style.display !== 'none' && document.activeElement === calculator) {
+            if (display.style.display !== 'none') {
+                display.value = 'Invalid input';
+            } else if (unitconvertermenu.style.display !== 'none') {
+                inputvalue.value = 'Invalid input';
+            }
+        }
+    } else {
+        // If the pasted data is valid
+        if (document.activeElement === calculator) {
+            if (display.style.display !== 'none') {
+                // Paste into calculator display if visible
+                display.value += pastedData;
+            } else if (unitconvertermenu.style.display !== 'none') {
+                // Paste into inputvalue if the unit converter menu is visible
+                inputvalue.value += pastedData;
+            }
+        }
+    }
+}
+
+
+
+
+    function performConversion() {
+        const inputUnit = document.getElementById('input-unit').value;
+        const outputUnit = document.getElementById('output-unit').value;
+        const inputValue = parseFloat(document.getElementById('input-value').value);
+        const outputField = document.getElementById('output-value');
+        const sliderText = document.getElementById('maxNumbersAllowedAfterDecimalSignIntervalValue');
+        const decimalPlaces = sliderText.textContent;
+
+        if (isNaN(inputValue)) {
+            outputField.value = 'Invalid input';
+            return;
+        }
+
+        let conversionFactor = getConversionFactor(inputUnit, outputUnit);
+        if (conversionFactor === null) {
+            outputField.value = 'Conversion not available';
+        } else {
+            outputField.value = (inputValue * conversionFactor).toFixed(decimalPlaces);
+            document.getElementById('calc-display').value = '';
+        }
+    }
+
+
+function attachButtonListeners() {
+    const calcButton = document.getElementById('calculator-button');
+    const calculator = document.getElementById('calculator');
+    const buttons = document.querySelectorAll('.calc-btn');
+    const convertButton = document.getElementById('convert-button');
+    const unitConverterButton = document.querySelector('.unit-converter');
+    const unitConverterMenu = document.getElementById('unit-converter-menu');
+    const inputField = document.getElementById('input-value');
+
+    // Initialize visibility state for the unit converter menu
+    let unitConverterVisible = false;
+
+    // Toggle calculator visibility on button click
+    calcButton.addEventListener('click', () => {
+        calculator.style.display = calculator.style.display === 'none' ? 'block' : 'none';
+    });
+
+    // Add click event listeners to calculator buttons
+    buttons.forEach(button => {
+        button.addEventListener('click', () => handleButtonClick(button.textContent, button));
+    });
+
+    // Perform conversion on click of convert button or pressing Enter
+    convertButton.addEventListener('click', performConversion);
+    inputField.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            performConversion();
+        }
+    });
+
+    // Hide the unit converter menu initially
+    unitConverterMenu.style.display = 'none';
+
+    // Toggle unit converter visibility
+    unitConverterButton.addEventListener('click', () => {
+        unitConverterVisible = !unitConverterVisible;
+        unitConverterMenu.style.display = unitConverterVisible ? 'block' : 'none';
+        document.getElementById('calc-display').style.display = unitConverterVisible ? 'none' : 'block';
+        toggleCalculatorButtons(!unitConverterVisible); // Disable/enable calculator buttons accordingly
+    });
+
+// Ensure the calculator is focusable
+calculator.setAttribute('tabindex', '-1'); // Make it focusable
+
+    // Handle key presses for the calculator only when it's visible and focused
+document.addEventListener('keydown', function(event) {
+    const calcDisplay = document.getElementById('calc-display');
+    const validKeys = '0123456789+-*/.^()_!BackspaceEnterDelete';
+
+    if (calculator.style.display !== 'none' && validKeys.includes(event.key) && document.activeElement === calculator) {
+        handleKeyPress(event);
+    }
+});
+
+
+    // Handle paste event
+    document.addEventListener('paste', handlePaste);
+}
+
+
+    function toggleCalculatorButtons(show) {
+        const calcButtons = document.querySelectorAll('.calc-btn:not(.unit-converter)');
+        calcButtons.forEach(btn => btn.style.display = show ? 'block' : 'none');
+    }
+
+    function handleButtonClick(value, button) {
+        const sliderText = document.getElementById('maxNumbersAllowedAfterDecimalSignIntervalValue2');
+        const decimalPlaces = sliderText.textContent;
+        const display = document.getElementById('calc-display');
+
+        // Use data-value for special buttons to determine the correct input behavior
+        if (button.classList.contains('fraction-btn') && value !== '-> Fraction') {
+            display.value += button.getAttribute('data-value'); // Adds '/' for fractions
+        } else if (value === 'C') {
+            display.value = '';
+        } else if (value === '=') {
+            try {
+                display.value = evaluateExpression(display.value).toFixed(decimalPlaces);
+            } catch (error) {
+                display.value = 'Error';
+            }
+        } else if (value === '√') {
+            try {
+                display.value = Math.sqrt(parseFloat(display.value));
+            } catch (error) {
+                display.value = 'Error';
+            }
+                } else if (value === '!') {
+        display.value += button.getAttribute('data-value');;
+        } else if (value === '-> Fraction') {
+            display.value = decimalToFraction(parseFloat(display.value));
+        } else if (button.classList.contains('backspace-btn')) {
+            display.value = display.value.slice(0, -1); // Remove last character
+        } else if (value === 'Unit Converter'){
+
+        } else {
+            display.value += value;
+        }
+    }
+
+    function handleKeyPress(event) {
+        const sliderText = document.getElementById('maxNumbersAllowedAfterDecimalSignIntervalValue2');
+        const decimalPlaces = sliderText.textContent;
+        const display = document.getElementById('calc-display');
+        const validKeys = '0123456789+-*/.^()_!';
+
+        if (validKeys.includes(event.key)) {
+            if (event.key === '_') {
+                display.value += '/'; // Add fraction symbol for "_"
+            } else {
+                display.value += event.key;
+            }
+        } else if (event.key === 'Enter') {
+            try {
+                display.value = evaluateExpression(display.value).toFixed(decimalPlaces);
+            } catch (error) {
+                display.value = 'Error';
+            }
+                } else if (event.key === '!') {
+        display.value += '!';
+        } else if (event.key === 'Backspace') {
+            display.value = display.value.slice(0, -1); // Remove last character
+        } else if (event.key === 'Delete') {
+            display.value = '';
+        }
+    }
+
+
+    window.onload = function() {
+    const sliderForUnitConvert = document.createElement('div');
+    sliderForUnitConvert.innerHTML = `
+    <div>
+        <label for="maxNumbersAllowedAfterDecimalSignSlider2">Decimal Places (1 - 20):</label>
+        <input type="range" id="maxNumbersAllowedAfterDecimalSignSlider2" min="1" max="20" value="10">
+        <output id="maxNumbersAllowedAfterDecimalSignIntervalValue2">10</output>
+    </div>
+    `;
+
+    const calc = document.getElementById('calculator');
+    if (calc) {
+        calc.appendChild(sliderForUnitConvert);
+    }
+
+    const slider = document.getElementById('maxNumbersAllowedAfterDecimalSignSlider2');
+    if (slider) {
+        slider.addEventListener('input', function() {
+            const sliderValue = slider.value;
+            const sliderText = document.getElementById('maxNumbersAllowedAfterDecimalSignIntervalValue2');
+            sliderText.textContent = sliderValue;
+        });
+    } else {
+        console.error('Element not found: maxNumbersAllowedAfterDecimalSignSlider2');
+    }
+};
+
+function evaluateExpression(expression) {
+    // Process factorials first by finding numbers followed by '!'
+    expression = expression.replace(/(\d+)!/g, (match, num) => factorial(parseInt(num)));
+
+    // Replace square root and exponentiation symbols with JS equivalents
+    expression = expression.replace(/√/g, 'Math.sqrt').replace(/\^/g, '**');
+
+    // Use JavaScript's eval to evaluate the final expression (safely)
+    return Function(`'use strict'; return (${expression})`)();
+}
+
+
+    function decimalToFraction(decimal) {
+        // Function to convert decimal numbers to fractions
+        if (isNaN(decimal)) return 'Error'; // Handle invalid input
+        let tolerance = 1.0E-6; // Tolerance for approximation
+        let h1 = 1, h2 = 0, k1 = 0, k2 = 1, negative = false;
+        let x = Math.abs(decimal);
+
+        if (decimal < 0) negative = true;
+
+        let b = x;
+        do {
+            let a = Math.floor(b);
+            let aux = h1;
+            h1 = a * h1 + h2;
+            h2 = aux;
+            aux = k1;
+            k1 = a * k1 + k2;
+            k2 = aux;
+            b = 1 / (b - a);
+        } while (Math.abs(x - h1 / k1) > x * tolerance);
+
+        return (negative ? '-' : '') + h1 + '/' + k1;
+    }
+
+    function factorial(n) {
+    // Convert negative numbers to positive
+    n = Math.abs(n);
+
+    if (n === 0 || n === 1) {
+        return 1;
+    }
+    let result = 1;
+    for (let i = 2; i <= n; i++) {
+        result *= i;
+    }
+    return result;
+}
+
+
+    showCalculatorButton();
