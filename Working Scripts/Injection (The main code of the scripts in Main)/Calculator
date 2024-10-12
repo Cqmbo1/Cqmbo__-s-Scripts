@@ -264,7 +264,7 @@ function handlePaste(event) {
         const outputUnit = document.getElementById('output-unit').value;
         const inputValue = parseFloat(document.getElementById('input-value').value);
         const outputField = document.getElementById('output-value');
-        const sliderText = document.getElementById('maxNumbersAllowedAfterDecimalSignIntervalValue');
+        const sliderText = document.getElementById('maxNumbersAllowedAfterDecimalSignIntervalValue2');
         const decimalPlaces = sliderText.textContent;
 
         if (isNaN(inputValue)) {
