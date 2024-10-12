@@ -543,12 +543,20 @@ function toggleelements(){
                 linkDownload.click();
             };
         }
-
+    
         const downloadButton = document.getElementById('download-button');
         if (downloadButton) {
             downloadButton.onclick = () => {
-                const CutURL = new URLSearchParams(window.location.search);
+                let currentUrl = window.location.href;
+                
+                // Check if the URL contains 'shorts/' and replace it with 'watch?v='
+                if (currentUrl.includes('/shorts/')) {
+                    currentUrl = currentUrl.replace('/shorts/', '/watch?v=');
+                }
+    
+                const CutURL = new URLSearchParams(new URL(currentUrl).search);
                 let enlace = CutURL.get('v');
+                
                 if (enlace) {
                     window.open(
                         `https://www.y2mate.com/en/convert-youtube/${enlace}`,
@@ -560,17 +568,24 @@ function toggleelements(){
                 }
             };
         }
-
+    
         const thumbnailButton = document.getElementById('thumbnail-button');
         if (thumbnailButton) {
             thumbnailButton.onclick = () => {
-                const CutURL = new URLSearchParams(window.location.search);
+                let currentUrl = window.location.href;
+                
+                // Check if the URL contains 'shorts/' and replace it with 'watch?v='
+                if (currentUrl.includes('/shorts/')) {
+                    currentUrl = currentUrl.replace('/shorts/', '/watch?v=');
+                }
+    
+                const CutURL = new URLSearchParams(new URL(currentUrl).search);
                 let enlace = CutURL.get('v');
-
+    
                 if (enlace) {
                     const maxResImageUrl = `https://i1.ytimg.com/vi/${enlace}/maxresdefault.jpg`;
                     const highQualityImageUrl = `https://i1.ytimg.com/vi/${enlace}/hqdefault.jpg`;
-
+    
                     fetchImage(maxResImageUrl)
                         .catch(() => fetchImage(highQualityImageUrl))
                         .catch((error) => {
@@ -581,8 +596,7 @@ function toggleelements(){
             };
         }
     }
-
-
+    
     function fetchImage(imageUrl) {
         return fetch(imageUrl)
             .then((response) => {
@@ -593,14 +607,14 @@ function toggleelements(){
             })
             .then((blob) => {
                 const imageSizeKB = blob.size / 1024;
-
+    
                 if (imageSizeKB >= 20) {
                     window.open(
                         imageUrl,
                         'popUpWindow',
                         'height=500,width=400,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes'
                     );
-
+    
                     const imageUrlObject = URL.createObjectURL(blob);
                     const linkDownload = document.createElement('a');
                     linkDownload.href = imageUrlObject;
@@ -613,6 +627,7 @@ function toggleelements(){
                 }
             });
     }
+    
 
 
 
