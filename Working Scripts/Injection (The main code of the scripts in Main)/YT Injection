@@ -1,3 +1,4 @@
+
 var removalInterval;
     var isRemoving = false;
     var removeAdsInterval
@@ -11,7 +12,7 @@ var removalInterval;
     var autoSubscribeInterval;
     var isAutoSubscribing = false;
     var ishidden = false;
- 
+
 function toggleelements(){
     const elements = [
         'download-button',
@@ -27,7 +28,7 @@ function toggleelements(){
         'removeads-button',
         'removal-button',
         ];
- 
+
             elements.forEach(id => {
             const toggleableelement = document.getElementById(id);
             if (toggleableelement) {
@@ -35,8 +36,8 @@ function toggleelements(){
             }
         });
     }
- 
- 
+
+
     var toggleelementbutton = document.createElement('button');
     toggleelementbutton.id = 'toggle-element-button';
     toggleelementbutton.textContent = 'Hide Menu';
@@ -45,7 +46,7 @@ function toggleelements(){
     toggleelementbutton.style.right = '10px';
     toggleelementbutton.style.zIndex = '10000';
     toggleelementbutton.title = 'Toggle Menu/Functions';
- 
+
     toggleelementbutton.addEventListener('click', function() {
         if (!ishidden) {
             toggleelementbutton.textContent = 'Show Menu';
@@ -57,10 +58,10 @@ function toggleelements(){
             ishidden = false;
         }
     });
- 
+
     document.body.appendChild(toggleelementbutton);
- 
- 
+
+
     function startRemovingElement() {
         removalInterval = setInterval(function() {
             var element1 = document.querySelector('.style-scope.yt-playability-error-supported-renderers');
@@ -70,12 +71,12 @@ function toggleelements(){
         }, 100);
         isRemoving = true;
     }
- 
+
     function stopRemovingElement() {
         clearInterval(removalInterval);
         isRemoving = false;
     }
- 
+
     var removalButton = document.createElement('button');
     removalButton.id = 'removal-button';
     removalButton.textContent = 'Remove Anti-Adblocker (Disabled)';
@@ -84,7 +85,7 @@ function toggleelements(){
     removalButton.style.right = '10px';
     removalButton.style.zIndex = '10000';
     removalButton.title = 'Remove Anti-Adblocker';
- 
+
     removalButton.addEventListener('click', function() {
         if (!isRemoving) {
             removalButton.textContent = 'Remove Anti-Adblocker (Enabled)';
@@ -94,11 +95,9 @@ function toggleelements(){
             stopRemovingElement();
         }
     });
- 
+
     document.body.appendChild(removalButton);
- 
- 
-    function killAd(){
+
         let video;
         //Interface ad selector
         const cssSelectorArr = [
@@ -116,7 +115,7 @@ function toggleelements(){
         `ytm-companion-ad-renderer`, //M skippable video ad link
         ];
         window.dev=false; //Development and use
-        
+
         /**
         * Format standard time
         * @param {Date} time standard time
@@ -128,7 +127,7 @@ function toggleelements(){
         let y = time.getFullYear();
         let m = (time.getMonth() + 1).toString().padStart(2, `0`); let d = time.getDate().toString().padStart(2, `0`); let h = time.getHours().toString().padStart(2, `0`); let min = time.getMinutes().toString().padStart(2 , `0`); let s = time.getSeconds().toString().padStart(2, `0`); return `${y}-${m}-${d} ${h}:${min}:${s}` } /** * Output information * @param {String} msg information * @return {undefined} */ function log(msg) { if(!window.dev){ return false; } console.log (window.location.href); console.log(`${moment(new Date())} ${msg}`);
         }
-        
+
         /**
         * Set the run flag
         * @param {String} name
@@ -139,7 +138,7 @@ function toggleelements(){
         style.id = name;
         (document.head || document.body).appendChild(style);//Append the node to HTML.
         }
-        
+
         /**
         * Get the run flag
         * @param {String} name
@@ -148,7 +147,7 @@ function toggleelements(){
         function getRunFlag(name){
         return document.getElementById(name);
         }
-        
+
         /**
         * Check if the run flag is set
         * @param {String} name
@@ -162,7 +161,7 @@ function toggleelements(){
         return false;
         }
         }
-        
+
         /**
         * Generate a CSS element style for removing ads and attach it to the HTML node
         * @param {String} styles style text
@@ -174,14 +173,14 @@ function toggleelements(){
         log(`Blocking page ad node has been generated`);
         return false
         }
-        
+
         //Set the removal ad style.
         let style = document.createElement(`style`);//Create a style element.
         (document.head || document.body).appendChild(style);//Append the node to HTML.
         style.appendChild(document.createTextNode(generateRemoveADCssText(cssSelectorArr)));//Append the style node to the element node.
         log(`Generate blocking page ad node successfully`);
         }
-        
+
         /**
         * Generate CSS text for removing ads
         * @param {Array} cssSelectorArr CSS selector array to be set
@@ -193,7 +192,7 @@ function toggleelements(){
         });
         return cssSelectorArr.join(` `);//Concatenate into a string.
         }
-        
+
         /**
         * Touch event
         * @return {undefined}
@@ -210,7 +209,7 @@ function toggleelements(){
         rotationAngle: 0,
         force: 1
         });
-        
+
         // Create TouchEvent object
         let touchStartEvent = new TouchEvent(`touchstart`, {
         bubbles: true,
@@ -220,10 +219,10 @@ function toggleelements(){
         targetTouches: [touch],
         changedTouches: [touch]
         });
-        
+
         // Dispatching touchstart event to target element
         this.dispatchEvent(touchStartEvent);
-        
+
         // Create TouchEvent object
         let touchEndEvent = new TouchEvent(`touchend`, {
         bubbles: true,
@@ -233,11 +232,11 @@ function toggleelements(){
         targetTouches: [],
         changedTouches: [touch]
         });
-        
+
         // Dispatching touchend event to target element
         this.dispatchEvent(touchEndEvent);
         }
-        
+
         /**
         * Get dom
         * @return {undefined}
@@ -245,7 +244,7 @@ function toggleelements(){
         function getVideoDom(){
         video = document.querySelector(`.ad-showing video`) || document.querySelector(`video`);
         }
-        
+
         /**
         * Autoplay
         * @return {undefined}
@@ -256,7 +255,7 @@ function toggleelements(){
         log(`Autoplay video`);
         }
         }
-        
+
         /**
         * Remove YT blocking ad blocking pop-up window and close the closing mask layer
         * @return {undefined}
@@ -265,12 +264,12 @@ function toggleelements(){
         //Remove YT blocking ad blocking pop-up window
         const premiumContainers = [...document.querySelectorAll(`ytd-popup-container`)];
         const matchingContainers = premiumContainers.filter(container => container.querySelector(`a[href="/premium"]`));
-        
+
         if(matchingContainers.length>0){
         matchingContainers.forEach(container => container.remove());
         log(`Remove YT Interceptor`);
         }
-        
+
         // Get all elements with the specified tag
         const backdrops = document.querySelectorAll(`tp-yt-iron-overlay-backdrop`);
         // Find elements with a specific style
@@ -284,7 +283,7 @@ function toggleelements(){
         log(`Close mask layer`); } } /** * Skip ads * @return {undefined} */ function skipAd(mutationsList, observer) { const skipButton = document.querySelector(`.ytp-ad-skip-button`) || document.querySelector(`.ytp-skip-ad-button`) || document.querySelector(`.ytp-ad-skip-button-modern`); const shortAdMsg = document.querySelector(`.video-ads.ytp-ad-module .ytp-ad-player-overlay`) || document.querySelector(`.ytp-ad-button-icon`); if((skipButton || shortAdMsg) && window.location.href.indexOf(`https://m.youtube.com/`) === -1){ //Mobile mute has a bug
         video.muted = true;
         }
-        
+
         if(skipButton){
         const delayTime = 0.5;
         setTimeout(skipAd,delayTime*1000);//If click and call do not skip changes, change the ad time directly
@@ -300,9 +299,9 @@ function toggleelements(){
         video.currentTime = video.duration;//Mandatory
         log(`Forced end of the ad`);
         }
-        
+
         }
-        
+
         /**
         * Remove the playing ad
         * @return {undefined}
@@ -313,7 +312,7 @@ function toggleelements(){
         log(`The function of removing ads in playback is already running`);
         return false
         }
-        
+
         //Monitor and process ads in the video
         const targetNode = document.body;//Directly monitor changes in body
         const config = {childList: true, subtree: true };//Monitor changes in the target node itself and the nodes under the subtree
@@ -321,7 +320,7 @@ function toggleelements(){
         observer.observe(targetNode, config);//Start observing ad nodes with the above configuration
         log(`Run the function of removing ads in playback successfully`);
         }
-        
+
         /**
         * main function
         */
@@ -329,7 +328,7 @@ function toggleelements(){
         generateRemoveADHTMLElement(`removeADHTMLElement`);//Remove ads in the interface.
         removePlayerAD(`removePlayerAD`);//Remove ads in playback.
         }
-        
+
         if (document.readyState === `loading`) {
         document.addEventListener(`DOMContentLoaded`, main); // Loading is not complete at this time
         log(`YouTube ad removal script is about to be called:`);
@@ -337,45 +336,9 @@ function toggleelements(){
         main(); // At this time, `DOMContentLoaded` has been triggered
         log(`YouTube ad removal script is quickly called:`);
         }
-        }
-        
- 
- 
-function startRemovingAds(){
-clearInterval(removeAdsInterval);
-removeAdsInterval = setInterval(killAd, 100);
-isRemovingAds = true;
-}
- 
- 
-function stopRemovingAds(){
-clearInterval (removeAdsInterval);
-isRemovingAds = false;
-}
- 
- 
-var removeAdsButton = document.createElement('button');
-removeAdsButton.id = 'removeads-button';
-removeAdsButton.textContent = 'Adblocker (Disabled)';
-removeAdsButton.style.position = 'fixed';
-removeAdsButton.style.top = '140px';
-removeAdsButton.style.right = '10px';
-removeAdsButton.style.zIndex = '10000';
-removeAdsButton.title = 'Remove Anti-Adblocker';
- 
-removeAdsButton.addEventListener('click', function() {
-    if (!isRemovingAds) {
-        removeAdsButton.textContent = 'Adblocker (Enabled)';
-        startRemovingAds();
-    } else {
-        removeAdsButton.textContent = 'Adblocker (Disabled)';
-        stopRemovingAds();
-    }
-});
- 
-document.body.appendChild(removeAdsButton);
- 
- 
+
+
+
     var autoLikeButton = document.createElement('button');
     autoLikeButton.id = 'auto-like-button';
     autoLikeButton.textContent = 'Auto Like (Disabled)';
@@ -384,7 +347,7 @@ document.body.appendChild(removeAdsButton);
     autoLikeButton.style.right = '10px';
     autoLikeButton.style.zIndex = '10000';
     autoLikeButton.title = 'Automatically like video every 10 seconds';
- 
+
     autoLikeButton.addEventListener('click', function() {
         if (!isAutoLiking) {
             autoLikeButton.textContent = 'Auto Like (Enabled)';
@@ -394,21 +357,21 @@ document.body.appendChild(removeAdsButton);
             stopAutoLiking();
         }
     });
- 
+
     document.body.appendChild(autoLikeButton);
- 
+
     function startAutoLiking() {
         clickLikeButton(); // Click immediately when enabled
         autoLikeInterval = setInterval(clickLikeButton, 10000);
         isAutoLiking = true;
     }
- 
+
     function stopAutoLiking() {
         clearInterval(autoLikeInterval);
         isAutoLiking = false;
     }
- 
- 
+
+
         function clickLikeButton() {
         var dislikeButton = document.querySelector('.yt-spec-button-shape-next.yt-spec-button-shape-next--tonal.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--size-m.yt-spec-button-shape-next--icon-button.yt-spec-button-shape-next--segmented-end');
         var likeButton = document.querySelector('.yt-spec-button-shape-next.yt-spec-button-shape-next--tonal.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--size-m.yt-spec-button-shape-next--icon-leading.yt-spec-button-shape-next--segmented-start');
@@ -422,7 +385,7 @@ document.body.appendChild(removeAdsButton);
             ShortslikeButton.click();
         }
     }
- 
+
     var autoDislikeButton = document.createElement('button');
     autoDislikeButton.id = 'auto-dislike-button';
     autoDislikeButton.textContent = 'Auto Dislike (Disabled)';
@@ -431,7 +394,7 @@ document.body.appendChild(removeAdsButton);
     autoDislikeButton.style.right = '10px';
     autoDislikeButton.style.zIndex = '10000';
     autoDislikeButton.title = 'Automatically dislike video every 10 seconds';
- 
+
     autoDislikeButton.addEventListener('click', function() {
         if (!isAutoDisliking) {
             autoDislikeButton.textContent = 'Auto Dislike (Enabled)';
@@ -441,20 +404,20 @@ document.body.appendChild(removeAdsButton);
             stopAutoDisliking();
         }
     });
- 
+
     document.body.appendChild(autoDislikeButton);
- 
+
     function startAutoDisliking() {
         clickDislikeButton(); // Click immediately when enabled
         autoDislikeInterval = setInterval(clickDislikeButton, 10000);
         isAutoDisliking = true;
     }
- 
+
     function stopAutoDisliking() {
         clearInterval(autoDislikeInterval);
         isAutoDisliking = false;
     }
- 
+
     function clickDislikeButton() {
         var dislikeButton = document.querySelector('.yt-spec-button-shape-next.yt-spec-button-shape-next--tonal.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--size-m.yt-spec-button-shape-next--icon-button.yt-spec-button-shape-next--segmented-end');
         var likeButton = document.querySelector('.yt-spec-button-shape-next.yt-spec-button-shape-next--tonal.yt-spec-button-shape-next--mono.yt-spec-button-shape-next--size-m.yt-spec-button-shape-next--icon-leading.yt-spec-button-shape-next--segmented-start');
@@ -468,7 +431,7 @@ document.body.appendChild(removeAdsButton);
             ShortsdislikeButton.click();
         }
     }
- 
+
     var validButtons = true;
     // Create the screenshot button
     const screenshotButton = document.createElement('button');
@@ -480,7 +443,7 @@ document.body.appendChild(removeAdsButton);
     screenshotButton.style.zIndex = '10000';
     screenshotButton.style.backgroundColor = '#4caf50';
     screenshotButton.style.color = 'white';
- 
+
     // Create and append the screenshot icon
     const screenshotIcon = document.createElement('img');
     screenshotIcon.src = 'https://static-00.iconduck.com/assets.00/screenshot-icon-512x512-hmhvvh50.png';
@@ -488,7 +451,7 @@ document.body.appendChild(removeAdsButton);
     screenshotIcon.style.width = '24px';
     screenshotIcon.style.height = '24px';
     screenshotButton.appendChild(screenshotIcon);
- 
+
     // Create the thumbnail button
     const thumbnailButton = document.createElement('button');
     thumbnailButton.id = 'thumbnail-button';
@@ -499,7 +462,7 @@ document.body.appendChild(removeAdsButton);
     thumbnailButton.style.zIndex = '10000';
     thumbnailButton.style.backgroundColor = '#ff5722';
     thumbnailButton.style.color = 'white';
- 
+
     // Create and append the thumbnail icon
     const thumbnailIcon = document.createElement('img');
     thumbnailIcon.src = 'https://th.bing.com/th/id/R.5d0756cfcc115698fa5571019979269b?rik=CyyaHNz7YvDWyQ&pid=ImgRaw&r=0';
@@ -507,7 +470,7 @@ document.body.appendChild(removeAdsButton);
     thumbnailIcon.style.width = '24px';
     thumbnailIcon.style.height = '24px';
     thumbnailButton.appendChild(thumbnailIcon);
- 
+
     // Create the download button
     const downloadButton = document.createElement('button');
     downloadButton.id = 'download-button';
@@ -518,7 +481,7 @@ document.body.appendChild(removeAdsButton);
     downloadButton.style.zIndex = '10000';
     downloadButton.style.backgroundColor = '#2196F3';
     downloadButton.style.color = 'white';
- 
+
     // Create and append the download icon
     const downloadIcon = document.createElement('img');
     downloadIcon.src = 'https://th.bing.com/th/id/OIP.tdSxNLAn5NVt39tvjk9tIAHaHa?w=159&h=180&c=7&r=0&o=5&pid=1.7';
@@ -526,8 +489,8 @@ document.body.appendChild(removeAdsButton);
     downloadIcon.style.width = '24px';
     downloadIcon.style.height = '24px';
     downloadButton.appendChild(downloadIcon);
- 
-     
+
+
     // Create the repeat button
     const repeatButton = document.createElement('button');
     repeatButton.id = 'repeat-button';
@@ -538,7 +501,7 @@ document.body.appendChild(removeAdsButton);
     repeatButton.style.zIndex = '10000';
     repeatButton.style.backgroundColor = '#ffff00';
     repeatButton.style.color = 'white';
- 
+
     // Create and append the repeat icon
     const repeatIcon = document.createElement('img');
     repeatIcon.src = 'https://img.favpng.com/20/15/5/repeat-icon-png-favpng-0wgvCV1bKvFXHzqDPGBXh1Jae.jpg';
@@ -546,8 +509,8 @@ document.body.appendChild(removeAdsButton);
     repeatIcon.style.width = '24px';
     repeatIcon.style.height = '24px';
     repeatButton.appendChild(repeatIcon);
- 
- 
+
+
     function renderizarContenido() {
         if (validButtons) {
             validButtons = false;
@@ -556,12 +519,12 @@ document.body.appendChild(removeAdsButton);
     document.body.appendChild(thumbnailButton);
     document.body.appendChild(repeatButton);
     document.body.appendChild(downloadButton);
- 
+
             // Attach event listeners for buttons
             attachButtonListeners();
         }
     }
- 
+
     function attachButtonListeners() {
         const screenShotButton = document.getElementById('screenshot-button');
         if (screenShotButton) {
@@ -580,7 +543,7 @@ document.body.appendChild(removeAdsButton);
                 linkDownload.click();
             };
         }
- 
+
         const downloadButton = document.getElementById('download-button');
         if (downloadButton) {
             downloadButton.onclick = () => {
@@ -597,17 +560,17 @@ document.body.appendChild(removeAdsButton);
                 }
             };
         }
- 
+
         const thumbnailButton = document.getElementById('thumbnail-button');
         if (thumbnailButton) {
             thumbnailButton.onclick = () => {
                 const CutURL = new URLSearchParams(window.location.search);
                 let enlace = CutURL.get('v');
- 
+
                 if (enlace) {
                     const maxResImageUrl = `https://i1.ytimg.com/vi/${enlace}/maxresdefault.jpg`;
                     const highQualityImageUrl = `https://i1.ytimg.com/vi/${enlace}/hqdefault.jpg`;
- 
+
                     fetchImage(maxResImageUrl)
                         .catch(() => fetchImage(highQualityImageUrl))
                         .catch((error) => {
@@ -618,8 +581,8 @@ document.body.appendChild(removeAdsButton);
             };
         }
     }
- 
- 
+
+
     function fetchImage(imageUrl) {
         return fetch(imageUrl)
             .then((response) => {
@@ -630,14 +593,14 @@ document.body.appendChild(removeAdsButton);
             })
             .then((blob) => {
                 const imageSizeKB = blob.size / 1024;
- 
+
                 if (imageSizeKB >= 20) {
                     window.open(
                         imageUrl,
                         'popUpWindow',
                         'height=500,width=400,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes'
                     );
- 
+
                     const imageUrlObject = URL.createObjectURL(blob);
                     const linkDownload = document.createElement('a');
                     linkDownload.href = imageUrlObject;
@@ -650,9 +613,9 @@ document.body.appendChild(removeAdsButton);
                 }
             });
     }
- 
- 
- 
+
+
+
     function observeDOM() {
         const observer = new MutationObserver(mutations => {
             mutations.forEach(mutation => {
@@ -661,24 +624,24 @@ document.body.appendChild(removeAdsButton);
                 }
             });
         });
- 
+
         observer.observe(document.body, { childList: true, subtree: true });
     }
- 
+
     observeDOM();
- 
+
     var coloredElements = ['video-title', 'style-scope ytd-watch-metadata'];
     var whiteElements = ['primary'];
- 
+
     const rainbowColors = ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#9400d3'];
- 
+
     let currentColor = 'black'; // Default color
     let savedCustomColor = 'black'; // Save custom color to restore it later
     let isCustomColorEnabled = false;
     let isRainbowEnabled = false;
     let isColoredUIEnabled = false;
     let rainbowFlashInterval;
- 
+
     function toggleColoredUI() {
         const button = document.getElementById('colored-ui-button');
         if (!isColoredUIEnabled) {
@@ -700,7 +663,7 @@ document.body.appendChild(removeAdsButton);
             stopRainbowFlash();
         }
     }
- 
+
     function createColoredUIDropdown() {
         const dropdown = document.createElement('div');
         dropdown.id = 'colored-ui-dropdown';
@@ -708,11 +671,11 @@ document.body.appendChild(removeAdsButton);
         dropdown.style.top = '360px';
         dropdown.style.right = '10px';
         dropdown.style.zIndex = '10000';
- 
+
         const label = document.createElement('div');
         label.textContent = 'Select Color:';
         dropdown.appendChild(label);
- 
+
         const defaultOption = createOptionElement('Black (Default)', 'black');
         const customOption = createOptionElement('Custom Color', 'custom');
         const rainbowOption = createOptionElement('Rainbow Flash', 'rainbow');
@@ -722,7 +685,7 @@ document.body.appendChild(removeAdsButton);
         dropdownMenu.appendChild(customOption);
         dropdownMenu.appendChild(rainbowOption);
         dropdown.appendChild(dropdownMenu);
- 
+
         if (isCustomColorEnabled) {
             dropdownMenu.value = 'custom';
         } else if (isRainbowEnabled) {
@@ -730,7 +693,7 @@ document.body.appendChild(removeAdsButton);
         } else {
             dropdownMenu.value = currentColor;
         }
- 
+
         dropdownMenu.addEventListener('change', function() {
             const selectedColor = this.value;
             if (selectedColor === 'custom') {
@@ -747,29 +710,29 @@ document.body.appendChild(removeAdsButton);
                 applyCustomColor(selectedColor);
             }
         });
- 
+
         document.body.appendChild(dropdown);
     }
- 
+
     function removeColoredUIDropdown() {
         const dropdown = document.getElementById('colored-ui-dropdown');
         if (dropdown) {
             dropdown.remove();
         }
     }
- 
+
     function createOptionElement(text, value) {
         const option = document.createElement('option');
         option.text = text;
         option.value = value;
         return option;
     }
- 
+
     function openCustomColorPicker() {
         if (document.getElementById('custom-color-picker')) {
             return;
         }
- 
+
         const customColorPicker = document.createElement('input');
         customColorPicker.type = 'color';
         customColorPicker.id = 'custom-color-picker';
@@ -777,17 +740,17 @@ document.body.appendChild(removeAdsButton);
         customColorPicker.style.top = '395px';
         customColorPicker.style.right = '10px';
         customColorPicker.style.zIndex = '10000';
- 
+
         customColorPicker.addEventListener('input', function() {
             const selectedColor = this.value;
             currentColor = selectedColor;
             savedCustomColor = selectedColor;
             applyCustomColor(selectedColor);
         });
- 
+
         document.body.appendChild(customColorPicker);
     }
- 
+
     function applyCustomColor(color) {
         coloredElements.forEach(elementId => {
             const elements = document.getElementsByClassName(elementId);
@@ -795,30 +758,30 @@ document.body.appendChild(removeAdsButton);
                 element.style.color = color;
             }
         });
- 
+
         whiteElements.forEach(elementId => {
             const elements = document.getElementsByClassName(elementId);
             for (let element of elements) {
                 element.style.color = (isColoredUIEnabled && (isCustomColorEnabled || isRainbowEnabled)) ? color : 'white';
             }
         });
- 
+
         currentColor = color;
     }
- 
+
     function startRainbowFlash() {
         if (rainbowFlashInterval) {
             clearInterval(rainbowFlashInterval);
         }
         let currentIndex = 0;
- 
+
         rainbowFlashInterval = setInterval(() => {
             const currentColor = rainbowColors[currentIndex];
             applyCustomColor(currentColor);
             currentIndex = (currentIndex + 1) % rainbowColors.length;
         }, 500);
     }
- 
+
     function stopRainbowFlash() {
         clearInterval(rainbowFlashInterval);
         isRainbowEnabled = false;
@@ -830,12 +793,12 @@ document.body.appendChild(removeAdsButton);
             applyCustomColor(currentColor);
         }
     }
- 
+
     function toggleElement() {
         const elementToToggle = [
             'custom-color-picker'
         ];
- 
+
         elementToToggle.forEach(id => {
             const element = document.getElementById(id);
             if (element) {
@@ -843,12 +806,12 @@ document.body.appendChild(removeAdsButton);
             }
         });
     }
- 
+
     function createColoredUIButton() {
         if (document.getElementById('colored-ui-button')) {
             return;
         }
- 
+
         const button = document.createElement('button');
         button.id = 'colored-ui-button';
         button.textContent = 'Colored UI (Disabled)';
@@ -857,15 +820,15 @@ document.body.appendChild(removeAdsButton);
         button.style.right = '10px';
         button.title = 'Color Selected Elements';
         button.style.zIndex = '10000';
- 
+
         button.addEventListener('click', toggleElement);
         button.addEventListener('click', toggleColoredUI);
- 
+
         document.body.appendChild(button);
     }
- 
+
     createColoredUIButton();
- 
+
     // New background function
     function createBackgroundFunctionality() {
         const youtubeLabel = document.createElement('label');
@@ -876,7 +839,7 @@ document.body.appendChild(removeAdsButton);
         youtubeLabel.style.zIndex = '10000';
         youtubeLabel.id = 'youtubelabel';
         youtubeLabel.style.color = 'red';
- 
+
         const youtubeInput = document.createElement('input');
         youtubeInput.type = 'text';
         youtubeInput.placeholder = 'Paste image URL here...';
@@ -885,7 +848,7 @@ document.body.appendChild(removeAdsButton);
         youtubeInput.style.right = '10px';
         youtubeInput.style.zIndex = '10000';
         youtubeInput.id = 'youtubeinput';
- 
+
         youtubeInput.addEventListener('keydown', function(event) {
             if (event.key === 'Enter') {
                 const url = youtubeInput.value;
@@ -897,11 +860,11 @@ document.body.appendChild(removeAdsButton);
                 }
             }
         });
- 
+
         document.body.appendChild(youtubeLabel);
         document.body.appendChild(youtubeInput);
     }
- 
+
     function setBackground(url) {
         const primaryInner = document.getElementById('primary-inner');
         console.log('Setting background for primary-inner with URL:', url); // Debugging line
@@ -911,7 +874,7 @@ document.body.appendChild(removeAdsButton);
             primaryInner.style.backgroundPosition = 'center';
         }
     }
- 
+
     function clearBackground() {
         const primaryInner = document.getElementById('primary-inner');
         console.log('Clearing background for primary-inner'); // Debugging line
@@ -919,9 +882,9 @@ document.body.appendChild(removeAdsButton);
             primaryInner.style.backgroundImage = '';
         }
     }
- 
+
     createBackgroundFunctionality();
- 
+
     var autoSubscribeButton = document.createElement('button');
     autoSubscribeButton.id = 'auto-subscribe-button';
     autoSubscribeButton.textContent = 'Auto Subscribe (Disabled)';
@@ -930,7 +893,7 @@ document.body.appendChild(removeAdsButton);
     autoSubscribeButton.style.right = '10px';
     autoSubscribeButton.style.zIndex = '10000';
     autoSubscribeButton.title = 'Automatically subscribe to channels';
- 
+
     autoSubscribeButton.addEventListener('click', function() {
         if (!isAutoSubscribing) {
             autoSubscribeButton.textContent = 'Auto Subscribe (Enabled)';
@@ -940,24 +903,25 @@ document.body.appendChild(removeAdsButton);
             stopAutoSubscribing();
         }
     });
- 
+
     document.body.appendChild(autoSubscribeButton);
- 
+
     function startAutoSubscribing() {
         clickSubscribeButton(); // Click immediately when enabled
         autoSubscribeInterval = setInterval(clickSubscribeButton, 10000);
         isAutoSubscribing = true;
     }
- 
+
     function stopAutoSubscribing() {
         clearInterval(autoSubscribeInterval);
         isAutoSubscribing = false;
     }
- 
+
     function clickSubscribeButton() {
         var subscribeButton = document.querySelector('[aria-label^="Subscribe to"]');
         if (subscribeButton && subscribeButton.textContent.includes('Subscribe')) {
             subscribeButton.click();
         }
     }
- 
+
+
