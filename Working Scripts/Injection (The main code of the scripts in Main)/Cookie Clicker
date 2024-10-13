@@ -1,12 +1,21 @@
 let autoclickerinterval;
 let autobuyupginterval;
 let autobuyiteminterval;
+let autobuyheavenlyupgsinterval
 let autobuyitemEinterval;
+let autokillwrinklersinterval;
 let autobuyitemCinterval;
 let autobuyitemcustominterval;
+let autoremovebadeffectsinterval;
 
 var ans = '';
     var confirmer = false;
+
+var Multi = {
+    duration: 0,
+    multiplier: 0
+};
+
 var forCookies = {
     iter: 0,
     ctr: 0
@@ -17,10 +26,31 @@ var ScrollWheel = {
     active2: false
 };
 
+var Wrinkler = {
+    active: false,
+    active2: false
+};
+
+var removebadeffects = {
+    active: false,
+    active2: false
+};
+
+var notes = {
+    active: false,
+    active2: false
+};
+
 var BuyUPGS = {
     active: false,
     active2: false
 };
+
+var BuyHeavenlyUPGS = {
+    active: false,
+    active2: false
+};
+
 var BuyItems = {
     active: false,
     active2: false
@@ -62,8 +92,9 @@ var calculatorVisible = false;
 
 // Insert buttons once
 const Buttons = `
-    <div class="containerButtons" style="position: fixed; top: 200px; right: 10px; z-index: 10000;">
+    <div class="containerButtons" style="position: fixed; top: 100px; right: 10px; z-index: 10000;">
         <button id="free-cookies-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Free Cookies</button>
+        <button id="chip-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Free Heavenly Chips</button>
         <button id="spawn-golden-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Spawn Golden Cookies</button>
         <button id="autoclicker-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Autoclicker</button>
         <button id="scroll-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Click on Scroll</button>
@@ -72,6 +103,12 @@ const Buttons = `
         <button id="gain-buffs-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Gain Buffs</button>
         <button id="grimoire-hacks-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Grimoire Hacks</button>
         <button id="upgrade-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Auto Buy Upgrades</button>
+        <button id="heavenly-upgrade-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Auto Buy Heavenly Upgrades</button>
+        <button id="multiplier-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Multiplier</button>
+        <button id="effect-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">No Bad Effects</button>
+        <button id="notes-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Hide Notifications</button>
+        <button id="wrinkler-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Kill All Wrinklers</button>
+        <button id="reset-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Reset Game</button>
         <button id="item-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Auto Buy Items</button>
         <button id="item-custom-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Auto Buy Custom Items</button>
         <button id="item-expensive-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Auto Buy Most Expensive Item</button>
@@ -654,6 +691,30 @@ document.getElementById('autoclicker-button').addEventListener('click', () => {
                                                 }
     });
 
+        document.getElementById('heavenly-upgrade-button').addEventListener('click', () => {
+            if (BuyHeavenlyUPGS.active === false) {
+                confirmer = confirm('Auto Buy Heavenly Upgrades is disabled. \nPress \'OK\' to activate Auto Buy Heavenly Upgrades.');
+                if (confirmer === true) {
+                    BuyHeavenlyUPGS.active2 = true;
+                } else {
+                    alert('Cancelled.');
+                }
+            } else if (BuyHeavenlyUPGS.active === true) {
+                confirmer = confirm('Auto Buy Heavenly Upgrades is enabled. \nPress \'OK\' to deactivate Auto Buy Heavenly Upgrades.');
+                if (confirmer === true) {
+                    BuyHeavenlyUPGS.active2 = false;
+                } else {
+                    alert('Cancelled.');
+                }
+            }
+            if (BuyHeavenlyUPGS.active2 === true) BuyHeavenlyUPGS.active = true;
+            else if (BuyHeavenlyUPGS.active2 === false) BuyHeavenlyUPGS.active = false;
+            if (BuyHeavenlyUPGS.active === true) autobuyheavenlyupgsinterval = setInterval(buyHeavenlyUpgrades, 100);
+            else if (BuyHeavenlyUPGS.active === false) {clearInterval(autobuyheavenlyupgsinterval);
+                                                 autobuyheavenlyupgsinterval = null; // Reset interval
+                                                }
+    });
+
 		document.getElementById('item-custom-button').addEventListener('click', () => {
     if (BuyItemsCustom.active === false) {
         // Prompt for item name if auto-buy is disabled
@@ -759,6 +820,50 @@ function buyUpgrades() {
   }
 }
 
+function buyHeavenlyUpgrades() {
+    const upgrades = document.getElementsByClassName('crate upgrade heavenly');
+    let i = 0;
+
+    function processUpgrade() {
+        if (i >= upgrades.length) {
+            return; // Stop when all upgrades are processed
+        }
+
+        if (document.getElementById('promptAnchor') && document.getElementById('promptAnchor').style.display !== 'none') {
+            dealwithprompt();
+        } else {
+            upgrades[i].click();
+            setTimeout(function() {
+                document.getElementById('promptAnchor').style.display = 'none';
+            }, 100);
+
+        }
+
+        i++;
+        setTimeout(processUpgrade, 200); // Delay of 200ms between each upgrade
+    }
+
+    processUpgrade(); // Start processing upgrades
+}
+
+
+function dealwithprompt() {
+    for (let i = 0; i <= 5; i++) {
+        let upgradeElement = document.getElementById('upgradeForPermanent' + i);
+        if (upgradeElement) {
+            upgradeElement.click();
+            setTimeout(function() {
+                let promptOption = document.getElementById('promptOption0');
+                if (promptOption) {
+                    promptOption.click();
+                }
+            }, 10);
+            break; // Exit loop after the first matching element is found and clicked
+        }
+    }
+}
+
+
 function buyItems() {
   const items = document.getElementsByClassName('product unlocked enabled');
   for (let i = 0; i < items.length; i++) {
@@ -822,47 +927,129 @@ function autobuyCheapestItem() {
     }
 }
 
-// Helper function to convert formatted price text to a number (up to Decillion)
+// Helper function to convert formatted price text to a number (up to Centillion)
 function parsePriceToNumber(priceText) {
     let multiplier = 1;
     let numberPart = priceText;
 
-    if (priceText.includes("million")) {
-        multiplier = 1e6;
-        numberPart = priceText.replace("million", "").trim();
-    } else if (priceText.includes("billion")) {
-        multiplier = 1e9;
-        numberPart = priceText.replace("billion", "").trim();
-    } else if (priceText.includes("trillion")) {
-        multiplier = 1e12;
-        numberPart = priceText.replace("trillion", "").trim();
-    } else if (priceText.includes("quadrillion")) {
-        multiplier = 1e15;
-        numberPart = priceText.replace("quadrillion", "").trim();
-    } else if (priceText.includes("quintillion")) {
-        multiplier = 1e18;
-        numberPart = priceText.replace("quintillion", "").trim();
-    } else if (priceText.includes("sextillion")) {
-        multiplier = 1e21;
-        numberPart = priceText.replace("sextillion", "").trim();
-    } else if (priceText.includes("septillion")) {
-        multiplier = 1e24;
-        numberPart = priceText.replace("septillion", "").trim();
-    } else if (priceText.includes("octillion")) {
-        multiplier = 1e27;
-        numberPart = priceText.replace("octillion", "").trim();
-    } else if (priceText.includes("nonillion")) {
-        multiplier = 1e30;
-        numberPart = priceText.replace("nonillion", "").trim();
-    } else if (priceText.includes("decillion")) {
-        multiplier = 1e33;
-        numberPart = priceText.replace("decillion", "").trim();
+    const scaleMap = {
+        "million": 1e6,
+        "billion": 1e9,
+        "trillion": 1e12,
+        "quadrillion": 1e15,
+        "quintillion": 1e18,
+        "sextillion": 1e21,
+        "septillion": 1e24,
+        "octillion": 1e27,
+        "nonillion": 1e30,
+        "decillion": 1e33,
+        "undecillion": 1e36,
+        "duodecillion": 1e39,
+        "tredecillion": 1e42,
+        "quattuordecillion": 1e45,
+        "quindecillion": 1e48,
+        "sexdecillion": 1e51,
+        "septendecillion": 1e54,
+        "octodecillion": 1e57,
+        "novemdecillion": 1e60,
+        "vigintillion": 1e63,
+        "unvigintillion": 1e66,
+        "duovigintillion": 1e69,
+        "tresvigintillion": 1e72,
+        "quattuorvigintillion": 1e75,
+        "quinvigintillion": 1e78,
+        "sesvigintillion": 1e81,
+        "septemvigintillion": 1e84,
+        "octovigintillion": 1e87,
+        "novemvigintillion": 1e90,
+        "trigintillion": 1e93,
+        "untrigintillion": 1e96,
+        "duotrigintillion": 1e99,
+        "trestrigintillion": 1e102,
+        "quattuortrigintillion": 1e105,
+        "quintrigintillion": 1e108,
+        "sestrigintillion": 1e111,
+        "septentrigintillion": 1e114,
+        "octotrigintillion": 1e117,
+        "noventrigintillion": 1e120,
+        "quadragintillion": 1e123,
+        "unquadragintillion": 1e126,
+        "duoquadragintillion": 1e129,
+        "tresquadragintillion": 1e132,
+        "quattuorquadragintillion": 1e135,
+        "quinquadragintillion": 1e138,
+        "sesquadragintillion": 1e141,
+        "septenquadragintillion": 1e144,
+        "octoquadragintillion": 1e147,
+        "novenquadragintillion": 1e150,
+        "quinquagintillion": 1e153,
+        "unquinquagintillion": 1e156,
+        "duoquinquagintillion": 1e159,
+        "tresquinquagintillion": 1e162,
+        "quattuorquinquagintillion": 1e165,
+        "quinquinquagintillion": 1e168,
+        "sesquinquagintillion": 1e171,
+        "septenquinquagintillion": 1e174,
+        "octoquinquagintillion": 1e177,
+        "novenquinquagintillion": 1e180,
+        "sexagintillion": 1e183,
+        "unsexagintillion": 1e186,
+        "duosexagintillion": 1e189,
+        "tresexagintillion": 1e192,
+        "quattuorsexagintillion": 1e195,
+        "quinsexagintillion": 1e198,
+        "sessexagintillion": 1e201,
+        "septensexagintillion": 1e204,
+        "octosexagintillion": 1e207,
+        "novensexagintillion": 1e210,
+        "septuagintillion": 1e213,
+        "unseptuagintillion": 1e216,
+        "duoseptuagintillion": 1e219,
+        "treseptuagintillion": 1e222,
+        "quattuorseptuagintillion": 1e225,
+        "quinseptuagintillion": 1e228,
+        "seseptuagintillion": 1e231,
+        "septenseptuagintillion": 1e234,
+        "octoseptuagintillion": 1e237,
+        "novenseptuagintillion": 1e240,
+        "octogintillion": 1e243,
+        "unoctogintillion": 1e246,
+        "duooctogintillion": 1e249,
+        "tresoctogintillion": 1e252,
+        "quattuoroctogintillion": 1e255,
+        "quinoctogintillion": 1e258,
+        "sexoctogintillion": 1e261,
+        "septemoctogintillion": 1e264,
+        "octooctogintillion": 1e267,
+        "novemoctogintillion": 1e270,
+        "nonagintillion": 1e273,
+        "unnonagintillion": 1e276,
+        "duononagintillion": 1e279,
+        "tresnonagintillion": 1e282,
+        "quattuornonagintillion": 1e285,
+        "quinnonagintillion": 1e288,
+        "senonagintillion": 1e291,
+        "septenonagintillion": 1e294,
+        "octononagintillion": 1e297,
+        "novenonagintillion": 1e300,
+        "centillion": 1e303
+    };
+
+    // Find and apply the appropriate multiplier
+    for (const [key, value] of Object.entries(scaleMap)) {
+        if (priceText.includes(key)) {
+            multiplier = value;
+            numberPart = priceText.replace(key, "").trim();
+            break;
+        }
     }
 
     // Convert the number part to a float and apply the multiplier
     const numericValue = parseFloat(numberPart.replace(/,/g, ''));
     return numericValue * multiplier;
 }
+
+
 
 // Example: Trigger autobuy for most expensive or cheapest item
 document.getElementById('item-expensive-button').addEventListener('click', () => {
@@ -892,17 +1079,17 @@ document.getElementById('item-expensive-button').addEventListener('click', () =>
 
 document.getElementById('item-cheap-button').addEventListener('click', () => {
     if (BuyItemsC.active === false) {
-        const confirmer = confirm('Auto Buy Most Expensive Item is disabled. \nPress \'OK\' to activate Auto Buy Items for the most expensive item.');
+        const confirmer = confirm('Auto Buy Cheapest Item is disabled. \nPress \'OK\' to activate Auto Buy Items for the most cheap item.');
         if (confirmer === true) {
             BuyItemsC.active2 = true;
             BuyItemsC.active = true;
 
-            autobuyitemCinterval = setInterval(autobuyCheapestItem, 100); // Buy most expensive item
+            autobuyitemCinterval = setInterval(autobuyCheapestItem, 100); // Buy most cheap item
         } else {
             alert('Cancelled.');
         }
     } else if (BuyItemsC.active === true) {
-        const confirmer = confirm('Auto Buy Most Expensive Item is enabled. \nPress \'OK\' to deactivate Auto Buy Most Expensive Item.');
+        const confirmer = confirm('Auto Buy Cheapest Item is enabled. \nPress \'OK\' to deactivate Auto Buy Most Cheapest Item.');
         if (confirmer === true) {
             BuyItemsC.active2 = false;
             BuyItemsC.active = false;
@@ -913,6 +1100,138 @@ document.getElementById('item-cheap-button').addEventListener('click', () => {
         }
     }
 });
+
+document.getElementById('multiplier-button').addEventListener('click', () => {
+  // Ask for duration first
+  let durationAns = prompt('How long do you want your multiplier to last?');
+  Multi.duration = Number(durationAns);
+
+  if (isNaN(Multi.duration) || Multi.duration < 1) {
+    alert('Invalid input for duration');
+    return; // Exit early if the input is invalid
+  }
+
+  // Ask for multiplier next
+  let multiplierAns = prompt('How much do you want to multiply?');
+  Multi.multiplier = Number(multiplierAns);
+
+  if (isNaN(Multi.multiplier) || Multi.multiplier < 1) {
+    alert('Invalid input for multiplier');
+  } else {
+    // Apply buffs if both inputs are valid
+    Game.gainBuff('frenzy', Multi.duration, Multi.multiplier);
+    Game.gainBuff('click frenzy', Multi.duration, Multi.multiplier);
+  }
+});
+
+
+document.getElementById('reset-button').addEventListener('click', ()=> {
+confirmer = confirm('Are you sure you want to reset?');
+if(confirmer === true){
+confirmer = confirm('⚠LAST WARNING⚠ If you reset you\'\ll lose all progress, farms, cookies & upgrades. Do you still want to reset?');
+if(confirmer === true){
+Game.HardReset(2);
+}
+}
+});
+
+document.getElementById('chip-button').addEventListener('click', ()=> {
+    ans = prompt('How many heavenly chips do you want to earn?');
+           if (ans === "" || ans === null) {
+               alert('Cancelled.');
+           } else {
+               Game.heavenlyChips += Number(ans);
+           }
+});
+
+document.getElementById('wrinkler-button').addEventListener('click', ()=> {
+    if (Wrinkler.active === false) {
+        const confirmer = confirm('Auto Kill Wrinklers is disabled. \nPress \'OK\' to activate Auto Kill Wrinklers.');
+        if (confirmer === true) {
+            Wrinkler.active2 = true;
+            Wrinkler.active = true;
+
+            autokillwrinklersinterval = setInterval(killwrinklers, 100);
+        } else {
+            alert('Cancelled.');
+        }
+    } else if (Wrinkler.active === true) {
+        const confirmer = confirm('Auto Kill Wrinklers is enabled. \nPress \'OK\' to deactivate Kill Wrinklers.');
+        if (confirmer === true) {
+            Wrinkler.active2 = false;
+            Wrinkler.active = false;
+            clearInterval(autokillwrinklersinterval);
+            autokillwrinklersinterval = null;
+        } else {
+            alert('Cancelled.');
+        }
+    }
+
+});
+
+function killwrinklers(){
+           // Create a function to pop all wrinklers on the screen.
+    setTimeout(function() { for (var i in Game.wrinklers) { var me=Game.wrinklers[i]; if (me.phase==2) { me.hurt=1; me.hp--; var x=me.x+(Math.sin(me.r*Math.PI/180)*100); var y=me.y+(Math.cos(me.r*Math.PI/180)*100); for (var ii=0;ii<4;ii++) { Game.particleAdd(x+Math.random()*50-25,y+Math.random()*50-25,Math.random()*4-2,Math.random()*-2-2,1,1,2,'wrinklerBits.png'); } } } }, 200);
+}
+
+document.getElementById('notes-button').addEventListener('click', ()=> {
+    if (notes.active === false) {
+        const confirmer = confirm('Auto Hide Notes (Notifications) is disabled. \nPress \'OK\' to activate Auto Hide Notes (Notifications).');
+        if (confirmer === true) {
+            notes.active2 = true;
+            notes.active = true;
+
+            document.getElementById('notes').style.display = 'none';
+        } else {
+            alert('Cancelled.');
+        }
+    } else if (notes.active === true) {
+        const confirmer = confirm('Auto Hide Notes (Notifications) is enabled. \nPress \'OK\' to deactivate Auto Hide Notes (Notifications).');
+        if (confirmer === true) {
+            notes.active2 = false;
+            notes.active = false;
+            document.getElementById('notes').style.display = 'block';
+        } else {
+            alert('Cancelled.');
+        }
+    }
+});
+
+document.getElementById('effect-button').addEventListener('click', () => {
+    if (!removebadeffects.active) {
+        const confirmer = confirm('Auto Remove Bad Effects is disabled. \nPress "OK" to activate Auto Remove Bad Effects.');
+        if (confirmer) {
+            removebadeffects.active = true;
+            removebadeffects.active2 = true;
+
+            const badBuffs = ['clot', 'building debuff'];
+            autoremovebadeffectsinterval = setInterval(() => {
+                const origGainBuff = Game.gainBuff; // eslint-disable-line
+                Game.gainBuff = function (type, time, ...args) { // eslint-disable-line
+                    if (typeof type !== 'string' || badBuffs.includes(type)) {
+                        return console.log(`The "${type}" buff was prevented from affecting your CpS.`);
+                    }
+                    origGainBuff(type, time, ...args); // Call original function if no bad buff
+                };
+            }, 100);
+        } else {
+            alert('Cancelled.');
+        }
+    } else {
+        const confirmer = confirm('Auto Remove Bad Effects is enabled. \nPress "OK" to deactivate Auto Remove Bad Effects.');
+        if (confirmer) {
+            removebadeffects.active = false;
+            removebadeffects.active2 = false;
+
+            clearInterval(autoremovebadeffectsinterval);
+            autoremovebadeffectsinterval = null;
+        } else {
+            alert('Cancelled.');
+        }
+    }
+});
+
+
 
 
     attachButtonListeners();
