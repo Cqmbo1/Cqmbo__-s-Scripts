@@ -691,9 +691,9 @@ document.getElementById('autoclicker-button').addEventListener('click', () => {
                                                 }
     });
 
-        document.getElementById('heavenly-upgrade-button').addEventListener('click', () => {
-            if (BuyHeavenlyUPGS.active === false) {
-        const confirmer = confirm('Auto Buy Heavenly Upgrades is disabled. \nPress \'OK\' to activate Auto Buy Heavenly Upgrades. To deactivate you can also click "e" key.');
+document.getElementById('heavenly-upgrade-button').addEventListener('click', () => {
+    if (BuyHeavenlyUPGS.active === false) {
+        const confirmer = confirm('Auto Buy Heavenly Upgrades is disabled. \nPress \'OK\' to activate Auto Buy Heavenly Upgrades. To deactivate you can also click "e" key. \n\nNote: Even when paused, Auto Buy Heavenly Upgrades will still run till all upgrades have been processed and finished. \n\nIf there is an error/you want to stop immediately, refresh page.');
         if (confirmer === true) {
             BuyHeavenlyUPGS.active2 = true;
             BuyHeavenlyUPGS.active = true;
