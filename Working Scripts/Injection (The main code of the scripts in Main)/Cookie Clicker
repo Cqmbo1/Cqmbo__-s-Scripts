@@ -765,7 +765,7 @@ document.onkeydown = function(e) {
         clearInterval(autoclickerinterval);
         autoclickerinterval = null; // Reset interval
         alert('Autoclicker disabled.');
-    } else if (key === 69){
+    } else if (key === 69 && autobuyheavenlyupgsinterval){
         clearInterval(autobuyheavenlyupgsinterval);
         autobuyheavenlyupgsinterval = null; // Reset interval
         document.getElementById('heavenly-upgrade-button').click();
