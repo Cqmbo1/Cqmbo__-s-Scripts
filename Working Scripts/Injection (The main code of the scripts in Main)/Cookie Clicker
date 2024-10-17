@@ -703,7 +703,7 @@ document.getElementById('heavenly-upgrade-button').addEventListener('click', () 
             alert('Cancelled.');
         }
     } else if (BuyHeavenlyUPGS.active === true) {
-        const confirmer = confirm('Auto Buy Heavenly Upgrades is enabled. \nPress \'OK\' to deactivate Auto Buy Heavenly Upgrades.');
+        const confirmer = confirm('Auto Buy Heavenly Upgrades is enabled. \nPress \'OK\' to deactivate Auto Buy Heavenly Upgrades. Click to get out of dark screen.');
         if (confirmer === true) {
             BuyHeavenlyUPGS.active2 = false;
             BuyHeavenlyUPGS.active = false;
@@ -713,7 +713,8 @@ document.getElementById('heavenly-upgrade-button').addEventListener('click', () 
             alert('Cancelled.');
         }
     }
-    });
+});
+
 
 		document.getElementById('item-custom-button').addEventListener('click', () => {
     if (BuyItemsCustom.active === false) {
@@ -765,7 +766,7 @@ document.onkeydown = function(e) {
         clearInterval(autoclickerinterval);
         autoclickerinterval = null; // Reset interval
         alert('Autoclicker disabled.');
-    } else if (key === 69 && autobuyheavenlyupgsinterval){
+    } else if (key === 69){
         clearInterval(autobuyheavenlyupgsinterval);
         autobuyheavenlyupgsinterval = null; // Reset interval
         document.getElementById('heavenly-upgrade-button').click();
@@ -833,18 +834,18 @@ function buyHeavenlyUpgrades() {
             return; // Stop when all upgrades are processed
         }
 
-        if (document.getElementById('promptAnchor') && document.getElementById('promptAnchor').style.display !== 'none') {
+        if (document.getElementById('promptAnchor') && document.getElementById('promptAnchor').style.display !== 'none' && document.getElementById('promptContentPickPermaUpgrade')) {
+            // document.getElementById('promptAnchor').remove();
             dealwithprompt();
         } else {
             upgrades[i].click();
             setTimeout(function() {
-                document.getElementById('promptAnchor').style.display = 'none';
-            }, 15);
-
+                 document.getElementById('promptAnchor').style.display = 'none';
+             }, 15);
         }
 
         i++;
-        setTimeout(processUpgrade, 200); // Delay of 200ms between each upgrade
+        setTimeout(processUpgrade, 100); // Delay of 100ms between each upgrade
     }
 
     processUpgrade(); // Start processing upgrades
@@ -862,6 +863,12 @@ function dealwithprompt() {
                     promptOption.click();
                 }
             }, 10);
+            setTimeout(function() {
+                let promptClose = document.getElementById('promptClose');
+                if (promptClose && document.getElementById('promptContentPickPermaUpgrade')) {
+                    promptClose.click();
+                }
+            }, 15);
             break; // Exit loop after the first matching element is found and clicked
         }
     }
