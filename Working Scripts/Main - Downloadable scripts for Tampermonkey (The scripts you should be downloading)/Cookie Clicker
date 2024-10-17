@@ -2,7 +2,7 @@
 // @name         Cookie Grinder X
 // @namespace    http://tampermonkey.net/
 // @version      1.0
-// @description  Best AFK Grinder
+// @description  Best AFK Grinder for Cookie Clicker
 // @author       Cqmbo__
 // @match        *://orteil.dashnet.org/cookieclicker/*
 // @match        *://orteil.dashnet.org/cookieclicker/
