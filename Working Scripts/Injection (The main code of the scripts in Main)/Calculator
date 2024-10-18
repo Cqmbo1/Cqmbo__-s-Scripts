@@ -7,7 +7,8 @@
                 <img src="https://th.bing.com/th/id/OIP.fljCTsp0o0y5HVKLBrU1dwHaHa?w=182&h=182&c=7&r=0&o=5&pid=1.7" alt="Calculator" style="width: 24px; height: 24px;">
             </button>
             <div id="calculator" style="display: none; position: fixed; top: 250px; right: 10px; z-index: 10000; background-color: #ffffff; border: 1px solid #ddd; padding: 10px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);">
-                <input type="text" id="calc-display" style="width: 90%; padding: 10px; font-size: 18px; text-align: right;" disabled>
+                <!-- Replace the input element with a div for better HTML rendering -->
+<div id="calc-display" style="width: 90%; padding: 10px; font-size: 18px; text-align: right; border: 1px solid #ccc; min-height: 40px;"></div>
                 <div class="calc-buttons" style="display: grid; grid-template-columns: repeat(4, 50px); gap: 5px; margin-top: 10px;">
                     <button class="calc-btn">7</button>
                     <button class="calc-btn">8</button>
@@ -183,6 +184,30 @@
         </div>
     `;
 
+// Create the style element and set its content for fraction styling
+var style = document.createElement('style');
+style.innerHTML = `
+    #calc-display {
+        white-space: pre-wrap;
+        font-size: 18px;
+        text-align: center;
+        line-height: 1.5;
+    }
+
+    sup {
+        font-size: 75%; /* Slightly smaller than the base font size */
+        vertical-align: super;
+    }
+
+    sub {
+        font-size: 75%;
+        vertical-align: sub;
+    }
+`;
+
+// Append the style element to the head
+document.head.appendChild(style);
+
 
 window.onload = function() {
     const sliderForUnitConvert = document.createElement('div');
@@ -347,67 +372,85 @@ document.addEventListener('keydown', function(event) {
         calcButtons.forEach(btn => btn.style.display = show ? 'block' : 'none');
     }
 
-    function handleButtonClick(value, button) {
-        const sliderText = document.getElementById('maxNumbersAllowedAfterDecimalSignIntervalValue2');
-        const decimalPlaces = sliderText.textContent;
-        const display = document.getElementById('calc-display');
+// This function formats a fraction as a superscript and subscript fraction
+function displayFraction(numerator, denominator) {
+    return `<sup>${numerator}</sup>&frasl;<sub>${denominator}</sub>`;
+}
 
-        // Use data-value for special buttons to determine the correct input behavior
-        if (button.classList.contains('fraction-btn') && value !== '-> Fraction') {
-            display.value += button.getAttribute('data-value'); // Adds '/' for fractions
-        } else if (value === 'C') {
-            display.value = '';
-        } else if (value === '=') {
-            try {
-                display.value = evaluateExpression(display.value).toFixed(decimalPlaces);
-            } catch (error) {
-                display.value = 'Error';
-            }
-        } else if (value === '√') {
-            try {
-                display.value = Math.sqrt(parseFloat(display.value));
-            } catch (error) {
-                display.value = 'Error';
-            }
-                } else if (value === '!') {
-        display.value += button.getAttribute('data-value');;
-        } else if (value === '-> Fraction') {
-            display.value = decimalToFraction(parseFloat(display.value));
-        } else if (button.classList.contains('backspace-btn')) {
-            display.value = display.value.slice(0, -1); // Remove last character
-        } else if (value === 'Unit Converter'){
 
+function handleButtonClick(value, button) {
+    const sliderText = document.getElementById('maxNumbersAllowedAfterDecimalSignIntervalValue2');
+    const decimalPlaces = sliderText.textContent;
+    const display = document.getElementById('calc-display');
+
+    // Check if the button clicked is the fraction button
+    if (button.classList.contains('fraction-btn')) {
+        const currentDisplay = display.innerHTML; // Use innerHTML instead of value
+        let numerator = currentDisplay || "0"; // Default numerator to 0 if display is empty
+        let denominator = prompt("Enter the denominator:");
+
+        if (denominator !== null && denominator !== "") {
+            display.innerHTML = displayFraction(numerator, denominator); // Use innerHTML to render fraction
         } else {
-            display.value += value;
+            display.innerHTML = numerator; // Just show the numerator if no valid denominator is given
         }
-    }
 
-    function handleKeyPress(event) {
-        const sliderText = document.getElementById('maxNumbersAllowedAfterDecimalSignIntervalValue2');
-        const decimalPlaces = sliderText.textContent;
-        const display = document.getElementById('calc-display');
-        const validKeys = '0123456789+-*/.^()_!';
-
-        if (validKeys.includes(event.key)) {
-            if (event.key === '_') {
-                display.value += '/'; // Add fraction symbol for "_"
-            } else {
-                display.value += event.key;
-            }
-        } else if (event.key === 'Enter') {
-            try {
-                display.value = evaluateExpression(display.value).toFixed(decimalPlaces);
-            } catch (error) {
-                display.value = 'Error';
-            }
-                } else if (event.key === '!') {
-        display.value += '!';
-        } else if (event.key === 'Backspace') {
-            display.value = display.value.slice(0, -1); // Remove last character
-        } else if (event.key === 'Delete') {
-            display.value = '';
+    } else if (value === 'C') {
+        display.innerHTML = ''; // Clear the display
+    } else if (value === '=') {
+        try {
+            // Extract text content before evaluating
+            const expression = display.innerHTML; // Use innerHTML to get the expression
+            console.log("Expression to Evaluate: ", expression); // Debugging statement
+            display.innerHTML = evaluateExpression(expression).toFixed(decimalPlaces);
+        } catch (error) {
+            display.innerHTML = 'Error';
         }
+    } else if (value === '√') {
+        try {
+            display.innerHTML = Math.sqrt(parseFloat(display.innerHTML));
+        } catch (error) {
+            display.innerHTML = 'Error';
+        }
+    } else if (value === '!') {
+        display.innerHTML += button.getAttribute('data-value');
+    } else if (value === '-> Fraction') {
+        display.innerHTML = decimalToFraction(parseFloat(display.innerHTML));
+    } else if (button.classList.contains('backspace-btn')) {
+        display.innerHTML = display.innerHTML.slice(0, -1); // Remove last character
+    } else {
+        display.innerHTML += value; // Append the value to innerHTML
     }
+}
+
+function handleKeyPress(event) {
+    const sliderText = document.getElementById('maxNumbersAllowedAfterDecimalSignIntervalValue2');
+    const decimalPlaces = sliderText.textContent;
+    const display = document.getElementById('calc-display');
+    const validKeys = '0123456789+-*/.^()_!';
+
+    if (validKeys.includes(event.key)) {
+        if (event.key === '_') {
+            display.innerHTML += '/'; // Add fraction symbol for "_"
+        } else {
+            display.innerHTML += event.key;
+        }
+    } else if (event.key === 'Enter') {
+        try {
+            // Extract text content before evaluating
+            const expression = display.textContent;
+            display.innerHTML = evaluateExpression(expression).toFixed(decimalPlaces);
+        } catch (error) {
+            display.innerHTML = 'Error';
+        }
+    } else if (event.key === '!') {
+        display.innerHTML += '!';
+    } else if (event.key === 'Backspace') {
+        display.innerHTML = display.innerHTML.slice(0, -1); // Remove last character
+    } else if (event.key === 'Delete') {
+        display.innerHTML = '';
+    }
+}
 
 
     window.onload = function() {
@@ -438,15 +481,35 @@ document.addEventListener('keydown', function(event) {
 };
 
 function evaluateExpression(expression) {
-    // Process factorials first by finding numbers followed by '!'
-    expression = expression.replace(/(\d+)!/g, (match, num) => factorial(parseInt(num)));
+    // 1. Use regex to find fractions like <sup>numerator</sup>&frasl;<sub>denominator</sub>
+    const fractionRegex = /<sup>(\d+)<\/sup>&frasl;<sub>(\d+)<\/sub>/g;
 
-    // Replace square root and exponentiation symbols with JS equivalents
-    expression = expression.replace(/√/g, 'Math.sqrt').replace(/\^/g, '**');
+    // Replace fractions with their decimal equivalents
+    let parsedExpression = expression.replace(fractionRegex, (match, numerator, denominator) => {
+        return `(${numerator} / ${denominator})`; // Convert to (numerator/denominator)
+    });
 
-    // Use JavaScript's eval to evaluate the final expression (safely)
-    return Function(`'use strict'; return (${expression})`)();
+    // 2. Process factorials by finding numbers followed by '!'
+    parsedExpression = parsedExpression.replace(/(\d+)!/g, (match, num) => factorial(parseInt(num)));
+
+    // 3. Replace square root (√) and exponentiation (^) symbols with JavaScript equivalents
+    parsedExpression = parsedExpression.replace(/√/g, 'Math.sqrt').replace(/\^/g, '**');
+
+    // 4. Remove any remaining HTML tags (this should happen before final evaluation)
+    parsedExpression = parsedExpression.replace(/<\/?[^>]+(>|$)/g, "");
+
+    // Log the final parsed expression for debugging
+    console.log("Parsed Expression: ", parsedExpression); // Debugging statement
+
+    // 5. Evaluate the final expression safely
+    try {
+        return new Function('return ' + parsedExpression)(); // Safely evaluate the expression
+    } catch (error) {
+        console.error('Error evaluating expression:', error); // Log error for debugging
+        throw new Error('Invalid Expression'); // Catch any errors and handle them
+    }
 }
+
 
 
     function decimalToFraction(decimal) {
