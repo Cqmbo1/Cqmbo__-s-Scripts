@@ -489,14 +489,15 @@ function evaluateExpression(expression) {
         return `(${numerator} / ${denominator})`; // Convert to (numerator/denominator)
     });
 
-    // 2. Process factorials by finding numbers followed by '!'
+    // 2. Replace any remaining HTML elements or symbols (including the fraction symbol itself)
+    parsedExpression = parsedExpression.replace(/<\/?[^>]+(>|$)/g, ""); // Remove HTML tags
+    parsedExpression = parsedExpression.replace(/⁄/g, '/'); // Replace any occurrence of the fraction character
+
+    // 3. Process factorials by finding numbers followed by '!'
     parsedExpression = parsedExpression.replace(/(\d+)!/g, (match, num) => factorial(parseInt(num)));
 
-    // 3. Replace square root (√) and exponentiation (^) symbols with JavaScript equivalents
+    // 4. Replace square root (√) and exponentiation (^) symbols with JavaScript equivalents
     parsedExpression = parsedExpression.replace(/√/g, 'Math.sqrt').replace(/\^/g, '**');
-
-    // 4. Remove any remaining HTML tags (this should happen before final evaluation)
-    parsedExpression = parsedExpression.replace(/<\/?[^>]+(>|$)/g, "");
 
     // Log the final parsed expression for debugging
     console.log("Parsed Expression: ", parsedExpression); // Debugging statement
@@ -509,6 +510,7 @@ function evaluateExpression(expression) {
         throw new Error('Invalid Expression'); // Catch any errors and handle them
     }
 }
+
 
 
 
