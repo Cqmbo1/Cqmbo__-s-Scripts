@@ -198,7 +198,7 @@ function toggleelements(){
     screenshotButton.id = 'screenshot-button';
     screenshotButton.title = 'Screenshot Video at Current Timestamp';
     screenshotButton.style.position = 'fixed';
-    screenshotButton.style.top = '210px';
+    screenshotButton.style.top = '220px';
     screenshotButton.style.right = '10px';
     screenshotButton.style.zIndex = '10000';
     screenshotButton.style.backgroundColor = '#4caf50';
@@ -217,7 +217,7 @@ function toggleelements(){
     thumbnailButton.id = 'thumbnail-button';
     thumbnailButton.title = 'Download Video Thumbnail';
     thumbnailButton.style.position = 'fixed';
-    thumbnailButton.style.top = '255px';
+    thumbnailButton.style.top = '280px';
     thumbnailButton.style.right = '10px';
     thumbnailButton.style.zIndex = '10000';
     thumbnailButton.style.backgroundColor = '#ff5722';
@@ -236,7 +236,7 @@ function toggleelements(){
     downloadButton.id = 'download-button';
     downloadButton.title = 'Download Video';
     downloadButton.style.position = 'fixed';
-    downloadButton.style.top = '300px';
+    downloadButton.style.top = '340px';
     downloadButton.style.right = '10px';
     downloadButton.style.zIndex = '10000';
     downloadButton.style.backgroundColor = '#2196F3';
@@ -251,33 +251,12 @@ function toggleelements(){
     downloadButton.appendChild(downloadIcon);
 
 
-    // Create the repeat button
-    const repeatButton = document.createElement('button');
-    repeatButton.id = 'repeat-button';
-    repeatButton.title = 'Repeat Video';
-    repeatButton.style.position = 'fixed';
-    repeatButton.style.top = '345px';
-    repeatButton.style.right = '10px';
-    repeatButton.style.zIndex = '10000';
-    repeatButton.style.backgroundColor = '#ffff00';
-    repeatButton.style.color = 'white';
-
-    // Create and append the repeat icon
-    const repeatIcon = document.createElement('img');
-    repeatIcon.src = 'https://img.favpng.com/20/15/5/repeat-icon-png-favpng-0wgvCV1bKvFXHzqDPGBXh1Jae.jpg';
-    repeatIcon.alt = 'Repeat';
-    repeatIcon.style.width = '24px';
-    repeatIcon.style.height = '24px';
-    repeatButton.appendChild(repeatIcon);
-
-
     function renderizarContenido() {
         if (validButtons) {
             validButtons = false;
     // Append the buttons to the body
     document.body.appendChild(screenshotButton);
     document.body.appendChild(thumbnailButton);
-    document.body.appendChild(repeatButton);
     document.body.appendChild(downloadButton);
 
             // Attach event listeners for buttons
@@ -698,5 +677,3 @@ function fetchImage(imageUrl) {
             subscribeButton.click();
         }
     }
-
-
