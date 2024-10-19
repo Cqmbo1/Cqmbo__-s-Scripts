@@ -4,10 +4,10 @@
 
     var Buttons = `
         <div class="containerButtons">
-            <button id="calculator-button" style="position: fixed; top: 200px; right: 10px; z-index: 10000; background-color: #2196f3; color: white;" title="Show/Hide Calculator">
+            <button id="calculator-button" style="position: fixed; top: 175px; right: 10px; z-index: 10000; background-color: #2196f3; color: white;" title="Show/Hide Calculator">
                 <img src="https://th.bing.com/th/id/OIP.fljCTsp0o0y5HVKLBrU1dwHaHa?w=182&h=182&c=7&r=0&o=5&pid=1.7" alt="Calculator" style="width: 24px; height: 24px;">
             </button>
-            <div id="calculator" style="display: none; position: fixed; top: 250px; right: 10px; z-index: 10000; background-color: #ffffff; border: 1px solid #ddd; padding: 10px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);">
+            <div id="calculator" style="display: none; position: fixed; top: 200px; right: 10px; z-index: 10000; background-color: #ffffff; border: 1px solid #ddd; padding: 10px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);">
                 <!-- Replace the input element with a div for better HTML rendering -->
 <div id="calc-display" style="width: 90%; padding: 10px; font-size: 18px; text-align: right; border: 1px solid #ccc; min-height: 40px;"></div>
                 <div class="calc-buttons" style="display: grid; grid-template-columns: repeat(4, 50px); gap: 5px; margin-top: 10px;">
@@ -37,6 +37,16 @@
                         <span style="border-top: 1px solid black; width: 10px;"></span>
                         <span style="font-size: 10px; line-height: 8px;">b</span>
                     </button>
+<button class="calc-btn mixed-btn" style="font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center;" data-value="/">
+    <span style="display: flex; align-items: center;">
+        <span style="font-size: 10px; margin-right: 2px;">c</span> <!-- Whole number part -->
+        <span style="display: flex; flex-direction: column; align-items: center;">
+            <span style="font-size: 10px; line-height: 8px;">a</span>
+            <span style="border-top: 1px solid black; width: 10px;"></span>
+            <span style="font-size: 10px; line-height: 8px;">b</span>
+        </span>
+    </span>
+</button>
                     <button class="calc-btn" style="grid-column: span 4; background-color: #f44336; color: white;">C</button>
                     <button class="calc-btn" style="grid-column: span 3; background-color: #7DDA58; color: white; margin-left: 55px;">=</button>
                     <button class="calc-btn conv-fraction-btn" style="grid-column: span 2; background-color: #7DDA58; color: white;">-> Fraction</button>
@@ -185,52 +195,72 @@
             </div>
         </div>
 
-<div id="help" style="position: fixed;padding: 10px;border: 1px solid rgb(204, 204, 204);background-color: rgb(249, 249, 249);z-index: 10000; top: 10px; left: 10px; display: none; ">
-    <h3>Calculator Keybinds</h3>
-    <ul>
-        <li><strong>0-9:</strong> Enter numbers.</li>
-        <li><strong>+</strong>: Add.</li>
-        <li><strong>-</strong>: Subtract.</li>
-        <li><strong>*</strong>: Multiply.</li>
-        <li><strong>/</strong>: Divide.</li>
-        <li><strong>.</strong>: Decimal point.</li>
-        <li><strong>^</strong>: Exponentiation.</li>
-        <li><strong>( ):</strong> Group expressions.</li>
-        <li><strong>_:</strong> Add fraction (Put numerator before).</li>
-        <li><strong>Enter:</strong> Evaluate the expression.</li>
-        <li><strong>!</strong>: Factorial.</li>
-        <li><strong>Backspace:</strong> Remove the last character.</li>
-        <li><strong>Delete:</strong> Clear the display.</li>
-        <li><strong>r/R:</strong> Square Root.</li>
-    </ul>
-    <br>
-        <h3>Calculator Buttons</h3>
-        <ul>
-             <li><button class="exam-btn">0-9</button>: Numbers to add.</li>
-        <li><button class="exam-btn">/</button>: Divide.</li>
-        <li><button class="exam-btn">*</button>: Multiply.</li>
-        <li><button class="exam-btn">-</button>: Subtract.</li>
-        <li><button class="exam-btn">.</button>: Decimal point.</li>
-        <li><button class="exam-btn">+</button>: Add.</li>
-        <li><button class="exam-btn">√</button>: Square root.</li>
-        <li><button class="exam-btn">(</button>: Open parenthesis for grouping.</li>
-        <li><button class="exam-btn">)</button>: Close parenthesis for grouping.</li>
-        <li><button class="exam-btn">^</button>: Exponentiation.</li>
-        <li><button class="exam-btn" data-value="!">!</button>: Factorial.</li>
-        <li>
-            <button class="exam-btn fraction-btn" style="font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center;" data-value="/">
-                <span style="font-size: 10px; line-height: 8px;">a</span>
-                <span style="border-top: 1px solid black; width: 10px;"></span>
-                <span style="font-size: 10px; line-height: 8px;">b</span></button>: Fraction (as a/b).</li>
-<li><button class="exam-btn" style="grid-column: span 4; background-color: #f44336; color: white;">C</button>: Clear the display.</li>
-<li><button class="exam-btn" style="grid-column: span 3; background-color: #7DDA58; color: white;">=</button>: Evaluate the expression.</li>
-<li><button class="exam-btn conv-fraction-btn" style="grid-column: span 2; background-color: #7DDA58; color: white;">-> Fraction</button>: Convert to fraction.</li>
-<li><button class="exam-btn help-btn" style="grid-column: span 4; background-color: #7DDA58; color: white;">Help</button>: Toggle the display of this help section.</li>
-<li><button class="exam-btn backspace-btn" style="background-color: #f9a825; color: white;"><img src="https://i.imgur.com/YkaU0mb.png" alt="Backspace" style="width: 24px; height: 24px;"></button>: Remove the last character.</li>
-<li><button class="exam-btn unit-converter" style="grid-column: span 4; background-color: #f9a825; color: white;">Unit Converter</button>: Convert units.</li>
-    <ul>
+<div id="help" style="position: fixed; padding: 10px; border: 1px solid rgb(204, 204, 204); background-color: rgb(249, 249, 249); z-index: 10000; top: 10px; left: 10px; display: none; ">
+    <div style="display: flex;">
+        <div style="flex: 1;">
+            <h3>Calculator Keybinds</h3>
+            <ul>
+                <li><strong>0-9:</strong> Enter numbers.</li>
+                <li><strong>+</strong>: Add.</li>
+                <li><strong>-</strong>: Subtract.</li>
+                <li><strong>*</strong>: Multiply.</li>
+                <li><strong>/</strong>: Divide.</li>
+                <li><strong>.</strong>: Decimal point.</li>
+                <li><strong>^</strong>: Exponentiation.</li>
+                <li><strong>( ):</strong> Group expressions.</li>
+                <li><strong>_:</strong> Add fraction (Put numerator first).</li>
+                <li><strong>Enter:</strong> Evaluate the expression.</li>
+                <li><strong>!</strong>: Factorial.</li>
+                <li><strong>Backspace:</strong> Remove the last character.</li>
+                <li><strong>Delete:</strong> Clear the display.</li>
+                <li><strong>r/R:</strong> Square Root.</li>
+            </ul>
+        </div>
+        <div style="flex: 1;">
+            <h3>Calculator Buttons</h3>
+            <ul>
+                <li><button class="exam-btn">0-9</button>: Numbers to add.</li>
+                <li><button class="exam-btn">/</button>: Divide.</li>
+                <li><button class="exam-btn">*</button>: Multiply.</li>
+                <li><button class="exam-btn">-</button>: Subtract.</li>
+                <li><button class="exam-btn">.</button>: Decimal point.</li>
+                <li><button class="exam-btn">+</button>: Add.</li>
+                <li><button class="exam-btn">√</button>: Square root.</li>
+                <li><button class="exam-btn">(</button>: Open parenthesis for grouping.</li>
+                <li><button class="exam-btn">)</button>: Close parenthesis for grouping.</li>
+                <li><button class="exam-btn">^</button>: Exponentiation.</li>
+                <li><button class="exam-btn" data-value="!">!</button>: Factorial.</li>
+                <li>
+                    <button class="exam-btn fraction-btn" style="font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center;" data-value="/">
+                        <span style="font-size: 10px; line-height: 8px;">a</span>
+                        <span style="border-top: 1px solid black; width: 10px;"></span>
+                        <span style="font-size: 10px; line-height: 8px;">b</span>
+                    </button>: Fraction (as a/b).
+                </li>
+                <li>
+                    <button class="calc-btn mixed-btn" style="font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center;" data-value="/">
+                        <span style="display: flex; align-items: center;">
+                            <span style="font-size: 10px; margin-right: 2px;">c</span> <!-- Whole number part -->
+                            <span style="display: flex; flex-direction: column; align-items: center;">
+                                <span style="font-size: 10px; line-height: 8px;">a</span>
+                                <span style="border-top: 1px solid black; width: 10px;"></span>
+                                <span style="font-size: 10px; line-height: 8px;">b</span>
+                            </span>
+                        </span>
+                    </button>: Mixed Number (Input whole number first).
+                </li>
+                <li><button class="exam-btn" style="grid-column: span 4; background-color: #f44336; color: white;">C</button>: Clear the display.</li>
+                <li><button class="exam-btn" style="grid-column: span 3; background-color: #7DDA58; color: white;">=</button>: Evaluate the expression.</li>
+                <li><button class="exam-btn conv-fraction-btn" style="grid-column: span 2; background-color: #7DDA58; color: white;">-> Fraction</button>: Convert to fraction.</li>
+                <li><button class="exam-btn help-btn" style="grid-column: span 4; background-color: #7DDA58; color: white;">Help</button>: Toggle the display of this help section.</li>
+                <li><button class="exam-btn backspace-btn" style="background-color: #f9a825; color: white;"><img src="https://i.imgur.com/YkaU0mb.png" alt="Backspace" style="width: 24px; height: 24px;"></button>: Remove the last character.</li>
+                <li><button class="exam-btn unit-converter" style="grid-column: span 4; background-color: #f9a825; color: white;">Unit Converter</button>: Convert units.</li>
+            </ul>
+        </div>
+    </div>
     <p>Click buttons or press valid keybinds to start.</p>
 </div>
+
 
     `;
 
@@ -414,7 +444,7 @@ calculator.setAttribute('tabindex', '-1'); // Make it focusable
     // Handle key presses for the calculator only when it's visible and focused
 document.addEventListener('keydown', function(event) {
     const calcDisplay = document.getElementById('calc-display');
-    const validKeys = '0123456789+-*/.^()_!BackspaceEnterDeleterR';
+    const validKeys = '0123456789+-*/.^()_!rRBackspaceEnterDelete';
 
     if (calculator.style.display !== 'none' && validKeys.includes(event.key) && document.activeElement === calculator) {
         handleKeyPress(event);
@@ -437,6 +467,34 @@ function displayFraction(numerator, denominator) {
     return `<sup>${numerator}</sup>&frasl;<sub>${denominator}</sub>`;
 }
 
+function displayMixedNumberWithWhole(wholeNumber, numerator, denominator) {
+    // Ensure we handle integer inputs
+    numerator = parseInt(numerator);
+    denominator = parseInt(denominator);
+
+    // If the numerator is greater than the denominator, we form a mixed number
+    if (numerator >= denominator) {
+        let extraWhole = Math.floor(numerator / denominator); // How many wholes fit in the fraction
+        let remainder = numerator % denominator; // Remainder after extracting whole parts
+
+        // Update the whole number by adding the extracted wholes
+        wholeNumber += extraWhole;
+
+        // If there’s no remainder, just display the whole number
+        if (remainder === 0) {
+            return wholeNumber.toString();
+        } else {
+            // Display the mixed number (whole + remainder/denominator)
+            return `${wholeNumber} <sup>${remainder}</sup>&frasl;<sub>${denominator}</sub>`;
+        }
+    } else {
+        // Proper fraction case: just display the fraction without changing the whole number
+        return `${wholeNumber} <sup>${numerator}</sup>&frasl;<sub>${denominator}</sub>`;
+    }
+}
+
+
+
 
 function handleButtonClick(value, button) {
     const sliderText = document.getElementById('maxNumbersAllowedAfterDecimalSignIntervalValue2');
@@ -455,8 +513,34 @@ function handleButtonClick(value, button) {
             display.innerHTML = numerator; // Just show the numerator if no valid denominator is given
         }
 
+    // Check if the button clicked is the mixed number button
+    } else if (button.classList.contains('mixed-btn')) {
+        // Get the current whole number from the display, if any
+        let wholeNumber = display.innerHTML.trim() || "0"; // Default to 0 if display is empty
+        wholeNumber = parseInt(wholeNumber); // Convert to integer
+
+        // Prompt the user for numerator and denominator
+        let numerator = prompt("Enter the numerator:");
+        let denominator = prompt("Enter the denominator:");
+
+        if (numerator !== null && denominator !== null && denominator !== "") {
+            numerator = parseInt(numerator);
+            denominator = parseInt(denominator);
+
+            if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
+                // If numerator > denominator, we add it to the whole number
+                let mixedNumberDisplay = displayMixedNumberWithWhole(wholeNumber, numerator, denominator);
+                display.innerHTML = mixedNumberDisplay;
+            } else {
+                display.innerHTML = "Error"; // Handle invalid input
+            }
+        } else {
+            display.innerHTML = "Error"; // Handle invalid input
+        }
+
     } else if (value === 'C') {
         display.innerHTML = ''; // Clear the display
+
     } else if (value === '=') {
         try {
             // Extract text content before evaluating
@@ -466,30 +550,38 @@ function handleButtonClick(value, button) {
         } catch (error) {
             display.innerHTML = 'Error';
         }
+
     } else if (value === '√') {
         try {
             display.innerHTML = Math.sqrt(parseFloat(display.innerHTML));
         } catch (error) {
             display.innerHTML = 'Error';
         }
+
     } else if (value === '!') {
         display.innerHTML += button.getAttribute('data-value');
+
     } else if (value === '-> Fraction') {
         display.innerHTML = decimalToFraction(parseFloat(display.innerHTML));
+
     } else if (button.classList.contains('backspace-btn')) {
         display.innerHTML = display.innerHTML.slice(0, -1); // Remove last character
+
     } else if (button.classList.contains('help-btn')){
         document.getElementById('help').style.display = 'none' ? 'block' : 'none';
+    } else if (value === 'Unit Converter'){
+
     } else {
         display.innerHTML += value; // Append the value to innerHTML
     }
 }
 
+
 function handleKeyPress(event) {
     const sliderText = document.getElementById('maxNumbersAllowedAfterDecimalSignIntervalValue2');
     const decimalPlaces = sliderText.textContent;
     const display = document.getElementById('calc-display');
-    const validKeys = '0123456789+-*/.^()_!rR';
+    const validKeys = '0123456789+-*/.^()_!rRBackspaceDeleteEnter';
 
     if (validKeys.includes(event.key)) {
         if (event.key === '_') {
@@ -505,7 +597,8 @@ function handleKeyPress(event) {
     } else if (event.key === 'Enter') {
         try {
             // Extract text content before evaluating
-            const expression = display.textContent;
+            const expression = display.innerHTML; // Use innerHTML to get the expression
+            console.log("Expression to Evaluate: ", expression); // Debugging statement
             display.innerHTML = evaluateExpression(expression).toFixed(decimalPlaces);
         } catch (error) {
             display.innerHTML = 'Error';
@@ -556,38 +649,44 @@ function handleKeyPress(event) {
     }
 };
 
-function evaluateExpression(expression) {
-    // 1. Use regex to find fractions like <sup>numerator</sup>&frasl;<sub>denominator</sub>
-    const fractionRegex = /<sup>(\d+)<\/sup>&frasl;<sub>(\d+)<\/sub>/g;
+    function evaluateExpression(expression) {
+    // 1. Regex to find mixed numbers like 'whole <sup>numerator</sup>⁄<sub>denominator</sub>'
+    const mixedNumberRegex = /(\d+)\s*<sup>(\d+)<\/sup>⁄<sub>(\d+)<\/sub>/g;
+
+    // Replace mixed numbers with their decimal equivalents
+    let parsedExpression = expression.replace(mixedNumberRegex, (match, whole, numerator, denominator) => {
+        return `(${whole} + (${numerator} / ${denominator}))`; // Convert to (whole + (numerator/denominator))
+    });
+
+    // 2. Regex to find fractions like '<sup>numerator</sup>⁄<sub>denominator</sub>'
+    const fractionRegex = /<sup>(\d+)<\/sup>⁄<sub>(\d+)<\/sub>/g;
 
     // Replace fractions with their decimal equivalents
-    let parsedExpression = expression.replace(fractionRegex, (match, numerator, denominator) => {
+    parsedExpression = parsedExpression.replace(fractionRegex, (match, numerator, denominator) => {
         return `(${numerator} / ${denominator})`; // Convert to (numerator/denominator)
     });
 
-    // 2. Replace any remaining HTML elements or symbols (including the fraction symbol itself)
+    // 3. Remove any remaining HTML tags and fraction symbols
     parsedExpression = parsedExpression.replace(/<\/?[^>]+(>|$)/g, ""); // Remove HTML tags
-    parsedExpression = parsedExpression.replace(/⁄/g, '/'); // Replace any occurrence of the fraction character
+    parsedExpression = parsedExpression.replace(/⁄/g, '/'); // Replace the fraction symbol (⁄)
 
-    // 3. Process factorials by finding numbers followed by '!'
+    // 4. Process factorials (e.g., 5!)
     parsedExpression = parsedExpression.replace(/(\d+)!/g, (match, num) => factorial(parseInt(num)));
 
-    // 4. Replace square root (√) and exponentiation (^) symbols with JavaScript equivalents
+    // 5. Replace square root (√) and exponentiation (^) symbols with JS equivalents
     parsedExpression = parsedExpression.replace(/√/g, 'Math.sqrt').replace(/\^/g, '**');
 
-    // Log the final parsed expression for debugging
-    console.log("Parsed Expression: ", parsedExpression); // Debugging statement
+    // Debugging log for parsed expression
+    console.log("Parsed Expression: ", parsedExpression);
 
-    // 5. Evaluate the final expression safely
+    // 6. Safely evaluate the final parsed expression
     try {
         return new Function('return ' + parsedExpression)(); // Safely evaluate the expression
     } catch (error) {
-        console.error('Error evaluating expression:', error); // Log error for debugging
-        throw new Error('Invalid Expression'); // Catch any errors and handle them
+        console.error('Error evaluating expression:', error);
+        throw new Error('Invalid Expression');
     }
 }
-
-
 
 
 function decimalToFraction(decimal) {
