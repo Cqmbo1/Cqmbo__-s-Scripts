@@ -441,15 +441,18 @@ helpbutton.addEventListener('click', () => {
 // Ensure the calculator is focusable
 calculator.setAttribute('tabindex', '-1'); // Make it focusable
 
-    // Handle key presses for the calculator only when it's visible and focused
 document.addEventListener('keydown', function(event) {
     const calcDisplay = document.getElementById('calc-display');
-    const validKeys = '0123456789+-*/.^()_!rRBackspaceEnterDelete';
+    const validKeys = '0123456789+-*/.^()_!';
+    const specialKeys = ['Backspace', 'Enter', 'Delete', 'r', 'R']; // Special keys to be allowed
 
-    if (calculator.style.display !== 'none' && validKeys.includes(event.key) && document.activeElement === calculator) {
+    if (calculator.style.display !== 'none' &&
+        (validKeys.includes(event.key) || specialKeys.includes(event.key)) &&
+        document.activeElement === calculator) {
         handleKeyPress(event);
     }
 });
+
 
 
     // Handle paste event
@@ -581,9 +584,10 @@ function handleKeyPress(event) {
     const sliderText = document.getElementById('maxNumbersAllowedAfterDecimalSignIntervalValue2');
     const decimalPlaces = sliderText.textContent;
     const display = document.getElementById('calc-display');
-    const validKeys = '0123456789+-*/.^()_!rRBackspaceDeleteEnter';
+    const validKeys = '0123456789+-*/.^()_!';
+    const specialKeys = ['Backspace', 'Enter', 'Delete', 'r', 'R']; // Special keys to be allowed
 
-    if (validKeys.includes(event.key)) {
+    if (validKeys.includes(event.key) || specialKeys.includes(event.key)) {
         if (event.key === '_') {
             const currentDisplay = display.innerHTML; // Use innerHTML instead of value
         let numerator = currentDisplay || "0"; // Default numerator to 0 if display is empty
@@ -650,43 +654,46 @@ function handleKeyPress(event) {
 };
 
     function evaluateExpression(expression) {
-    // 1. Regex to find mixed numbers like 'whole <sup>numerator</sup>⁄<sub>denominator</sub>'
-    const mixedNumberRegex = /(\d+)\s*<sup>(\d+)<\/sup>⁄<sub>(\d+)<\/sub>/g;
-
-    // Replace mixed numbers with their decimal equivalents
-    let parsedExpression = expression.replace(mixedNumberRegex, (match, whole, numerator, denominator) => {
-        return `(${whole} + (${numerator} / ${denominator}))`; // Convert to (whole + (numerator/denominator))
-    });
-
-    // 2. Regex to find fractions like '<sup>numerator</sup>⁄<sub>denominator</sub>'
+    // 1. Use regex to find mixed numbers and fractions like "whole <sup>numerator</sup>⁄<sub>denominator</sub>"
+    const mixedNumberRegex = /(\d*)\s?<sup>(\d+)<\/sup>⁄<sub>(\d+)<\/sub>/g;
     const fractionRegex = /<sup>(\d+)<\/sup>⁄<sub>(\d+)<\/sub>/g;
+
+    // Replace mixed numbers with equivalent decimal or fraction form
+    let parsedExpression = expression.replace(mixedNumberRegex, (match, whole, numerator, denominator) => {
+        if (whole) {
+            return `(${whole} + ${numerator} / ${denominator})`; // Convert to (whole + numerator/denominator)
+        } else {
+            return `(${numerator} / ${denominator})`; // Just a fraction, no whole part
+        }
+    });
 
     // Replace fractions with their decimal equivalents
     parsedExpression = parsedExpression.replace(fractionRegex, (match, numerator, denominator) => {
         return `(${numerator} / ${denominator})`; // Convert to (numerator/denominator)
     });
 
-    // 3. Remove any remaining HTML tags and fraction symbols
+    // 2. Replace any remaining HTML elements or symbols
     parsedExpression = parsedExpression.replace(/<\/?[^>]+(>|$)/g, ""); // Remove HTML tags
-    parsedExpression = parsedExpression.replace(/⁄/g, '/'); // Replace the fraction symbol (⁄)
 
-    // 4. Process factorials (e.g., 5!)
+    // 3. Process factorials by finding numbers followed by '!'
     parsedExpression = parsedExpression.replace(/(\d+)!/g, (match, num) => factorial(parseInt(num)));
 
-    // 5. Replace square root (√) and exponentiation (^) symbols with JS equivalents
+    // 4. Replace square root (√) and exponentiation (^) symbols with JavaScript equivalents
     parsedExpression = parsedExpression.replace(/√/g, 'Math.sqrt').replace(/\^/g, '**');
 
-    // Debugging log for parsed expression
-    console.log("Parsed Expression: ", parsedExpression);
+    // Log the final parsed expression for debugging
+    console.log("Parsed Expression: ", parsedExpression); // Debugging statement
 
-    // 6. Safely evaluate the final parsed expression
+    // 5. Evaluate the final expression safely
     try {
         return new Function('return ' + parsedExpression)(); // Safely evaluate the expression
     } catch (error) {
-        console.error('Error evaluating expression:', error);
-        throw new Error('Invalid Expression');
+        console.error('Error evaluating expression:', error); // Log error for debugging
+        throw new Error('Invalid Expression'); // Catch any errors and handle them
     }
 }
+
+
 
 
 function decimalToFraction(decimal) {
