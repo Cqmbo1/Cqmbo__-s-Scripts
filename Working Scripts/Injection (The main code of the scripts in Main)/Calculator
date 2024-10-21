@@ -336,13 +336,13 @@ function handlePaste(event) {
     unitconvertermenu.setAttribute('tabindex', '-1'); // Make it focusable
 
     // Optionally, validate the pasted data to only allow valid characters
-    const validCharacters = /^[0-9+\-*/.^() ]+$/;
+    const validCharacters = /^[0-9+\-*/.^() ]+$⁄/;
 
     if (!validCharacters.test(pastedData)) {
         // If pasted data is invalid, show an error
         if (calculator.style.display !== 'none' && document.activeElement === calculator) {
             if (display.style.display !== 'none') {
-                display.value = 'Invalid input';
+                display.innerHTML = 'Invalid input';
             } else if (unitconvertermenu.style.display !== 'none') {
                 inputvalue.value = 'Invalid input';
             }
@@ -352,7 +352,7 @@ function handlePaste(event) {
         if (document.activeElement === calculator) {
             if (display.style.display !== 'none') {
                 // Paste into calculator display if visible
-                display.value += pastedData;
+                display.innerHTML += pastedData;
             } else if (unitconvertermenu.style.display !== 'none') {
                 // Paste into inputvalue if the unit converter menu is visible
                 inputvalue.value += pastedData;
@@ -467,7 +467,7 @@ document.addEventListener('keydown', function(event) {
 
 // This function formats a fraction as a superscript and subscript fraction
 function displayFraction(numerator, denominator) {
-    return `<sup>${numerator}</sup>&frasl;<sub>${denominator}</sub>`;
+    return `<sup>${numerator}</sup>⁄<sub>${denominator}</sub>`;
 }
 
 function displayMixedNumberWithWhole(wholeNumber, numerator, denominator) {
@@ -475,29 +475,16 @@ function displayMixedNumberWithWhole(wholeNumber, numerator, denominator) {
     numerator = parseInt(numerator);
     denominator = parseInt(denominator);
 
-    // If the numerator is greater than the denominator, we form a mixed number
+    // If the numerator is greater than or equal to the denominator, form a mixed number
     if (numerator >= denominator) {
-        let extraWhole = Math.floor(numerator / denominator); // How many wholes fit in the fraction
-        let remainder = numerator % denominator; // Remainder after extracting whole parts
-
-        // Update the whole number by adding the extracted wholes
-        wholeNumber += extraWhole;
-
-        // If there’s no remainder, just display the whole number
-        if (remainder === 0) {
-            return wholeNumber.toString();
-        } else {
-            // Display the mixed number (whole + remainder/denominator)
-            return `${wholeNumber} <sup>${remainder}</sup>&frasl;<sub>${denominator}</sub>`;
-        }
+        let remainder = numerator % denominator;
+            // Mixed number: whole + remainder/denominator
+            return `<sup>${remainder}</sup>⁄<sub>${denominator}</sub>`;
     } else {
-        // Proper fraction case: just display the fraction without changing the whole number
-        return `${wholeNumber} <sup>${numerator}</sup>&frasl;<sub>${denominator}</sub>`;
+        // Proper fraction: just display the fraction without changing the whole number
+        return `<sup>${numerator}</sup>⁄<sub>${denominator}</sub>`;
     }
 }
-
-
-
 
 function handleButtonClick(value, button) {
     const sliderText = document.getElementById('maxNumbersAllowedAfterDecimalSignIntervalValue2');
@@ -505,8 +492,8 @@ function handleButtonClick(value, button) {
     const display = document.getElementById('calc-display');
 
     // Check if the button clicked is the fraction button
-    if (button.classList.contains('fraction-btn')) {
-        const currentDisplay = display.innerHTML; // Use innerHTML instead of value
+if (button.classList.contains('fraction-btn')) {
+    const currentDisplay = display.innerHTML; // Use innerHTML instead of value
         let numerator = currentDisplay || "0"; // Default numerator to 0 if display is empty
         let denominator = prompt("Enter the denominator:");
 
@@ -515,40 +502,39 @@ function handleButtonClick(value, button) {
         } else {
             display.innerHTML = numerator; // Just show the numerator if no valid denominator is given
         }
-
     // Check if the button clicked is the mixed number button
     } else if (button.classList.contains('mixed-btn')) {
-        // Get the current whole number from the display, if any
-        let wholeNumber = display.innerHTML.trim() || "0"; // Default to 0 if display is empty
-        wholeNumber = parseInt(wholeNumber); // Convert to integer
+    // Get the current whole number from the display, if any
+    let wholeNumber = display.innerHTML.trim() || "0"; // Default to 0 if display is empty
+    wholeNumber = parseInt(wholeNumber); // Convert to integer
 
-        // Prompt the user for numerator and denominator
-        let numerator = prompt("Enter the numerator:");
-        let denominator = prompt("Enter the denominator:");
+    // Prompt the user for numerator and denominator
+    let numerator = prompt("Enter the numerator:");
+    let denominator = prompt("Enter the denominator:");
 
-        if (numerator !== null && denominator !== null && denominator !== "") {
-            numerator = parseInt(numerator);
-            denominator = parseInt(denominator);
+    if (numerator !== null && denominator !== null && denominator !== "") {
+        numerator = parseInt(numerator);
+        denominator = parseInt(denominator);
 
-            if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
-                // If numerator > denominator, we add it to the whole number
-                let mixedNumberDisplay = displayMixedNumberWithWhole(wholeNumber, numerator, denominator);
-                display.innerHTML = mixedNumberDisplay;
-            } else {
-                display.innerHTML = "Error"; // Handle invalid input
-            }
+        if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
+            // If numerator > denominator, we add it to the whole number
+            let mixedNumberDisplay = displayMixedNumberWithWhole(wholeNumber, numerator, denominator);
+            display.innerHTML += mixedNumberDisplay;
         } else {
-            display.innerHTML = "Error"; // Handle invalid input
+            display.innerHTML += wholeNumber; // Handle invalid input
         }
+    } else {
+        display.innerHTML += wholeNumber; // Handle invalid input
+    }
+
 
     } else if (value === 'C') {
         display.innerHTML = ''; // Clear the display
 
     } else if (value === '=') {
         try {
-            // Extract text content before evaluating
-            const expression = display.innerHTML; // Use innerHTML to get the expression
-            console.log("Expression to Evaluate: ", expression); // Debugging statement
+            const expression = display.innerHTML;
+            console.log("Expression to Evaluate: ", expression);
             display.innerHTML = evaluateExpression(expression).toFixed(decimalPlaces);
         } catch (error) {
             display.innerHTML = 'Error';
@@ -556,7 +542,7 @@ function handleButtonClick(value, button) {
 
     } else if (value === '√') {
         try {
-            display.innerHTML = Math.sqrt(parseFloat(display.innerHTML));
+            display.innerHTML = Math.sqrt(parseFloat(display.innerHTML.replace(/<[^>]+>/g, '')));
         } catch (error) {
             display.innerHTML = 'Error';
         }
@@ -565,31 +551,63 @@ function handleButtonClick(value, button) {
         display.innerHTML += button.getAttribute('data-value');
 
     } else if (value === '-> Fraction') {
-        display.innerHTML = decimalToFraction(parseFloat(display.innerHTML));
+        display.innerHTML = decimalToFraction(parseFloat(display.innerHTML.replace(/<[^>]+>/g, '')));
 
     } else if (button.classList.contains('backspace-btn')) {
         display.innerHTML = display.innerHTML.slice(0, -1); // Remove last character
 
-    } else if (button.classList.contains('help-btn')){
-        document.getElementById('help').style.display = 'none' ? 'block' : 'none';
-    } else if (value === 'Unit Converter'){
-
     } else {
-        display.innerHTML += value; // Append the value to innerHTML
+        display.innerHTML += value; // Append the value
     }
 }
 
+function evaluateExpression(expression) {
+    const mixedNumberRegex = /(\d*)\s?<sup>(\d+)<\/sup>⁄<sub>(\d+)<\/sub>/g;
+    const fractionRegex = /<sup>(\d+)<\/sup>⁄<sub>(\d+)<\/sub>/g;
+
+    // Replace mixed numbers with decimal or fraction form
+    let parsedExpression = expression.replace(mixedNumberRegex, (match, whole, numerator, denominator) => {
+        if (whole) {
+            return `(${whole} + ${numerator} / ${denominator})`;
+        } else {
+            return `(${numerator} / ${denominator})`;
+        }
+    });
+
+    // Replace fractions with decimal equivalents
+    parsedExpression = parsedExpression.replace(fractionRegex, (match, numerator, denominator) => {
+        return `(${numerator} / ${denominator})`;
+    });
+
+    // Replace non-standard symbols
+    parsedExpression = parsedExpression.replace(/⁄/g, '/').replace(/−/g, '-').replace(/×/g, '*').replace(/÷/g, '/').replace(/√/g, 'Math.sqrt').replace(/\^/g, '**');
+
+    // Strip remaining HTML tags
+    parsedExpression = parsedExpression.replace(/<\/?[^>]+(>|$)/g, "");
+
+    // Process factorials
+    parsedExpression = parsedExpression.replace(/(\d+)!/g, (match, num) => factorial(parseInt(num)));
+
+    console.log("Parsed Expression: ", parsedExpression); // Debugging
+
+    try {
+        return new Function('return ' + parsedExpression)(); // Safely evaluate the expression
+    } catch (error) {
+        console.error('Error evaluating expression:', error);
+        throw new Error('Invalid Expression');
+    }
+}
 
 function handleKeyPress(event) {
     const sliderText = document.getElementById('maxNumbersAllowedAfterDecimalSignIntervalValue2');
     const decimalPlaces = sliderText.textContent;
     const display = document.getElementById('calc-display');
-    const validKeys = '0123456789+-*/.^()_!';
+    const validKeys = '0123456789+-*/.^()_!'; // Add valid keys
     const specialKeys = ['Backspace', 'Enter', 'Delete', 'r', 'R']; // Special keys to be allowed
 
     if (validKeys.includes(event.key) || specialKeys.includes(event.key)) {
         if (event.key === '_') {
-            const currentDisplay = display.innerHTML; // Use innerHTML instead of value
+     const currentDisplay = display.innerHTML; // Use innerHTML instead of value
         let numerator = currentDisplay || "0"; // Default numerator to 0 if display is empty
         let denominator = prompt("Enter the denominator:");
 
@@ -598,32 +616,59 @@ function handleKeyPress(event) {
         } else {
             display.innerHTML = numerator; // Just show the numerator if no valid denominator is given
         }
-    } else if (event.key === 'Enter') {
-        try {
-            // Extract text content before evaluating
-            const expression = display.innerHTML; // Use innerHTML to get the expression
-            console.log("Expression to Evaluate: ", expression); // Debugging statement
-            display.innerHTML = evaluateExpression(expression).toFixed(decimalPlaces);
-        } catch (error) {
-            display.innerHTML = 'Error';
-        }
-    } else if (event.key === '!') {
-        display.innerHTML += '!';
-    } else if (event.key === 'Backspace') {
-        display.innerHTML = display.innerHTML.slice(0, -1); // Remove last character
-    } else if (event.key === 'r' || event.key === 'R') {
-        try {
-            display.innerHTML = Math.sqrt(parseFloat(display.innerHTML));
-        } catch (error) {
-            display.innerHTML = 'Error';
-        }
-    } else if (event.key === 'Delete') {
-        display.innerHTML = '';
-    } else {
+
+        } else if (event.key === 'Enter') {
+            try {
+                const expression = display.innerHTML; // Use innerHTML to get the expression
+                console.log("Expression to Evaluate: ", expression); // Debugging statement
+                display.innerHTML = evaluateExpression(expression).toFixed(decimalPlaces);
+            } catch (error) {
+                display.innerHTML = 'Error';
+            }
+        } else if (event.key === '!') {
+            display.innerHTML += '!';
+        } else if (event.key === 'Backspace') {
+            display.innerHTML = display.innerHTML.slice(0, -1); // Remove last character
+        } else if (event.key === 'r' || event.key === 'R') {
+            try {
+                display.innerHTML = Math.sqrt(parseFloat(display.innerHTML));
+            } catch (error) {
+                display.innerHTML = 'Error';
+            }
+        } else if (event.key === 'Delete') {
+            display.innerHTML = '';
+        } else {
             display.innerHTML += event.key;
-    }
+        }
     }
 }
+
+window.onload = function () {
+    const sliderForUnitConvert = document.createElement('div');
+    sliderForUnitConvert.innerHTML = `
+    <div>
+        <label for="maxNumbersAllowedAfterDecimalSignSlider2">Decimal Places (1 - 20):</label>
+        <input type="range" id="maxNumbersAllowedAfterDecimalSignSlider2" min="1" max="20" value="10">
+        <output id="maxNumbersAllowedAfterDecimalSignIntervalValue2">10</output>
+    </div>
+    `;
+
+    const calc = document.getElementById('calculator');
+    if (calc) {
+        calc.appendChild(sliderForUnitConvert);
+    }
+
+    const slider = document.getElementById('maxNumbersAllowedAfterDecimalSignSlider2');
+    if (slider) {
+        slider.addEventListener('input', function () {
+            const sliderValue = slider.value;
+            const sliderText = document.getElementById('maxNumbersAllowedAfterDecimalSignIntervalValue2');
+            sliderText.textContent = sliderValue;
+        });
+    } else {
+        console.error('Element not found: maxNumbersAllowedAfterDecimalSignSlider2');
+    }
+};
 
 
     window.onload = function() {
@@ -652,47 +697,6 @@ function handleKeyPress(event) {
         console.error('Element not found: maxNumbersAllowedAfterDecimalSignSlider2');
     }
 };
-
-    function evaluateExpression(expression) {
-    // 1. Use regex to find mixed numbers and fractions like "whole <sup>numerator</sup>⁄<sub>denominator</sub>"
-    const mixedNumberRegex = /(\d*)\s?<sup>(\d+)<\/sup>⁄<sub>(\d+)<\/sub>/g;
-    const fractionRegex = /<sup>(\d+)<\/sup>⁄<sub>(\d+)<\/sub>/g;
-
-    // Replace mixed numbers with equivalent decimal or fraction form
-    let parsedExpression = expression.replace(mixedNumberRegex, (match, whole, numerator, denominator) => {
-        if (whole) {
-            return `(${whole} + ${numerator} / ${denominator})`; // Convert to (whole + numerator/denominator)
-        } else {
-            return `(${numerator} / ${denominator})`; // Just a fraction, no whole part
-        }
-    });
-
-    // Replace fractions with their decimal equivalents
-    parsedExpression = parsedExpression.replace(fractionRegex, (match, numerator, denominator) => {
-        return `(${numerator} / ${denominator})`; // Convert to (numerator/denominator)
-    });
-
-    // 2. Replace any remaining HTML elements or symbols
-    parsedExpression = parsedExpression.replace(/<\/?[^>]+(>|$)/g, ""); // Remove HTML tags
-
-    // 3. Process factorials by finding numbers followed by '!'
-    parsedExpression = parsedExpression.replace(/(\d+)!/g, (match, num) => factorial(parseInt(num)));
-
-    // 4. Replace square root (√) and exponentiation (^) symbols with JavaScript equivalents
-    parsedExpression = parsedExpression.replace(/√/g, 'Math.sqrt').replace(/\^/g, '**');
-
-    // Log the final parsed expression for debugging
-    console.log("Parsed Expression: ", parsedExpression); // Debugging statement
-
-    // 5. Evaluate the final expression safely
-    try {
-        return new Function('return ' + parsedExpression)(); // Safely evaluate the expression
-    } catch (error) {
-        console.error('Error evaluating expression:', error); // Log error for debugging
-        throw new Error('Invalid Expression'); // Catch any errors and handle them
-    }
-}
-
 
 
 
