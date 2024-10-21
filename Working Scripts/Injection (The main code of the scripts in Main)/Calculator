@@ -555,7 +555,7 @@ if (button.classList.contains('fraction-btn')) {
 
     } else if (button.classList.contains('backspace-btn')) {
         display.innerHTML = display.innerHTML.slice(0, -1); // Remove last character
-
+    } else if (value === 'Unit Converter'){
     } else {
         display.innerHTML += value; // Append the value
     }
