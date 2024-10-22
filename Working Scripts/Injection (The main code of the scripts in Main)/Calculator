@@ -32,20 +32,11 @@
                     <button class="calc-btn">^</button>
                     <button class="calc-btn" data-value="!">!</button> <!-- Factorial Button -->
                     <!-- Fraction button styled as a/b with a line between -->
-                    <button class="calc-btn fraction-btn" style="font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center;" data-value="/">
-                        <span style="font-size: 10px; line-height: 8px;">a</span>
-                        <span style="border-top: 1px solid black; width: 10px;"></span>
-                        <span style="font-size: 10px; line-height: 8px;">b</span>
+                    <button class="calc-btn fraction-btn" style="font-size: 12px;" data-value="/">
+<sup>n</sup>&frasl;<sub>d</sub>
                     </button>
-<button class="calc-btn mixed-btn" style="font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center;" data-value="/">
-    <span style="display: flex; align-items: center;">
-        <span style="font-size: 10px; margin-right: 2px;">c</span> <!-- Whole number part -->
-        <span style="display: flex; flex-direction: column; align-items: center;">
-            <span style="font-size: 10px; line-height: 8px;">a</span>
-            <span style="border-top: 1px solid black; width: 10px;"></span>
-            <span style="font-size: 10px; line-height: 8px;">b</span>
-        </span>
-    </span>
+<button class="calc-btn mixed-btn" style="font-size: 12px;" data-value="/">
+u <sup>n</sup>&frasl;<sub>d</sub>
 </button>
                     <button class="calc-btn" style="grid-column: span 4; background-color: #f44336; color: white;">C</button>
                     <button class="calc-btn" style="grid-column: span 3; background-color: #7DDA58; color: white; margin-left: 55px;">=</button>
@@ -231,23 +222,14 @@
                 <li><button class="exam-btn">^</button>: Exponentiation.</li>
                 <li><button class="exam-btn" data-value="!">!</button>: Factorial.</li>
                 <li>
-                    <button class="exam-btn fraction-btn" style="font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center;" data-value="/">
-                        <span style="font-size: 10px; line-height: 8px;">a</span>
-                        <span style="border-top: 1px solid black; width: 10px;"></span>
-                        <span style="font-size: 10px; line-height: 8px;">b</span>
+                    <button class="exam-btn fraction-btn" style="font-size: 12px;" data-value="/">
+<sup>n</sup>&frasl;<sub>d</sub>
                     </button>: Fraction (as a/b).
                 </li>
                 <li>
-                    <button class="calc-btn mixed-btn" style="font-size: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center;" data-value="/">
-                        <span style="display: flex; align-items: center;">
-                            <span style="font-size: 10px; margin-right: 2px;">c</span> <!-- Whole number part -->
-                            <span style="display: flex; flex-direction: column; align-items: center;">
-                                <span style="font-size: 10px; line-height: 8px;">a</span>
-                                <span style="border-top: 1px solid black; width: 10px;"></span>
-                                <span style="font-size: 10px; line-height: 8px;">b</span>
-                            </span>
-                        </span>
-                    </button>: Mixed Number (Input whole number first).
+                    <button class="exam-btn mixed-btn" style="font-size: 12px;" data-value="/">
+u <sup>n</sup>&frasl;<sub>d</sub>
+</button>: Mixed Number (Input whole number first).
                 </li>
                 <li><button class="exam-btn" style="grid-column: span 4; background-color: #f44336; color: white;">C</button>: Clear the display.</li>
                 <li><button class="exam-btn" style="grid-column: span 3; background-color: #7DDA58; color: white;">=</button>: Evaluate the expression.</li>
