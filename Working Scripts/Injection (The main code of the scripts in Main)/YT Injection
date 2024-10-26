@@ -17,7 +17,7 @@ function toggleelements(){
         'download-button',
         'screenshot-button',
         'thumbnail-button',
-        'repeat-button',
+        'speed-button',
         'youtubelabel',
         'youtubeinput',
         'auto-subscribe-button',
@@ -96,8 +96,6 @@ function toggleelements(){
     });
 
     document.body.appendChild(removalButton);
-
-
 
     var autoLikeButton = document.createElement('button');
     autoLikeButton.id = 'auto-like-button';
@@ -193,7 +191,7 @@ function toggleelements(){
     }
 
     var validButtons = true;
-        // Create the screenshot button
+    // Create the screenshot button
     const screenshotButton = document.createElement('button');
     screenshotButton.id = 'screenshot-button';
     screenshotButton.title = 'Screenshot Video at Current Timestamp';
@@ -254,17 +252,17 @@ function toggleelements(){
     // Create the speed button
     const speedButton = document.createElement('button');
     speedButton.id = 'speed-button';
-    speedButton.title = 'Change speed of video';
+    speedButton.title = 'Modify Speed of Video';
     speedButton.style.position = 'fixed';
     speedButton.style.top = '345px';
     speedButton.style.right = '10px';
     speedButton.style.zIndex = '10000';
-    speedButton.style.backgroundColor = '#Ffff00';
+    speedButton.style.backgroundColor = '#ffff00';
     speedButton.style.color = 'white';
 
     // Create and append the speed icon
     const speedIcon = document.createElement('img');
-    speedIcon.src = 'https://th.bing.com/th/id/OIP.FqXL96sm01sDe4pfJAl0cwHaHa?w=186&h=186&c=7&r=0&o=5&pid=1.7';
+    speedIcon.src = 'https://th.bing.com/th/id/OIP.FqXL96sm01sDe4pfJAl0cwHaHa?w=180&h=180&c=7&r=0&o=5&pid=1.7';
     speedIcon.alt = 'Speed';
     speedIcon.style.width = '24px';
     speedIcon.style.height = '24px';
@@ -274,130 +272,125 @@ function toggleelements(){
     function renderizarContenido() {
         if (validButtons) {
             validButtons = false;
-            // Append the buttons to the body
-            document.body.appendChild(screenshotButton);
-            document.body.appendChild(thumbnailButton);
-            document.body.appendChild(downloadButton);
-            document.body.appendChild(speedButton);
+    // Append the buttons to the body
+    document.body.appendChild(screenshotButton);
+    document.body.appendChild(thumbnailButton);
+    document.body.appendChild(speedButton);
+    document.body.appendChild(downloadButton);
 
             // Attach event listeners for buttons
             attachButtonListeners();
         }
     }
 
-function attachButtonListeners() {
-    const screenShotButton = document.getElementById('screenshot-button');
-    if (screenShotButton) {
-        screenShotButton.onclick = () => {
-            const video = document.querySelector('video');
-            const canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            const context = canvas.getContext('2d');
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const imagenURL = canvas.toDataURL('image/png');
-            const linkDownload = document.createElement('a');
-            linkDownload.href = imagenURL;
-            const titleVideo = document.querySelector('h1.style-scope.ytd-watch-metadata').innerText;
-            linkDownload.download = `${video.currentTime.toFixed(0)}s_${titleVideo}.png`;
-            linkDownload.click();
-        };
-    }
+    function attachButtonListeners() {
+        const screenShotButton = document.getElementById('screenshot-button');
+        if (screenShotButton) {
+            screenShotButton.onclick = () => {
+                const video = document.querySelector('video');
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const context = canvas.getContext('2d');
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imagenURL = canvas.toDataURL('image/png');
+                const linkDownload = document.createElement('a');
+                linkDownload.href = imagenURL;
+                const titleVideo = document.querySelector('h1.style-scope.ytd-watch-metadata').innerText;
+                linkDownload.download = `${video.currentTime.toFixed(0)}s_${titleVideo}.png`;
+                linkDownload.click();
+            };
+        }
 
-    const downloadButton = document.getElementById('download-button');
-    if (downloadButton) {
-        downloadButton.onclick = () => {
-            let currentUrl = window.location.href;
+        const downloadButton = document.getElementById('download-button');
+        if (downloadButton) {
+            downloadButton.onclick = () => {
+                let currentUrl = window.location.href;
 
-            // Check if the URL contains 'shorts/' and replace it with 'watch?v='
-            if (currentUrl.includes('/shorts/')) {
-                currentUrl = currentUrl.replace('/shorts/', '/watch?v=');
-            }
+                // Check if the URL contains 'shorts/' and replace it with 'watch?v='
+                if (currentUrl.includes('/shorts/')) {
+                    currentUrl = currentUrl.replace('/shorts/', '/watch?v=');
+                }
 
-            const CutURL = new URLSearchParams(new URL(currentUrl).search);
-            let enlace = CutURL.get('v');
+                const CutURL = new URLSearchParams(new URL(currentUrl).search);
+                let enlace = CutURL.get('v');
 
-            if (enlace) {
-                window.open(
-                    `https://www.y2mate.com/en/convert-youtube/${enlace}`,
-                    'popUpWindow',
-                    'height=800,width=1000,left=50%,top=100,resizable=no,scrollbars=yes,toolbar=no,menubar=yes,location=no,directories=yes,status=no'
-                );
-            } else {
-                alert('No video ID found in the URL.');
-            }
-        };
-    }
+                if (enlace) {
+                    window.open(
+                        `https://www.y2mate.com/en/convert-youtube/${enlace}`,
+                        'popUpWindow',
+                        'height=800,width=1000,left=50%,top=100,resizable=no,scrollbars=yes,toolbar=no,menubar=yes,location=no,directories=yes,status=no'
+                    );
+                } else {
+                    alert('No video ID found in the URL.');
+                }
+            };
+        }
 
-    const thumbnailButton = document.getElementById('thumbnail-button');
-    if (thumbnailButton) {
-        thumbnailButton.onclick = () => {
-            let currentUrl = window.location.href;
+        const thumbnailButton = document.getElementById('thumbnail-button');
+        if (thumbnailButton) {
+            thumbnailButton.onclick = () => {
+                let currentUrl = window.location.href;
 
-            // Check if the URL contains 'shorts/' and replace it with 'watch?v='
-            if (currentUrl.includes('/shorts/')) {
-                currentUrl = currentUrl.replace('/shorts/', '/watch?v=');
-            }
+                // Check if the URL contains 'shorts/' and replace it with 'watch?v='
+                if (currentUrl.includes('/shorts/')) {
+                    currentUrl = currentUrl.replace('/shorts/', '/watch?v=');
+                }
 
-            const CutURL = new URLSearchParams(new URL(currentUrl).search);
-            let enlace = CutURL.get('v');
+                const CutURL = new URLSearchParams(new URL(currentUrl).search);
+                let enlace = CutURL.get('v');
 
-            if (enlace) {
-                const maxResImageUrl = `https://i1.ytimg.com/vi/${enlace}/maxresdefault.jpg`;
-                const highQualityImageUrl = `https://i1.ytimg.com/vi/${enlace}/hqdefault.jpg`;
+                if (enlace) {
+                    const maxResImageUrl = `https://i1.ytimg.com/vi/${enlace}/maxresdefault.jpg`;
+                    const highQualityImageUrl = `https://i1.ytimg.com/vi/${enlace}/hqdefault.jpg`;
 
-                fetchImage(maxResImageUrl)
-                    .catch(() => fetchImage(highQualityImageUrl))
-                    .catch((error) => {
-                        alert('No image found');
-                        console.error('Error getting image:', error);
-                    });
-            }
-        };
-    }
-    var ans = '';
+                    fetchImage(maxResImageUrl)
+                        .catch(() => fetchImage(highQualityImageUrl))
+                        .catch((error) => {
+                            alert('No image found');
+                            console.error('Error getting image:', error);
+                        });
+                }
+            };
+        }
+        var ans = '';
         const speedbutton = document.getElementById('speed-button');
-    speedbutton.onclick = () => {
-        ans = prompt('What is the speed of the video that you want? (1 is default)');
-        if (ans === null || ans === "") {
-        alert('Cancelled.');
-        } else {
-        document.getElementsByTagName('video')[0].playbackRate = Number(ans);
+        speedbutton.onclick = () => {
+        ans = prompt('How much do you want to in/decrease the speed of your video? 1 is default.');
+            document.getElementsByTagName('video')[0].playbackRate = Number(ans);
         }
     }
-}
 
-function fetchImage(imageUrl) {
-    return fetch(imageUrl)
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.blob();
-        })
-        .then((blob) => {
-            const imageSizeKB = blob.size / 1024;
+    function fetchImage(imageUrl) {
+        return fetch(imageUrl)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.blob();
+            })
+            .then((blob) => {
+                const imageSizeKB = blob.size / 1024;
 
-            if (imageSizeKB >= 20) {
-                window.open(
-                    imageUrl,
-                    'popUpWindow',
-                    'height=500,width=400,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes'
-                );
+                if (imageSizeKB >= 20) {
+                    window.open(
+                        imageUrl,
+                        'popUpWindow',
+                        'height=500,width=400,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes'
+                    );
 
-                const imageUrlObject = URL.createObjectURL(blob);
-                const linkDownload = document.createElement('a');
-                linkDownload.href = imageUrlObject;
-                const titleVideo = document.querySelector('h1.style-scope.ytd-watch-metadata').innerText;
-                linkDownload.download = `thumbnail_${titleVideo}.jpg`;
-                linkDownload.click();
-            } else {
-                alert('No image found');
-                throw new Error('No image found');
-            }
-        });
-
-}
+                    const imageUrlObject = URL.createObjectURL(blob);
+                    const linkDownload = document.createElement('a');
+                    linkDownload.href = imageUrlObject;
+                    const titleVideo = document.querySelector('h1.style-scope.ytd-watch-metadata').innerText;
+                    linkDownload.download = `thumbnail_${titleVideo}.jpg`;
+                    linkDownload.click();
+                } else {
+                    alert('No image found');
+                    throw new Error('No image found');
+                }
+            });
+    }
 
 
 
@@ -709,4 +702,3 @@ function fetchImage(imageUrl) {
             subscribeButton.click();
         }
     }
-
