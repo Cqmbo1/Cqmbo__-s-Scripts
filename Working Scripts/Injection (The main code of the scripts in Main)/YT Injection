@@ -193,12 +193,12 @@ function toggleelements(){
     }
 
     var validButtons = true;
-    // Create the screenshot button
+        // Create the screenshot button
     const screenshotButton = document.createElement('button');
     screenshotButton.id = 'screenshot-button';
     screenshotButton.title = 'Screenshot Video at Current Timestamp';
     screenshotButton.style.position = 'fixed';
-    screenshotButton.style.top = '220px';
+    screenshotButton.style.top = '210px';
     screenshotButton.style.right = '10px';
     screenshotButton.style.zIndex = '10000';
     screenshotButton.style.backgroundColor = '#4caf50';
@@ -217,7 +217,7 @@ function toggleelements(){
     thumbnailButton.id = 'thumbnail-button';
     thumbnailButton.title = 'Download Video Thumbnail';
     thumbnailButton.style.position = 'fixed';
-    thumbnailButton.style.top = '280px';
+    thumbnailButton.style.top = '255px';
     thumbnailButton.style.right = '10px';
     thumbnailButton.style.zIndex = '10000';
     thumbnailButton.style.backgroundColor = '#ff5722';
@@ -236,7 +236,7 @@ function toggleelements(){
     downloadButton.id = 'download-button';
     downloadButton.title = 'Download Video';
     downloadButton.style.position = 'fixed';
-    downloadButton.style.top = '340px';
+    downloadButton.style.top = '300px';
     downloadButton.style.right = '10px';
     downloadButton.style.zIndex = '10000';
     downloadButton.style.backgroundColor = '#2196F3';
@@ -251,13 +251,34 @@ function toggleelements(){
     downloadButton.appendChild(downloadIcon);
 
 
+    // Create the speed button
+    const speedButton = document.createElement('button');
+    speedButton.id = 'speed-button';
+    speedButton.title = 'Change speed of video';
+    speedButton.style.position = 'fixed';
+    speedButton.style.top = '345px';
+    speedButton.style.right = '10px';
+    speedButton.style.zIndex = '10000';
+    speedButton.style.backgroundColor = '#Ffff00';
+    speedButton.style.color = 'white';
+
+    // Create and append the speed icon
+    const speedIcon = document.createElement('img');
+    speedIcon.src = 'https://th.bing.com/th/id/OIP.FqXL96sm01sDe4pfJAl0cwHaHa?w=186&h=186&c=7&r=0&o=5&pid=1.7';
+    speedIcon.alt = 'Speed';
+    speedIcon.style.width = '24px';
+    speedIcon.style.height = '24px';
+    speedButton.appendChild(speedIcon);
+
+
     function renderizarContenido() {
         if (validButtons) {
             validButtons = false;
-    // Append the buttons to the body
-    document.body.appendChild(screenshotButton);
-    document.body.appendChild(thumbnailButton);
-    document.body.appendChild(downloadButton);
+            // Append the buttons to the body
+            document.body.appendChild(screenshotButton);
+            document.body.appendChild(thumbnailButton);
+            document.body.appendChild(downloadButton);
+            document.body.appendChild(speedButton);
 
             // Attach event listeners for buttons
             attachButtonListeners();
@@ -334,6 +355,16 @@ function attachButtonListeners() {
             }
         };
     }
+    var ans = '';
+        const speedbutton = document.getElementById('speed-button');
+    speedbutton.onclick = () => {
+        ans = prompt('What is the speed of the video that you want? (1 is default)');
+        if (ans === null || ans === "") {
+        alert('Cancelled.');
+        } else {
+        document.getElementsByTagName('video')[0].playbackRate = Number(ans);
+        }
+    }
 }
 
 function fetchImage(imageUrl) {
@@ -365,6 +396,7 @@ function fetchImage(imageUrl) {
                 throw new Error('No image found');
             }
         });
+
 }
 
 
@@ -677,3 +709,4 @@ function fetchImage(imageUrl) {
             subscribeButton.click();
         }
     }
+
