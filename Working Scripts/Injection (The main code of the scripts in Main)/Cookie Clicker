@@ -749,13 +749,15 @@ document.getElementById('heavenly-upgrade-button').addEventListener('click', () 
 // Modify autoBuyItemsCustomCustom to accept an item name as an argument
 function autoBuyItemsCustomCustom(itemName) {
     const items = document.getElementsByClassName('title productName');
+      const storeBulkMax = document.getElementById('storeBulkMax');
     for (let i = 0; i < items.length; i++) {
+      if (storeBulkMax && storeBulkMax.style.visibility === 'hidden') {
         if (items[i].textContent.trim() === itemName.trim()) { // Compare text content
             items[i].click(); // Click the item if it matches the answer
         }
     }
 }
-
+}
 
 
 
@@ -877,8 +879,11 @@ function dealwithprompt() {
 
 function buyItems() {
   const items = document.getElementsByClassName('product unlocked enabled');
+      const storeBulkMax = document.getElementById('storeBulkMax');
   for (let i = 0; i < items.length; i++) {
+      if (storeBulkMax && storeBulkMax.style.visibility === 'hidden') {
     items[i].click();
+      }
   }
 }
 
@@ -887,8 +892,9 @@ function autobuyMostExpensiveItem() {
     const items = document.getElementsByClassName('product unlocked enabled');
     let mostExpensiveItem = null;
     let highestPrice = 0;
-
+      const storeBulkMax = document.getElementById('storeBulkMax');
     for (let i = 0; i < items.length; i++) {
+      if (storeBulkMax && storeBulkMax.style.visibility === 'hidden') {
         const priceElement = items[i].getElementsByClassName('price')[0]; // Get the price element
         const priceText = priceElement ? priceElement.textContent.trim() : "";
         const priceColor = window.getComputedStyle(priceElement).color; // Get the color of the price text
@@ -909,14 +915,17 @@ function autobuyMostExpensiveItem() {
         mostExpensiveItem.click();
     }
 }
+}
 
-// Function to buy the cheapest item, only if the price text color is '#6f6'
+    // Function to buy the cheapest item, only if the price text color is '#6f6'
 function autobuyCheapestItem() {
     const items = document.getElementsByClassName('product unlocked enabled');
     let cheapestItem = null;
     let lowestPrice = Infinity;
 
+      const storeBulkMax = document.getElementById('storeBulkMax');
     for (let i = 0; i < items.length; i++) {
+        if (storeBulkMax && storeBulkMax.style.visibility === 'hidden') {
         const priceElement = items[i].getElementsByClassName('price')[0]; // Get the price element
         const priceText = priceElement ? priceElement.textContent.trim() : "";
         const priceColor = window.getComputedStyle(priceElement).color; // Get the color of the price text
@@ -936,6 +945,7 @@ function autobuyCheapestItem() {
     if (cheapestItem) {
         cheapestItem.click();
     }
+}
 }
 
 // Helper function to convert formatted price text to a number (up to Centillion)
