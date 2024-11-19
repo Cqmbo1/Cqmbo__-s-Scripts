@@ -12,6 +12,8 @@
 // @exclude      *https://www.bing.com*
 // @require      https://gist.githubusercontent.com/Cqmbo1/77f8253fae3486b1e159eb731566424d/raw/3d1a320e54cec5023b52229141b322472b5674d4/gistfile1.txt
 // @require      https://raw.githubusercontent.com/Cqmbo1/Cqmbo__-s-Scripts/refs/heads/main/Working%20Scripts/Injection%20(The%20main%20code%20of%20the%20scripts%20in%20Main)/Calculator
+// @updateURL    https://raw.githubusercontent.com/Cqmbo1/Cqmbo__-s-Scripts/refs/heads/main/Working%20Scripts/Injection%20(The%20main%20code%20of%20the%20scripts%20in%20Main)/Calculator
+// @downloadURL  https://raw.githubusercontent.com/Cqmbo1/Cqmbo__-s-Scripts/refs/heads/main/Working%20Scripts/Injection%20(The%20main%20code%20of%20the%20scripts%20in%20Main)/Calculator
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @grant        none
 // ==/UserScript==
