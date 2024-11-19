@@ -107,6 +107,7 @@ const Buttons = `
         <button id="multiplier-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Multiplier</button>
         <button id="effect-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">No Bad Effects</button>
         <button id="notes-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Hide Notifications</button>
+        <button id="infinite-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Infinite Cookies</button>
         <button id="wrinkler-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Kill All Wrinklers</button>
         <button id="reset-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Reset Game</button>
         <button id="item-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Auto Buy Items</button>
@@ -120,6 +121,13 @@ document.body.insertAdjacentHTML('beforeend', Buttons);
 
 // Attach event listeners to each button
 function attachButtonListeners() {
+    document.getElementById('infinite-button').addEventListener('click', () => {
+        confirmer = confirm('Are you sure you want Infinite Cookies? This cannot be reversed!')
+        if(confirmer === true){
+            Game.cookies = Infinity
+            Game.cookiesEarned = Infinity
+        }
+    })
     document.getElementById('free-cookies-button').addEventListener('click', () => {
          ans = prompt('How many cookies do you want to earn?');
             if (ans === "" || ans === null) {
