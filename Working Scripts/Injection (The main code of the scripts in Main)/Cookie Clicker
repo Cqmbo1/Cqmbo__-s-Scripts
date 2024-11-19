@@ -92,7 +92,7 @@ var calculatorVisible = false;
 
 // Insert buttons once
 const Buttons = `
-    <div class="containerButtons" style="position: fixed; top: 100px; right: 10px; z-index: 10000;">
+    <div class="containerButtons" style="position: fixed; top: 25px; right: 10px; z-index: 10000;">
         <button id="free-cookies-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Free Cookies</button>
         <button id="chip-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Free Heavenly Chips</button>
         <button id="spawn-golden-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Spawn Golden Cookies</button>
