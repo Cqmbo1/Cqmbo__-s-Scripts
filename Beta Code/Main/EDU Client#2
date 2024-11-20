@@ -1,0 +1,13 @@
+// ==UserScript==
+// @name         EDU Client #2
+// @namespace    http://tampermonkey.net/
+// @version      2024-08-08
+// @description  Best Hack & AFK Farm for Khan Academy!
+// @author       Cqmbo__
+// @match        https://www.khanacademy.org/*
+// @icon         https://i.imgur.com/lCxl4hl.png
+// @grant        none
+// @require      https://raw.githubusercontent.com/Cqmbo1/Cqmbo__-s-Scripts/refs/heads/main/Beta%20Code/Injection/EDU%20Client%232
+// @updateURL    https://raw.githubusercontent.com/Cqmbo1/Cqmbo__-s-Scripts/refs/heads/main/Beta%20Code/Injection/EDU%20Client%232
+// @downloadURL  https://raw.githubusercontent.com/Cqmbo1/Cqmbo__-s-Scripts/refs/heads/main/Beta%20Code/Injection/EDU%20Client%232
+// ==/UserScript==
