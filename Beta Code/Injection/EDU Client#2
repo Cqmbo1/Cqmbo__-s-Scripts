@@ -1,0 +1,598 @@
+    var isAutoFarming = false;
+    var autoFarmInterval;
+    var isAutoWatching = false;
+    var autoWatchInterval;
+    var isMusicPlayerVisible = false;
+    var youtubeIframe = null;
+    var youtubeVolume = 100;
+
+    // Create Auto Farm Button
+    var autoFarmButton = document.createElement('button');
+    autoFarmButton.id = 'auto-farm-button';
+    autoFarmButton.textContent = 'Auto Farm (Disabled)';
+    autoFarmButton.style.position = 'fixed';
+    autoFarmButton.style.top = '120px';
+    autoFarmButton.style.right = '10px';
+    autoFarmButton.style.zIndex = '10000';
+    autoFarmButton.style.display = 'block'; // Ensure it's visible initially
+    autoFarmButton.title = 'Automatically Farm Points';
+
+    autoFarmButton.addEventListener('click', function() {
+        if (!isAutoFarming) {
+            autoFarmButton.textContent = 'Auto Farm (Enabled)';
+            startAutoFarming();
+        } else {
+            autoFarmButton.textContent = 'Auto Farm (Disabled)';
+            stopAutoFarming();
+        }
+    });
+
+    document.body.appendChild(autoFarmButton);
+
+    // Create Auto Watch Button
+    var autoWatchButton = document.createElement('button');
+    autoWatchButton.id = 'auto-watch-button';
+    autoWatchButton.textContent = 'Auto Watch (Disabled)';
+    autoWatchButton.style.position = 'fixed';
+    autoWatchButton.style.top = '140px';
+    autoWatchButton.style.right = '10px';
+    autoWatchButton.style.zIndex = '10000';
+    autoWatchButton.style.display = 'block'; // Ensure it's visible initially
+    autoWatchButton.title = 'Automatically Watch Videos';
+
+    autoWatchButton.addEventListener('click', function() {
+        if (!isAutoWatching) {
+            autoWatchButton.textContent = 'Auto Watch (Enabled)';
+            startAutoWatching();
+        } else {
+            autoWatchButton.textContent = 'Auto Watch (Disabled)';
+            stopAutoWatching();
+        }
+    });
+
+    document.body.appendChild(autoWatchButton);
+
+    // Create Auto Farm All Button
+    var autoFarmAllButton = document.createElement('button');
+    autoFarmAllButton.id = 'auto-farm-all-button';
+    autoFarmAllButton.textContent = 'Auto Farm All (Disabled)';
+    autoFarmAllButton.style.position = 'fixed';
+    autoFarmAllButton.style.top = '160px';
+    autoFarmAllButton.style.right = '10px';
+    autoFarmAllButton.style.zIndex = '10000';
+    autoFarmAllButton.style.display = 'block'; // Ensure it's visible initially
+    autoFarmAllButton.title = 'Automatically Farm All Points';
+
+    autoFarmAllButton.addEventListener('click', function() {
+        if (!isAutoFarming) {
+            autoFarmAllButton.textContent = 'Auto Farm All (Enabled)';
+            startAutoFarmAll();
+        } else {
+            autoFarmAllButton.textContent = 'Auto Farm All (Disabled)';
+            stopAutoFarmAll();
+        }
+    });
+
+    document.body.appendChild(autoFarmAllButton);
+
+    // Toggle visibility with the 'n' key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'n') {
+            autoFarmButton.style.display = autoFarmButton.style.display === 'block' ? 'none' : 'block';
+            autoWatchButton.style.display = autoWatchButton.style.display === 'block' ? 'none' : 'block';
+            autoFarmAllButton.style.display = autoFarmAllButton.style.display === 'block' ? 'none' : 'block';
+            toggleMusicPlayer();
+            toggleYoutubeIframe();
+        }
+    });
+
+    function startAutoFarming() {
+        clickFarmButton(); // Click immediately when enabled
+        autoFarmInterval = setInterval(clickFarmButton, 1000);
+        isAutoFarming = true;
+    }
+
+    function stopAutoFarming() {
+        clearInterval(autoFarmInterval);
+        isAutoFarming = false;
+    }
+
+    function clickFarmButton() {
+        var muteButton = Array.from(document.querySelectorAll('button')).find(button => button.title === 'Mute (m)');
+        if (muteButton && muteButton.getAttribute('aria-pressed') === 'false') {
+            muteButton.click();
+        }
+
+        var playButton = document.querySelector('[data-testid^="video-play-button"]');
+        if (playButton) {
+            playButton.click();
+        }
+
+        var replayButton = Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Replay this video');
+        if (replayButton) {
+            replayButton.click();
+        }
+
+        var playButton2 = Array.from(document.querySelectorAll('button')).find(button => button.getAttribute('aria-label') === 'Play');
+        if (playButton2) {
+            playButton2.click();
+        }
+        var playButton3 = Array.from(document.querySelectorAll('button')).find(button => button.title === 'Play (k)');
+        if (playButton3) {
+            playButton3.click();
+        }
+    }
+
+    function startAutoWatching() {
+        clickWatchButton(); // Click immediately when enabled
+        autoWatchInterval = setInterval(clickWatchButton, 1000);
+        isAutoWatching = true;
+    }
+
+    function stopAutoWatching() {
+        clearInterval(autoWatchInterval);
+        isAutoWatching = false;
+    }
+
+    function clickWatchButton() {
+        var playButton = document.querySelector('[data-testid^="video-play-button"]');
+        if (playButton) {
+            playButton.click();
+        }
+
+        var playButton2 = Array.from(document.querySelectorAll('button')).find(button => button.title === 'Play (k)');
+        if (playButton2) {
+            playButton2.click();
+        }
+
+        var replayButton = Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Replay this video');
+        if (replayButton) {
+            watchNextVid();
+        }
+    }
+
+    function watchNextVid(){
+        var nextVid = document.getElementsByClassName('_ixuggsz')[0];
+        if (nextVid){
+            nextVid.click();
+        }
+    }
+
+    function startAutoFarmAll() {
+        autoFarmInterval = setInterval(clickFarmAllButton, 1000);
+        isAutoFarming = true;
+    }
+
+    function stopAutoFarmAll() {
+        clearInterval(autoFarmInterval);
+        isAutoFarming = false;
+    }
+
+
+function clickFarmAllButton() {
+    var replayButton = Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Replay this video');
+    var firstVid = document.getElementsByClassName('_1a0bzlxj')[0];
+
+    if (replayButton) {
+        var nextVid = document.getElementsByClassName('_ixuggsz')[0];
+        if (nextVid && nextVid.textContent.includes('Up next: video')) {
+            nextVid.click();
+        } else {
+            firstVid.click();
+        }
+    } else {
+        var playButton = document.querySelector('[data-testid^="video-play-button"]');
+        if (playButton) {
+            playButton.click();
+        }
+        var playButton2 = Array.from(document.querySelectorAll('button')).find(button => button.title === 'Play (k)');
+        if (playButton2) {
+            playButton2.click();
+        }
+    }
+}
+
+
+
+    // Music Player Components
+    var musicPlayerContainer = document.createElement('div');
+    musicPlayerContainer.style.position = 'fixed';
+    musicPlayerContainer.style.bottom = '10px';
+    musicPlayerContainer.style.right = '200px';
+    musicPlayerContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+    musicPlayerContainer.style.color = 'white';
+    musicPlayerContainer.style.border = '1px solid #333';
+    musicPlayerContainer.style.padding = '10px';
+    musicPlayerContainer.style.borderRadius = '5px';
+    musicPlayerContainer.style.zIndex = '10000';
+    musicPlayerContainer.style.display = 'block'; // Initially visible
+
+    var youtubeInput = document.createElement('input');
+    youtubeInput.type = 'text';
+    youtubeInput.placeholder = 'Paste YouTube link here...';
+    youtubeInput.style.width = '300px';
+    youtubeInput.style.marginRight = '10px';
+    youtubeInput.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            playYoutubeLoop(youtubeInput.value);
+        }
+    });
+
+    var volumeSlider = document.createElement('input');
+    volumeSlider.type = 'range';
+    volumeSlider.min = 0;
+    volumeSlider.max = 100;
+    volumeSlider.value = youtubeVolume;
+    volumeSlider.style.width = '100px';
+    volumeSlider.style.marginLeft = '10px';
+    volumeSlider.oninput = function() {
+        youtubeVolume = volumeSlider.value;
+        adjustYoutubeVolume(youtubeVolume / 100);
+    };
+
+    var playButton = document.createElement('button');
+    playButton.textContent = '▶️';
+    playButton.onclick = playYoutubeAudio;
+
+    var pauseButton = document.createElement('button');
+    pauseButton.textContent = '⏸️';
+    pauseButton.onclick = pauseYoutubeAudio;
+
+    musicPlayerContainer.appendChild(youtubeInput);
+    musicPlayerContainer.appendChild(playButton);
+    musicPlayerContainer.appendChild(pauseButton);
+    musicPlayerContainer.appendChild(volumeSlider);
+    document.body.appendChild(musicPlayerContainer);
+
+    function toggleMusicPlayer() {
+        isMusicPlayerVisible = !isMusicPlayerVisible;
+        musicPlayerContainer.style.display = isMusicPlayerVisible ? 'none' : 'block';
+    }
+
+    function toggleYoutubeIframe() {
+        if (youtubeIframe) {
+            youtubeIframe.style.display = youtubeIframe.style.display === 'none' ? 'block' : 'none';
+        }
+    }
+
+    function playYoutubeLoop(youtubeLink) {
+        if (!youtubeIframe) {
+            youtubeIframe = document.createElement('iframe');
+            youtubeIframe.width = 360;
+            youtubeIframe.height = 150;
+            youtubeIframe.style.position = 'fixed';
+            youtubeIframe.style.bottom = '150px'; // Adjust position
+            youtubeIframe.style.right = '10px';
+            youtubeIframe.frameBorder = "0";
+            youtubeIframe.allow = "autoplay";
+            youtubeIframe.style.zIndex = '10000';
+            document.body.appendChild(youtubeIframe);
+        }
+
+        if (youtubeLink.trim() === '') {
+            // Clear the iframe if no link is provided
+            youtubeIframe.src = '';
+            youtubeIframe.style.zIndex = '0';
+        } else if (youtubeLink.includes('youtube.com/watch?v=')) {
+            const videoId = youtubeLink.split('v=')[1].split('&')[0];
+            youtubeIframe.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&enablejsapi=1&volume=${youtubeVolume}`;
+            youtubeIframe.style.display = 'block';
+        } else {
+            alert('Please provide a valid YouTube link.');
+        }
+    }
+
+    function pauseYoutubeAudio() {
+        if (youtubeIframe) {
+            youtubeIframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+        }
+    }
+
+    function playYoutubeAudio() {
+        if (youtubeIframe) {
+            youtubeIframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+        }
+    }
+
+    function adjustYoutubeVolume(value) {
+        if (youtubeIframe) {
+            youtubeIframe.contentWindow.postMessage(`{"event":"command","func":"setVolume","args":[${value * 100}]}`, '*');
+        }
+    }
+
+    const overlayHTML =
+        `<div id="khanhack-overlay" style="position: fixed; top: 10px; right: 10px; background-color: white; padding: 10px; border: 1px solid black; z-index: 1000;">
+            <button id="toggle-menu">Toggle Answer List</button>
+            <button id="reset-answers">Reset Answer List</button>
+            <button id="toggle-video-speed">Enable Video Speed Toggle</button>
+            <button id="auto-solve">Auto Solve</button>
+            <div id="answer-list" style="display: block;">-Answers-</div>
+            <p>M also toggles Menu</p>
+        </div>
+        `
+    ;
+
+    function get(x) { return document.getElementById(x); }
+
+    function resetAnswers() {
+        document.getElementById('answer-list').innerHTML = ''; // Clear the answer list
+        curAns = 1; // Reset the answer counter
+        // Trigger the original fetch process to refresh answers
+        simulateFetchRequest(); // This simulates a new fetch to repopulate the answer list
+        console.log('Answer list has been reset and refreshed.');
+    }
+
+    function handleFetchError(error) {
+        console.error('An error occurred:', error);
+    }
+
+    function simulateFetchRequest() {
+        // Simulate the original fetch request to trigger the fetching process
+        const fakeFetchEvent = new Event('fakeFetch');
+        document.dispatchEvent(fakeFetchEvent);
+    }
+
+    function processAnswers(json) {
+        let item, question;
+        item = json.data.assessmentItem.item.itemData;
+        question = JSON.parse(item).question;
+
+        Object.keys(question.widgets).forEach(widgetName => {
+            switch (widgetName.split(" ")[0]) {
+                case "numeric-input":
+                    freeResponseAnswerFrom(question).log();
+                    break;
+                case "radio":
+                    multipleChoiceAnswerFrom(question).log();
+                    break;
+                case "expression":
+                    expressionAnswerFrom(question).log();
+                    break;
+                case "dropdown":
+                    dropdownAnswerFrom(question).log();
+                    break;
+                default:
+                    console.warn('Unhandled widget type:', widgetName);
+            }
+        });
+    }
+
+    let overlay = document.createElement("div");
+    overlay.innerHTML = overlayHTML;
+    document.body.appendChild(overlay);
+
+    let toggleButton = get("toggle-menu");
+    let resetButton = get("reset-answers");
+    let toggleVideoSpeedButton = get('toggle-video-speed');
+    let answerList = get("answer-list");
+    let khOverlay = get("khanhack-overlay");
+    let autosolveButton = get("auto-solve");
+
+    if (toggleButton && answerList) {
+        toggleButton.onclick = function () {
+            if (answerList.style.display === "none") {
+                answerList.style.display = "block";
+            } else {
+                answerList.style.display = "none";
+            }
+        }
+    }
+
+    if (resetButton) {
+        resetButton.onclick = resetAnswers;
+    }
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'm') {
+            if (khOverlay) {
+                if (khOverlay.style.display === "none" || khOverlay.style.display === "") {
+                    khOverlay.style.display = "block";
+                } else {
+                    khOverlay.style.display = "none";
+                }
+            }
+        }
+    });
+
+    'use strict';
+    window.loaded = false;
+
+    class Answer {
+        constructor(answer, type) {
+            this.body = answer;
+            this.type = type;
+        }
+
+        get isMultiChoice() {
+            return this.type === "multiple_choice";
+        }
+
+        get isFreeResponse() {
+            return this.type === "free_response";
+        }
+
+        get isExpression() {
+            return this.type === "expression";
+        }
+
+        get isDropdown() {
+            return this.type === "dropdown";
+        }
+
+        log() {
+            try {
+                const answer = this.body;
+                answer.forEach(ans => {
+                    if (typeof ans === "string") {
+                        if (ans.includes("web+graphie")) {
+                            this.body[this.body.indexOf(ans)] = "";
+                            this.printImage(ans);
+                        } else {
+                            answer[answer.indexOf(ans)] = ans.replaceAll("$", "");
+                        }
+                    }
+                });
+            } catch (error) {
+                handleFetchError(error);
+            }
+        }
+    }
+
+    const originalFetch = window.fetch;
+    window.fetch = function () {
+        return originalFetch.apply(this, arguments).then(async (res) => {
+            try {
+                if (res.url.includes("/getAssessmentItem")) {
+                    const clone = res.clone();
+                    const json = await clone.json();
+                    processAnswers(json);
+                }
+
+                if (!window.loaded) {
+                    window.loaded = true;
+                }
+
+                return res;
+            } catch (error) {
+                handleFetchError(error);
+                return res; // Ensure the original response is returned even if an error occurs
+            }
+        });
+    }
+
+    document.addEventListener('fakeFetch', function() {
+        // Simulate fetching by using a previously captured URL
+        const fakeUrl = '/path/to/assessment/endpoint'; // Replace with actual URL
+        originalFetch.call(window, fakeUrl)
+            .then(res => res.json())
+            .then(processAnswers)
+            .catch(handleFetchError);
+    });
+
+    let curAns = 1;
+
+autosolveButton.onclick = function () {
+    if (autosolveButton.innerText === 'Auto Solve') {
+        autosolveButton.innerText = 'Disable Auto Solve';
+
+        const answers = document.querySelectorAll('.answer');
+        const options = document.querySelectorAll('._ssxvf9l');
+
+        answers.forEach((answer) => {
+            options.forEach((option) => {
+                if (answer.textContent === option.textContent) {
+                    if (option) {
+                        option.click(); // Click the actual option button
+                        console.log('Clicking matching option:', option.textContent);
+                    }
+                }
+            });
+        });
+
+    } else {
+        autosolveButton.innerText = 'Auto Solve';
+    }
+};
+
+
+    function freeResponseAnswerFrom(question) {
+        const answer = Object.values(question.widgets).flatMap((widget) => {
+            if (widget.options?.answers) {
+                return widget.options.answers
+                    .filter(answer => answer.status === "correct")
+                    .map(answer => {
+                        let createPar = document.createElement('section');
+                        createPar.innerHTML = answer.value;
+                    createPar.className = 'answer';
+                        document.getElementById('answer-list').append(createPar);
+                        curAns++;
+                        return answer.value;
+                    });
+            }
+            return [];
+        });
+
+        return new Answer(answer, "free_response");
+    }
+
+    function multipleChoiceAnswerFrom(question) {
+        const answer = Object.values(question.widgets).flatMap((widget) => {
+            if (widget.options?.choices) {
+                return widget.options.choices
+                    .filter(choice => choice.correct)
+                    .map(choice => {
+                        let createPar = document.createElement('section');
+                        createPar.innerHTML = choice.content;
+                    createPar.className = 'answer';
+                        document.getElementById('answer-list').append(createPar);
+                        curAns++;
+                        return choice.content;
+                    });
+            }
+            return [];
+        });
+
+        return new Answer(answer, "multiple_choice");
+    }
+
+    function expressionAnswerFrom(question) {
+        const answer = Object.values(question.widgets).flatMap((widget) => {
+            if (widget.options?.answerForms) {
+                return widget.options.answerForms
+                    .filter(answer => Object.values(answer).includes("correct"))
+                    .map(answer => {
+                        let createPar = document.createElement('section');
+                        createPar.innerHTML = answer.value;
+                    createPar.className = 'answer';
+                        document.getElementById('answer-list').append(createPar);
+                        curAns++;
+                        return answer.value;
+                    });
+            }
+            return [];
+        });
+
+        return new Answer(answer, "expression");
+    }
+
+    function dropdownAnswerFrom(question) {
+        const answer = Object.values(question.widgets).flatMap((widget) => {
+            if (widget.options?.choices) {
+                return widget.options.choices
+                    .filter(choice => choice.correct)
+                    .map(choice => {
+                        let createPar = document.createElement('section');
+                        createPar.innerHTML = choice.content;
+                    createPar.className = 'answer';
+                        document.getElementById('answer-list').append(createPar);
+                        curAns++;
+                        return choice.content;
+                    });
+            }
+            return [];
+        });
+
+        return new Answer(answer, "dropdown");
+    }
+
+    // Function to set video speed
+    let intervalId;
+    function setVideoSpeed() {
+        let playButtons = document.querySelectorAll('.ytp-play-button.ytp-button');
+        playButtons.click();
+    };
+
+
+
+
+
+    toggleVideoSpeedButton.onclick = function () {
+        if (toggleVideoSpeedButton.innerText === 'Enable Point Farmer (via Video)') {
+            toggleVideoSpeedButton.innerText = 'Disable Point Farmer (via Video)';
+            intervalId = setInterval(setVideoSpeed, 2000);
+            setVideoSpeed();
+        } else {
+            toggleVideoSpeedButton.innerText = 'Enable Point Farmer (via Video)';
+            clearInterval(intervalId);
+        }
+    };
