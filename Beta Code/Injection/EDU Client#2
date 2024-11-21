@@ -304,8 +304,9 @@ function clickFarmAllButton() {
         `<div id="khanhack-overlay" style="position: fixed; top: 10px; right: 10px; background-color: white; padding: 10px; border: 1px solid black; z-index: 1000;">
             <button id="toggle-menu">Toggle Answer List</button>
             <button id="reset-answers">Reset Answer List</button>
-            <button id="toggle-video-speed">Enable Video Speed Toggle</button>
-            <button id="auto-solve">Auto Solve</button>
+            <button id="auto-solve">Solve Question</button>
+            <button id="auto-solve-all">Solve All Questions</button>
+            <button id="log-anss">Log Options Text</button>
             <div id="answer-list" style="display: block;">-Answers-</div>
             <p>M also toggles Menu</p>
         </div>
@@ -315,11 +316,12 @@ function clickFarmAllButton() {
     function get(x) { return document.getElementById(x); }
 
     function resetAnswers() {
-        document.getElementById('answer-list').innerHTML = ''; // Clear the answer list
+        const answers = document.querySelectorAll('answer');
+        answers.forEach((answer) => {
+        answer.remove();
+        });
         curAns = 1; // Reset the answer counter
         // Trigger the original fetch process to refresh answers
-        simulateFetchRequest(); // This simulates a new fetch to repopulate the answer list
-        console.log('Answer list has been reset and refreshed.');
     }
 
     function handleFetchError(error) {
@@ -367,6 +369,8 @@ function clickFarmAllButton() {
     let answerList = get("answer-list");
     let khOverlay = get("khanhack-overlay");
     let autosolveButton = get("auto-solve");
+    let solveallBtn = get("auto-solve-all");
+    let logBtn = get("log-anss");
 
     if (toggleButton && answerList) {
         toggleButton.onclick = function () {
@@ -471,28 +475,99 @@ function clickFarmAllButton() {
 
     let curAns = 1;
 
+    function normalizeText(text) {
+    // Replace HTML emphasis tags (<em>, </em>) with an asterisk (*)
+    text = text.replace(/<em>/g, "*").replace(/<\/em>/g, "*");
+    // Remove emphasis markers (*) to standardize comparison
+    text = text.replace(/\*/g, "");
+    // Remove any remaining HTML tags
+    text = text.replace(/<\/?[^>]+(>|$)/g, "");
+    // Remove option labels (e.g., "A", "B", "C") at the beginning and trailing punctuation or whitespace
+    text = text.replace(/^[A-Z]\s*/, ""); // Removes the label like "C" followed by a space
+    // Standardize quotes and remove curly quotes
+    text = text.replace(/“|”/g, '"');
+    // Normalize whitespace and trim
+    text = text.replace(/\s+/g, " ").trim().toLowerCase();
+    return text;
+}
+
+
 autosolveButton.onclick = function () {
-    if (autosolveButton.innerText === 'Auto Solve') {
-        autosolveButton.innerText = 'Disable Auto Solve';
+    const answers = document.querySelectorAll('.answer');
+    const options = document.querySelectorAll('._ssxvf9l');
+    const checkbtn = document.querySelectorAll('._1pyeoxjt');
+    let delay = 0;
 
-        const answers = document.querySelectorAll('.answer');
-        const options = document.querySelectorAll('._ssxvf9l');
+    answers.forEach((answer) => {
+        const answerText = normalizeText(answer.textContent); // Normalize answer text
+        options.forEach((option) => {
+            const optionText = normalizeText(option.textContent); // Normalize option text
+            console.log("Normalized Option:", optionText);
+            console.log("Normalized Answer:", answerText);
+            if (optionText.includes(answerText)) {
+                setTimeout(() => {
+                    if (!option.classList.contains('clicked')) {
+                        option.click();
+                        option.classList.add('clicked');
+                        console.log('Clicking matching option:', optionText);
 
-        answers.forEach((answer) => {
-            options.forEach((option) => {
-                if (answer.textContent === option.textContent) {
-                    if (option) {
-                        option.click(); // Click the actual option button
-                        console.log('Clicking matching option:', option.textContent);
+                        setTimeout(() => {
+                            answer.remove();
+                        }, 100);
+
+                        setTimeout(() => {
+                            checkbtn.forEach((checkb) => {
+                                checkb.click();
+                                console.log('Check button clicked');
+                            });
+                        }, 250);
+
+                        setTimeout(() => {
+                            const nextbtn = document.querySelector('button[data-testid="exercise-next-question"]');
+                            console.log('Next question button:', nextbtn);
+                            if (nextbtn && !nextbtn.disabled) {
+                                nextbtn.click();
+                                console.log('Next question button clicked');
+                            } else {
+                                console.error('Next question button not clickable or found');
+                            }
+                        }, 2000);
                     }
-                }
-            });
+                }, delay);
+                delay += 10;
+            }
         });
+    });
+};
 
+    let autosolveinterval;
+
+solveallBtn.onclick = function () {
+    if (solveallBtn.innerText === 'Solve All Questions') {
+        solveallBtn.innerText = 'Pause Solve All';
+
+        autosolveinterval = setInterval(() => {
+            const specialElement = document.querySelector('._1f0fvyce');
+            if (specialElement) {
+                specialElement.click();
+            } else {
+            }
+
+            autosolveButton.click();
+        }, 3500);
     } else {
-        autosolveButton.innerText = 'Auto Solve';
+        solveallBtn.innerText = 'Solve All Questions';
+        clearInterval(autosolveinterval);
+        autosolveinterval = null;
     }
 };
+
+    logBtn.onclick = function (){
+        const options = document.querySelectorAll('._ssxvf9l');
+        options.forEach((option) => {
+        console.log(option.textContent);
+        });
+    }
 
 
     function freeResponseAnswerFrom(question) {
@@ -574,25 +649,3 @@ autosolveButton.onclick = function () {
 
         return new Answer(answer, "dropdown");
     }
-
-    // Function to set video speed
-    let intervalId;
-    function setVideoSpeed() {
-        let playButtons = document.querySelectorAll('.ytp-play-button.ytp-button');
-        playButtons.click();
-    };
-
-
-
-
-
-    toggleVideoSpeedButton.onclick = function () {
-        if (toggleVideoSpeedButton.innerText === 'Enable Point Farmer (via Video)') {
-            toggleVideoSpeedButton.innerText = 'Disable Point Farmer (via Video)';
-            intervalId = setInterval(setVideoSpeed, 2000);
-            setVideoSpeed();
-        } else {
-            toggleVideoSpeedButton.innerText = 'Enable Point Farmer (via Video)';
-            clearInterval(intervalId);
-        }
-    };
