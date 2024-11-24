@@ -1,5 +1,70 @@
+function change() {
+    const streaks = document.getElementsByClassName('_776naao');
+    const rainbowColors = ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#9400d3'];
+
+    for (let i = 0; i < streaks.length; i++) {
+        streaks[i].textContent = 'Sub to @Cqmbo__ (Click on me)';
+        let colorIndex = 0;
+
+        function changeColor() {
+            streaks[i].style.color = rainbowColors[colorIndex];
+            colorIndex = (colorIndex + 1) % rainbowColors.length;
+        }
+
+        streaks[i].addEventListener("click", function() {
+            window.open("https://www.youtube.com/@Cqmbo__");
+        });
+
+        setInterval(changeColor, 500); // Change color every 500ms
+    }
+
+    const headernames1 = document.getElementsByClassName('_azwfqqs');
+    const headernames2 = document.getElementsByClassName('_19lfck2n');
+
+    for (let i = 0; i < headernames1.length; i++) {
+        headernames1[i].textContent = 'Cqmbo__';
+        let colorIndex = 0;
+
+        function changeColor2() {
+            if (headernames1[i]){
+            headernames1[i].style.color = rainbowColors[colorIndex];
+            colorIndex = (colorIndex + 1) % rainbowColors.length;
+        }
+        }
+
+        headernames1[i].addEventListener("click", function() {
+            window.open("https://www.youtube.com/@Cqmbo__");
+        });
+
+        setInterval(changeColor2, 500); // Change color every 500ms
+    }
+
+    for (let i = 0; i < headernames2.length; i++) {
+        headernames2[i].textContent = 'Cqmbo__';
+        let colorIndex = 0;
+
+        function changeColor3() {
+            headernames2[i].style.color = rainbowColors[colorIndex];
+            colorIndex = (colorIndex + 1) % rainbowColors.length;
+        }
+
+        headernames2[i].addEventListener("click", function() {
+            window.open("https://www.youtube.com/@Cqmbo__");
+        });
+
+        setInterval(changeColor3, 500); // Change color every 500ms
+    }
+}
+
+setInterval(change, 500);
+
+
+
+
     var isAutoFarming = false;
     var autoFarmInterval;
+    var isAutoFarming2 = false;
+    var autoFarmInterval2;
     var isAutoWatching = false;
     var autoWatchInterval;
     var isMusicPlayerVisible = false;
@@ -61,7 +126,7 @@
     autoFarmAllButton.style.right = '10px';
     autoFarmAllButton.style.zIndex = '10000';
     autoFarmAllButton.style.display = 'block'; // Ensure it's visible initially
-    autoFarmAllButton.title = 'Automatically Farm All Points';
+    autoFarmAllButton.title = 'Automatically Farms All Videos';
 
     autoFarmAllButton.addEventListener('click', function() {
         if (!isAutoFarming) {
@@ -75,13 +140,44 @@
 
     document.body.appendChild(autoFarmAllButton);
 
+        // Create Auto Farm All Button
+    var autoFarmAllButton2 = document.createElement('button');
+    autoFarmAllButton2.id = 'auto-farm-all-button-2';
+    autoFarmAllButton2.textContent = 'Auto Farm All 2 (Disabled)';
+    autoFarmAllButton2.style.position = 'fixed';
+    autoFarmAllButton2.style.top = '180px';
+    autoFarmAllButton2.style.right = '10px';
+    autoFarmAllButton2.style.zIndex = '10000';
+    autoFarmAllButton2.style.display = 'block'; // Ensure it's visible initially
+    autoFarmAllButton2.title = 'Automatically Farms All Videos 2';
+
+    autoFarmAllButton2.addEventListener('click', function() {
+        if (!isAutoFarming2) {
+            autoFarmAllButton2.textContent = 'Auto Farm All 2(Enabled)';
+            startAutoFarmAll2();
+        } else {
+            autoFarmAllButton2.textContent = 'Auto Farm All 2(Disabled)';
+            stopAutoFarmAll2();
+        }
+    });
+
+    document.body.appendChild(autoFarmAllButton2);
+
     // Toggle visibility with the 'n' key
     document.addEventListener('keydown', function(event) {
-        if (event.key === 'n') {
+        if (event.key === 'j') {
             autoFarmButton.style.display = autoFarmButton.style.display === 'block' ? 'none' : 'block';
             autoWatchButton.style.display = autoWatchButton.style.display === 'block' ? 'none' : 'block';
             autoFarmAllButton.style.display = autoFarmAllButton.style.display === 'block' ? 'none' : 'block';
+            autoFarmAllButton2.style.display = autoFarmAllButton2.style.display === 'block' ? 'none' : 'block';
             toggleMusicPlayer();
+            toggleYoutubeIframe();
+        }
+    });
+
+        // Toggle visibility with the 'n' key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'l') {
             toggleYoutubeIframe();
         }
     });
@@ -134,29 +230,55 @@
         isAutoWatching = false;
     }
 
-    function clickWatchButton() {
-        var playButton = document.querySelector('[data-testid^="video-play-button"]');
-        if (playButton) {
-            playButton.click();
-        }
+var firstVid = document.getElementsByClassName('_1a0bzlxj')[0];
 
-        var playButton2 = Array.from(document.querySelectorAll('button')).find(button => button.title === 'Play (k)');
-        if (playButton2) {
-            playButton2.click();
-        }
+function clickWatchButton() {
+    var playButton = document.querySelector('[data-testid^="video-play-button"]');
+    if (playButton) {
+        playButton.click();
+    }
 
+    var playButton2 = Array.from(document.querySelectorAll('button')).find(button => button.title === 'Play (k)');
+    if (playButton2) {
+        playButton2.click();
+    }
+
+    var replayButton = Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Replay this video');
+    if (replayButton) {
+        setTimeout(function() {
+            replayButton.click();
+        }, 1000); // 4 seconds check
+    }
+
+    setTimeout(function() {
+        watchNextVid();
+    }, 240000); // 4 minutes to watch the video
+}
+
+function watchNextVid() {
+    var firstVid = document.getElementsByClassName('_1a0bzlxj')[0];
+    var nextVid = document.getElementsByClassName('_ixuggsz')[0];
+    if (replayButton) {
+    if (nextVid && nextVid.textContent.includes('Up next: video')) {
+        setTimeout(function() {
+                nextVid.click();
+    }, 10000);
+            clickWatchButton();
+    } else if (firstVid) {
+        firstVid.click();
+            clickWatchButton();
+    } else {
         var replayButton = Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Replay this video');
         if (replayButton) {
-            watchNextVid();
+            replayButton.click();
+            clickWatchButton();
         }
     }
+}
+}
 
-    function watchNextVid(){
-        var nextVid = document.getElementsByClassName('_ixuggsz')[0];
-        if (nextVid){
-            nextVid.click();
-        }
-    }
+
+
 
     function startAutoFarmAll() {
         autoFarmInterval = setInterval(clickFarmAllButton, 1000);
@@ -168,6 +290,90 @@
         isAutoFarming = false;
     }
 
+    function startAutoFarmAll2() {
+        autoFarmInterval2 = setInterval(clickFarmAllButton2, 1000);
+        isAutoFarming2 = true;
+    }
+
+    function stopAutoFarmAll2() {
+        clearInterval(autoFarmInterval2);
+        isAutoFarming2 = false;
+    }
+
+function clickFarmAllButton2() {
+    var firstVid = document.getElementsByClassName('_1a0bzlxj')[0];
+    var nextVid = document.getElementsByClassName('_ixuggsz')[0];
+
+    setTimeout(function () {
+        firstVidCheck();
+    }, 100);
+
+    function firstVidCheck() {
+        if (firstVid) {
+            playVids();  // Start playing videos
+        } else {
+            firstVid.click();
+            setTimeout(playVids, 100);
+        }
+    }
+
+    function playVids() {
+        var replayButton = Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Replay this video');
+        var playButton = document.querySelector('[data-testid^="video-play-button"]');
+
+        setTimeout(function () {
+            if (playButton) {
+                playButton.click();
+                setTimeout(nextVidCheck, 200);
+            }
+        }, 100);
+
+        setTimeout(function () {
+            if (replayButton) {
+                replayButton.click();
+                setTimeout(nextVidCheck, 12000);
+            }
+        }, 10000);
+    }
+
+    function nextVidCheck() {
+        if (nextVid && nextVid.textContent.includes('Up next: video')) {
+            nextVid.click();
+            setTimeout(function () {
+                playVids();  // Continue playing videos if "Up next" video exists
+            }, 100);
+        } else if (nextVid && !nextVid.textContent.includes('Up next: video')) {
+            // No more "Up next" videos, click the first video to start watching
+            firstVid.click();
+            setTimeout(function () {
+                watchVids();  // Stop playVids and watch the videos
+            }, 1000);
+        }
+    }
+
+    function watchVids() {
+        setTimeout(function () {
+            var replayButton = Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Replay this video');
+            var playButton = document.querySelector('[data-testid^="video-play-button"]');
+
+            if (replayButton) {
+                replayButton.click();  // Replay the video if replay button appears
+            } else if (playButton) {
+                playButton.click();  // Start playing if play button appears
+            }
+        }, 500);
+    }
+
+    function vidCheck() {
+        if (nextVid && !nextVid.textContent.includes('Up next: video')) {
+            firstVid.click();
+            setTimeout(function () {
+                firstVidCheck();
+            }, 1000);
+        }
+    }
+}
+
 
 function clickFarmAllButton() {
     var replayButton = Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Replay this video');
@@ -177,8 +383,14 @@ function clickFarmAllButton() {
         var nextVid = document.getElementsByClassName('_ixuggsz')[0];
         if (nextVid && nextVid.textContent.includes('Up next: video')) {
             nextVid.click();
+            setTimeout(function (){
+                clickFarmAllButton();
+            },1000);
         } else {
             firstVid.click();
+                        setTimeout(function (){
+                clickFarmAllButton();
+            },1000);
         }
     } else {
         var playButton = document.querySelector('[data-testid^="video-play-button"]');
@@ -191,7 +403,6 @@ function clickFarmAllButton() {
         }
     }
 }
-
 
 
     // Music Player Components
@@ -258,13 +469,14 @@ function clickFarmAllButton() {
     function playYoutubeLoop(youtubeLink) {
         if (!youtubeIframe) {
             youtubeIframe = document.createElement('iframe');
-            youtubeIframe.width = 360;
-            youtubeIframe.height = 150;
+            youtubeIframe.width = 380;
+            youtubeIframe.height = 200;
             youtubeIframe.style.position = 'fixed';
-            youtubeIframe.style.bottom = '150px'; // Adjust position
-            youtubeIframe.style.right = '10px';
+            youtubeIframe.style.top = '10px'; // Adjust position
+            youtubeIframe.style.right = '500px';
             youtubeIframe.frameBorder = "0";
             youtubeIframe.allow = "autoplay";
+            youtubeIframe.allow = "fullscreen";
             youtubeIframe.style.zIndex = '10000';
             document.body.appendChild(youtubeIframe);
         }
@@ -304,9 +516,10 @@ function clickFarmAllButton() {
         `<div id="khanhack-overlay" style="position: fixed; top: 10px; right: 10px; background-color: white; padding: 10px; border: 1px solid black; z-index: 1000;">
             <button id="toggle-menu">Toggle Answer List</button>
             <button id="reset-answers">Reset Answer List</button>
+            <button id="toggle-video-speed">Enable Video Speed Increase</button>
             <button id="auto-solve">Solve Question</button>
             <button id="auto-solve-all">Solve All Questions</button>
-            <button id="log-anss">Log Options Text</button>
+            <button id="show-text">Log Options Text</button>
             <div id="answer-list" style="display: block;">-Answers-</div>
             <p>M also toggles Menu</p>
         </div>
@@ -316,12 +529,11 @@ function clickFarmAllButton() {
     function get(x) { return document.getElementById(x); }
 
     function resetAnswers() {
-        const answers = document.querySelectorAll('answer');
-        answers.forEach((answer) => {
-        answer.remove();
-        });
+        document.getElementById('answer-list').innerHTML = ''; // Clear the answer list
         curAns = 1; // Reset the answer counter
         // Trigger the original fetch process to refresh answers
+        simulateFetchRequest(); // This simulates a new fetch to repopulate the answer list
+        console.log('Answer list has been reset and refreshed.');
     }
 
     function handleFetchError(error) {
@@ -370,7 +582,7 @@ function clickFarmAllButton() {
     let khOverlay = get("khanhack-overlay");
     let autosolveButton = get("auto-solve");
     let solveallBtn = get("auto-solve-all");
-    let logBtn = get("log-anss");
+    let showtextbtn = get("show-text");
 
     if (toggleButton && answerList) {
         toggleButton.onclick = function () {
@@ -387,7 +599,7 @@ function clickFarmAllButton() {
     }
 
     document.addEventListener('keydown', (event) => {
-        if (event.key === 'm') {
+        if (event.key === 'k') {
             if (khOverlay) {
                 if (khOverlay.style.display === "none" || khOverlay.style.display === "") {
                     khOverlay.style.display = "block";
@@ -453,6 +665,7 @@ function clickFarmAllButton() {
                 }
 
                 if (!window.loaded) {
+                    // console.clear();
                     window.loaded = true;
                 }
 
@@ -475,21 +688,60 @@ function clickFarmAllButton() {
 
     let curAns = 1;
 
-    function normalizeText(text) {
-    // Replace HTML emphasis tags (<em>, </em>) with an asterisk (*)
-    text = text.replace(/<em>/g, "*").replace(/<\/em>/g, "*");
-    // Remove emphasis markers (*) to standardize comparison
-    text = text.replace(/\*/g, "");
-    // Remove any remaining HTML tags
-    text = text.replace(/<\/?[^>]+(>|$)/g, "");
-    // Remove option labels (e.g., "A", "B", "C") at the beginning and trailing punctuation or whitespace
-    text = text.replace(/^[A-Z]\s*/, ""); // Removes the label like "C" followed by a space
-    // Standardize quotes and remove curly quotes
-    text = text.replace(/“|”/g, '"');
-    // Normalize whitespace and trim
-    text = text.replace(/\s+/g, " ").trim().toLowerCase();
-    return text;
+    showtextbtn.onclick = function () {
+     const options = document.querySelectorAll('._ssxvf9l');
+        options.forEach((option) => {
+            console.log(option.textContent);
+        });
+    }
+
+function normalizeText(text) {
+    // Replace LaTeX math symbols and tags
+    text = text.replace(/\\div/g, "÷"); // Replace \div with ÷
+    text = text.replace(/\\times|\\cdot/g, "×"); // Replace \times or \cdot with ×
+    text = text.replace(/\\dfrac|\\frac/g, "/"); // Replace fractions with /
+    text = text.replace(/\\left|\\right/g, ""); // Remove \left and \right
+    text = text.replace(/\\qquad|\\large/g, ""); // Remove \qquad and \large
+    text = text.replace(/\[|\]/g, ""); // Remove square brackets
+    text = text.replace(/<em>/g, "").replace(/<\/em>/g, ""); // Remove <em> tags
+    text = text.replace(/\$/g, ""); // Remove $ symbols used in math expressions
+
+    // Remove leading option letters (e.g., "b3" to "3")
+    text = text.replace(/^[a-z]\s*/i, ""); // Removes any leading letter followed by whitespace or nothing
+
+    // Standardize mathematical expressions
+    text = text.replace(/\s+/g, " ").trim(); // Normalize whitespace
+    text = text.replace(/\((\s*)/g, "(").replace(/(\s*)\)/g, ")"); // Remove spaces around parentheses
+    text = text.replace(/\*/g, "×"); // Replace * with ×
+
+    // Ensure consistent spacing around mathematical operators
+    text = text.replace(/(\d)\s*([=÷×+\-\/])\s*(\d)/g, "$1 $2 $3"); // Add spaces around operators
+
+    // Normalize quotes and formatting
+    text = text.replace(/“|”/g, '"'); // Standardize double quotes
+
+    // Standardize negative signs within parentheses
+    text = text.replace(/\(\s*-\s*/g, "(-").replace(/\s*\)/g, ")"); // Ensure (-3) is formatted correctly
+
+    // Enforce consistent spacing after commas
+    text = text.replace(/,\s*/g, ", "); // Ensure one space after every comma
+
+    // Trim spaces, tabs, or invisible characters
+    text = text.trim();
+
+    // Handle trailing spaces (explicitly remove after normalization)
+    text = text.replace(/\s+$/, ""); // Remove trailing spaces caused by space bar
+
+    // Remove multiple spaces, handle ZERO WIDTH SPACE, and format multiplication
+    return text
+        .replace(/\s+/g, " ") // Replace multiple spaces with a single space
+        .replace(/[\u200b-\u200d\uFEFF]/g, "") // Remove invisible characters (e.g., ZERO WIDTH SPACE)
+        .replace(/(\d)\s*×\s*(\d)/g, "$1 × $2") // Standardize spaces around the '×' symbol
+        .trim() // Remove leading and trailing spaces
+        .toLowerCase(); // Convert to lowercase for uniformity
 }
+
+
 
 
 autosolveButton.onclick = function () {
@@ -504,7 +756,10 @@ autosolveButton.onclick = function () {
             const optionText = normalizeText(option.textContent); // Normalize option text
             console.log("Normalized Option:", optionText);
             console.log("Normalized Answer:", answerText);
-            if (optionText.includes(answerText)) {
+
+            // Use strict matching
+            if (optionText === answerText) {
+                console.log("Match Found - Option:", optionText, "Answer:", answerText);
                 setTimeout(() => {
                     if (!option.classList.contains('clicked')) {
                         option.click();
@@ -540,7 +795,8 @@ autosolveButton.onclick = function () {
     });
 };
 
-    let autosolveinterval;
+
+let autosolveinterval;
 
 solveallBtn.onclick = function () {
     if (solveallBtn.innerText === 'Solve All Questions') {
@@ -550,7 +806,9 @@ solveallBtn.onclick = function () {
             const specialElement = document.querySelector('._1f0fvyce');
             if (specialElement) {
                 specialElement.click();
+                console.log('Special element _1f0fvyce clicked');
             } else {
+                console.log('No special element _1f0fvyce found');
             }
 
             autosolveButton.click();
@@ -562,12 +820,6 @@ solveallBtn.onclick = function () {
     }
 };
 
-    logBtn.onclick = function (){
-        const options = document.querySelectorAll('._ssxvf9l');
-        options.forEach((option) => {
-        console.log(option.textContent);
-        });
-    }
 
 
     function freeResponseAnswerFrom(question) {
@@ -578,6 +830,7 @@ solveallBtn.onclick = function () {
                     .map(answer => {
                         let createPar = document.createElement('section');
                         createPar.innerHTML = answer.value;
+                    createPar.id = answer.value;
                     createPar.className = 'answer';
                         document.getElementById('answer-list').append(createPar);
                         curAns++;
@@ -598,6 +851,7 @@ solveallBtn.onclick = function () {
                     .map(choice => {
                         let createPar = document.createElement('section');
                         createPar.innerHTML = choice.content;
+                        createPar.id = choice.content;
                     createPar.className = 'answer';
                         document.getElementById('answer-list').append(createPar);
                         curAns++;
@@ -618,6 +872,7 @@ solveallBtn.onclick = function () {
                     .map(answer => {
                         let createPar = document.createElement('section');
                         createPar.innerHTML = answer.value;
+                    createPar.id = answer.value;
                     createPar.className = 'answer';
                         document.getElementById('answer-list').append(createPar);
                         curAns++;
@@ -638,6 +893,7 @@ solveallBtn.onclick = function () {
                     .map(choice => {
                         let createPar = document.createElement('section');
                         createPar.innerHTML = choice.content;
+                    createPar.id = choice.content;
                     createPar.className = 'answer';
                         document.getElementById('answer-list').append(createPar);
                         curAns++;
@@ -649,3 +905,14 @@ solveallBtn.onclick = function () {
 
         return new Answer(answer, "dropdown");
     }
+
+    toggleVideoSpeedButton.onclick = function () {
+        if (toggleVideoSpeedButton.innerText === 'Enable Video Speed Increase') {
+            toggleVideoSpeedButton.innerText = 'Disable Video Speed Increase';
+            document.getElementsByTagName('video')[0].playbackRate = 1;
+        } else {
+            toggleVideoSpeedButton.innerText = 'Enable Video Speed Increase';
+            document.getElementsByTagName('video')[0].playbackRate = 2;
+        }
+    };
+
