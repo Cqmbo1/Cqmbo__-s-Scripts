@@ -11,9 +11,9 @@
 
 (function() {
     'use strict';
-const URL = window.location.href;
+    const URL = window.location.href;
 
-if(URL.includes(www.khanacademy.org)){
+if (URL.includes('www.khanacademy.org')) {
 function change() {
     const streaks = document.getElementsByClassName('_776naao');
     const rainbowColors = ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#9400d3'];
