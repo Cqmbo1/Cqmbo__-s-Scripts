@@ -530,22 +530,23 @@ function clickFarmAllButton() {
         }
     }
 
-    const overlayHTML =
-        `<div id="khanhack-overlay" style="position: fixed; top: 10px; right: 10px; background-color: white; padding: 10px; border: 1px solid black; z-index: 1000;">
-            <button id="toggle-menu">Toggle Answer List</button>
-            <button id="reset-answers">Reset Answer List</button>
-            <button id="toggle-video-speed">Enable Video Speed Increase</button>
-            <button id="auto-solve">Solve Question</button>
-            <button id="auto-solve-all">Solve All Questions</button>
-            <button id="show-text">Log Options Text</button>
-            <div id="answer-list" style="display: block;">-Answers-</div>
-            <p>M also toggles Menu</p>
-        </div>
-        `
-    ;
-
     function get(x) { return document.getElementById(x); }
 }
+
+const overlayHTML =
+`<div id="khanhack-overlay" style="position: fixed; top: 10px; right: 10px; background-color: white; padding: 10px; border: 1px solid black; z-index: 1000;">
+    <button id="toggle-menu">Toggle Answer List</button>
+    <button id="reset-answers">Reset Answer List</button>
+    <button id="toggle-video-speed">Enable Video Speed Increase</button>
+    <button id="auto-solve">Solve Question</button>
+    <button id="auto-solve-all">Solve All Questions</button>
+    <button id="show-text">Log Options Text</button>
+    <div id="answer-list" style="display: block;">-Answers-</div>
+    <p>M also toggles Menu</p>
+</div>
+`
+;
+
 function checkURLKhanhack(){
 // Check if the URL includes the specified string
 if (currentURL.includes("https://www.khanacademy.org/") || currentURL.includes("www.khanacademy.org")) {
