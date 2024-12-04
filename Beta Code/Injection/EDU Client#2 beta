@@ -934,5 +934,3 @@ solveallBtn.onclick = function () {
             document.getElementsByTagName('video')[0].playbackRate = 2;
         }
     };
-
-setInterval(checkURLKhanhack,100);
