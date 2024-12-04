@@ -9,11 +9,13 @@
 // @grant        none
 // ==/UserScript==
 
-(function() {
-    'use strict';
-    const URL = window.location.href;
+// Get the current URL
+const currentURL = window.location.href;
 
-if (URL.includes('www.khanacademy.org')) {
+// Check if the URL includes the specified string
+if (currentURL.includes("https://www.khanacademy.org/") || currentURL.includes("www.khanacademy.org")) {
+console.log("The function is running because the URL matches!");
+
 function change() {
     const streaks = document.getElementsByClassName('_776naao');
     const rainbowColors = ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#9400d3'];
@@ -931,5 +933,4 @@ solveallBtn.onclick = function () {
             document.getElementsByTagName('video')[0].playbackRate = 2;
         }
     };
-})();
 }
