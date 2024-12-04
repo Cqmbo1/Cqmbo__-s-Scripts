@@ -547,9 +547,6 @@ const overlayHTML =
 `
 ;
 
-function checkURLKhanhack(){
-// Check if the URL includes the specified string
-if (currentURL.includes("https://www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs") || currentURL.includes("www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs")) {
     function resetAnswers() {
         document.getElementById('answer-list').innerHTML = ''; // Clear the answer list
         curAns = 1; // Reset the answer counter
@@ -937,6 +934,5 @@ solveallBtn.onclick = function () {
             document.getElementsByTagName('video')[0].playbackRate = 2;
         }
     };
-}
-}
+
 setInterval(checkURLKhanhack,100);
