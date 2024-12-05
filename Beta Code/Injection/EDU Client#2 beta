@@ -13,7 +13,7 @@
 const currentURL = window.location.href;
 
 // Check if the URL includes the specified string
-if (currentURL.includes("https://www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs") || currentURL.includes("www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs")) {
+if (currentURL.includes("https://www.khanacademy.org") || currentURL.includes("www.khanacademy.org")) {
 
 function change() {
     const streaks = document.getElementsByClassName('_776naao');
@@ -110,7 +110,7 @@ setInterval(change, 500);
 
 
 // Check if the URL includes the specified string
-if (currentURL.includes("https://www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs") || currentURL.includes("www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs")) {
+if (currentURL.includes("https://www.khanacademy.org") || currentURL.includes("www.khanacademy.org")) {
 
     document.body.appendChild(autoFarmButton);
     document.body.appendChild(autoWatchButton);
@@ -189,7 +189,7 @@ if (currentURL.includes("https://www.khanacademy.org/math/pre-algebra/pre-algebr
     document.addEventListener('keydown', function(event) {
         if (event.key === 'j') {
 // Check if the URL includes the specified string
-if (currentURL.includes("https://www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs") || currentURL.includes("www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs")) {
+if (currentURL.includes("https://www.khanacademy.org") || currentURL.includes("www.khanacademy.org")) {
 
             autoFarmButton.style.display = autoFarmButton.style.display === 'block' ? 'none' : 'block';
             autoWatchButton.style.display = autoWatchButton.style.display === 'block' ? 'none' : 'block';
@@ -206,7 +206,7 @@ if (currentURL.includes("https://www.khanacademy.org/math/pre-algebra/pre-algebr
         if (event.key === 'l') {
 
 // Check if the URL includes the specified string
-if (currentURL.includes("https://www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs") || currentURL.includes("www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs")) {
+if (currentURL.includes("https://www.khanacademy.org") || currentURL.includes("www.khanacademy.org")) {
 
             toggleYoutubeIframe();
         }
@@ -481,7 +481,7 @@ function clickFarmAllButton() {
     pauseButton.onclick = pauseYoutubeAudio;
 
 // Check if the URL includes the specified string
-if (currentURL.includes("https://www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs") || currentURL.includes("www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs")) {
+if (currentURL.includes("https://www.khanacademy.org") || currentURL.includes("www.khanacademy.org")) {
 
     musicPlayerContainer.appendChild(youtubeInput);
     musicPlayerContainer.appendChild(playButton);
@@ -610,7 +610,7 @@ const overlayHTML =
     overlay.innerHTML = overlayHTML;
 
 // Check if the URL includes the specified string
-if (currentURL.includes("https://www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs") || currentURL.includes("www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs")) {
+if (currentURL.includes("https://www.khanacademy.org") || currentURL.includes("www.khanacademy.org")) {
 
     document.body.appendChild(overlay);
 
@@ -641,7 +641,7 @@ if (currentURL.includes("https://www.khanacademy.org/math/pre-algebra/pre-algebr
     document.addEventListener('keydown', (event) => {
         if (event.key === 'k') {
 // Check if the URL includes the specified string
-if (currentURL.includes("https://www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs") || currentURL.includes("www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs")) {
+if (currentURL.includes("https://www.khanacademy.org") || currentURL.includes("www.khanacademy.org")) {
 
             if (khOverlay) {
                 if (khOverlay.style.display === "none" || khOverlay.style.display === "") {
