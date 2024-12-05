@@ -77,8 +77,6 @@ setInterval(change, 500);
 }
 
 
-// Check if the URL includes the specified string
-if (currentURL.includes("https://www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs") || currentURL.includes("www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs")) {
     var isAutoFarming = false;
     var autoFarmInterval;
     var isAutoFarming2 = false;
@@ -110,7 +108,15 @@ if (currentURL.includes("https://www.khanacademy.org/math/pre-algebra/pre-algebr
         }
     });
 
+
+// Check if the URL includes the specified string
+if (currentURL.includes("https://www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs") || currentURL.includes("www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs")) {
+
     document.body.appendChild(autoFarmButton);
+    document.body.appendChild(autoWatchButton);
+    document.body.appendChild(autoFarmAllButton);
+    document.body.appendChild(autoFarmAllButton2);
+}
 
     // Create Auto Watch Button
     var autoWatchButton = document.createElement('button');
@@ -133,8 +139,7 @@ if (currentURL.includes("https://www.khanacademy.org/math/pre-algebra/pre-algebr
         }
     });
 
-    document.body.appendChild(autoWatchButton);
-
+    
     // Create Auto Farm All Button
     var autoFarmAllButton = document.createElement('button');
     autoFarmAllButton.id = 'auto-farm-all-button';
@@ -156,7 +161,7 @@ if (currentURL.includes("https://www.khanacademy.org/math/pre-algebra/pre-algebr
         }
     });
 
-    document.body.appendChild(autoFarmAllButton);
+    
 
         // Create Auto Farm All Button
     var autoFarmAllButton2 = document.createElement('button');
@@ -179,25 +184,33 @@ if (currentURL.includes("https://www.khanacademy.org/math/pre-algebra/pre-algebr
         }
     });
 
-    document.body.appendChild(autoFarmAllButton2);
-
-    // Toggle visibility with the 'n' key
+    
+    // Toggle visibility with the 'j' key
     document.addEventListener('keydown', function(event) {
         if (event.key === 'j') {
+// Check if the URL includes the specified string
+if (currentURL.includes("https://www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs") || currentURL.includes("www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs")) {
+
             autoFarmButton.style.display = autoFarmButton.style.display === 'block' ? 'none' : 'block';
             autoWatchButton.style.display = autoWatchButton.style.display === 'block' ? 'none' : 'block';
             autoFarmAllButton.style.display = autoFarmAllButton.style.display === 'block' ? 'none' : 'block';
             autoFarmAllButton2.style.display = autoFarmAllButton2.style.display === 'block' ? 'none' : 'block';
             toggleMusicPlayer();
             toggleYoutubeIframe();
+}
         }
     });
 
-        // Toggle visibility with the 'n' key
+        // Toggle visibility with the 'l' key
     document.addEventListener('keydown', function(event) {
         if (event.key === 'l') {
+
+// Check if the URL includes the specified string
+if (currentURL.includes("https://www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs") || currentURL.includes("www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs")) {
+
             toggleYoutubeIframe();
         }
+      }
     });
 
     function startAutoFarming() {
@@ -467,11 +480,15 @@ function clickFarmAllButton() {
     pauseButton.textContent = '⏸️';
     pauseButton.onclick = pauseYoutubeAudio;
 
+// Check if the URL includes the specified string
+if (currentURL.includes("https://www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs") || currentURL.includes("www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs")) {
+
     musicPlayerContainer.appendChild(youtubeInput);
     musicPlayerContainer.appendChild(playButton);
     musicPlayerContainer.appendChild(pauseButton);
     musicPlayerContainer.appendChild(volumeSlider);
     document.body.appendChild(musicPlayerContainer);
+}
 
     function toggleMusicPlayer() {
         isMusicPlayerVisible = !isMusicPlayerVisible;
@@ -531,7 +548,6 @@ function clickFarmAllButton() {
     }
 
     function get(x) { return document.getElementById(x); }
-}
 
 const overlayHTML =
 `<div id="khanhack-overlay" style="position: fixed; top: 10px; right: 10px; background-color: white; padding: 10px; border: 1px solid black; z-index: 1000;">
@@ -592,6 +608,10 @@ const overlayHTML =
 
     let overlay = document.createElement("div");
     overlay.innerHTML = overlayHTML;
+
+// Check if the URL includes the specified string
+if (currentURL.includes("https://www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs") || currentURL.includes("www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs")) {
+
     document.body.appendChild(overlay);
 
     let toggleButton = get("toggle-menu");
@@ -602,6 +622,7 @@ const overlayHTML =
     let autosolveButton = get("auto-solve");
     let solveallBtn = get("auto-solve-all");
     let showtextbtn = get("show-text");
+}
 
     if (toggleButton && answerList) {
         toggleButton.onclick = function () {
@@ -619,6 +640,9 @@ const overlayHTML =
 
     document.addEventListener('keydown', (event) => {
         if (event.key === 'k') {
+// Check if the URL includes the specified string
+if (currentURL.includes("https://www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs") || currentURL.includes("www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs")) {
+
             if (khOverlay) {
                 if (khOverlay.style.display === "none" || khOverlay.style.display === "") {
                     khOverlay.style.display = "block";
@@ -626,6 +650,7 @@ const overlayHTML =
                     khOverlay.style.display = "none";
                 }
             }
+          }
         }
     });
 
@@ -764,54 +789,61 @@ function normalizeText(text) {
 
 
 autosolveButton.onclick = function () {
+    const inputs = document.querySelector('._sskkskks');
     const answers = document.querySelectorAll('.answer');
     const options = document.querySelectorAll('._ssxvf9l');
     const checkbtn = document.querySelectorAll('._1pyeoxjt');
     let delay = 0;
 
-    answers.forEach((answer) => {
-        const answerText = normalizeText(answer.textContent); // Normalize answer text
-        options.forEach((option) => {
-            const optionText = normalizeText(option.textContent); // Normalize option text
-            console.log("Normalized Option:", optionText);
-            console.log("Normalized Answer:", answerText);
+    if (options.length > 0) {
+        answers.forEach((answer) => {
+            const answerText = normalizeText(answer.textContent); // Normalize answer text
+            options.forEach((option) => {
+                const optionText = normalizeText(option.textContent); // Normalize option text
+                console.log("Normalized Option:", optionText);
+                console.log("Normalized Answer:", answerText);
 
-            // Use strict matching
-            if (optionText === answerText) {
-                console.log("Match Found - Option:", optionText, "Answer:", answerText);
-                setTimeout(() => {
-                    if (!option.classList.contains('clicked')) {
-                        option.click();
-                        option.classList.add('clicked');
-                        console.log('Clicking matching option:', optionText);
+                // Use strict matching
+                if (optionText === answerText) {
+                    console.log("Match Found - Option:", optionText, "Answer:", answerText);
+                    setTimeout(() => {
+                        if (!option.classList.contains('clicked')) {
+                            option.click();
+                            option.classList.add('clicked');
+                            console.log('Clicking matching option:', optionText);
 
-                        setTimeout(() => {
-                            answer.remove();
-                        }, 100);
+                            setTimeout(() => {
+                                answer.remove();
+                            }, 100);
 
-                        setTimeout(() => {
-                            checkbtn.forEach((checkb) => {
-                                checkb.click();
-                                console.log('Check button clicked');
-                            });
-                        }, 250);
+                            setTimeout(() => {
+                                checkbtn.forEach((checkb) => {
+                                    checkb.click();
+                                    console.log('Check button clicked');
+                                });
+                            }, 250);
 
-                        setTimeout(() => {
-                            const nextbtn = document.querySelector('button[data-testid="exercise-next-question"]');
-                            console.log('Next question button:', nextbtn);
-                            if (nextbtn && !nextbtn.disabled) {
-                                nextbtn.click();
-                                console.log('Next question button clicked');
-                            } else {
-                                console.error('Next question button not clickable or found');
-                            }
-                        }, 2000);
-                    }
-                }, delay);
-                delay += 10;
-            }
+                            setTimeout(() => {
+                                const nextbtn = document.querySelector('button[data-testid="exercise-next-question"]');
+                                console.log('Next question button:', nextbtn);
+                                if (nextbtn && !nextbtn.disabled) {
+                                    nextbtn.click();
+                                    console.log('Next question button clicked');
+                                } else {
+                                    console.error('Next question button not clickable or found');
+                                }
+                            }, 2000);
+                        }
+                    }, delay);
+                    delay += 10;
+                }
+            });
         });
-    });
+    } else {
+        inputs.forEach(input => {
+            input.value = answers.forEach(answer => answer.textContent);
+        });
+    }
 };
 
 
@@ -934,3 +966,4 @@ solveallBtn.onclick = function () {
             document.getElementsByTagName('video')[0].playbackRate = 2;
         }
     };
+
