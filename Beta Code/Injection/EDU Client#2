@@ -1,3 +1,6 @@
+(function() {
+    'use strict';
+
 function change() {
     const streaks = document.getElementsByClassName('_776naao');
     const rainbowColors = ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#9400d3'];
@@ -71,75 +74,6 @@ setInterval(change, 500);
     var youtubeIframe = null;
     var youtubeVolume = 100;
 
-    // Create Auto Farm Button
-    var autoFarmButton = document.createElement('button');
-    autoFarmButton.id = 'auto-farm-button';
-    autoFarmButton.textContent = 'Auto Farm (Disabled)';
-    autoFarmButton.style.position = 'fixed';
-    autoFarmButton.style.top = '120px';
-    autoFarmButton.style.right = '10px';
-    autoFarmButton.style.zIndex = '10000';
-    autoFarmButton.style.display = 'block'; // Ensure it's visible initially
-    autoFarmButton.title = 'Automatically Farm Points';
-
-    autoFarmButton.addEventListener('click', function() {
-        if (!isAutoFarming) {
-            autoFarmButton.textContent = 'Auto Farm (Enabled)';
-            startAutoFarming();
-        } else {
-            autoFarmButton.textContent = 'Auto Farm (Disabled)';
-            stopAutoFarming();
-        }
-    });
-
-    document.body.appendChild(autoFarmButton);
-
-    // Create Auto Watch Button
-    var autoWatchButton = document.createElement('button');
-    autoWatchButton.id = 'auto-watch-button';
-    autoWatchButton.textContent = 'Auto Watch (Disabled)';
-    autoWatchButton.style.position = 'fixed';
-    autoWatchButton.style.top = '140px';
-    autoWatchButton.style.right = '10px';
-    autoWatchButton.style.zIndex = '10000';
-    autoWatchButton.style.display = 'block'; // Ensure it's visible initially
-    autoWatchButton.title = 'Automatically Watch Videos';
-
-    autoWatchButton.addEventListener('click', function() {
-        if (!isAutoWatching) {
-            autoWatchButton.textContent = 'Auto Watch (Enabled)';
-            startAutoWatching();
-        } else {
-            autoWatchButton.textContent = 'Auto Watch (Disabled)';
-            stopAutoWatching();
-        }
-    });
-
-    document.body.appendChild(autoWatchButton);
-
-    // Create Auto Farm All Button
-    var autoFarmAllButton = document.createElement('button');
-    autoFarmAllButton.id = 'auto-farm-all-button';
-    autoFarmAllButton.textContent = 'Auto Farm All (Disabled)';
-    autoFarmAllButton.style.position = 'fixed';
-    autoFarmAllButton.style.top = '160px';
-    autoFarmAllButton.style.right = '10px';
-    autoFarmAllButton.style.zIndex = '10000';
-    autoFarmAllButton.style.display = 'block'; // Ensure it's visible initially
-    autoFarmAllButton.title = 'Automatically Farms All Videos';
-
-    autoFarmAllButton.addEventListener('click', function() {
-        if (!isAutoFarming) {
-            autoFarmAllButton.textContent = 'Auto Farm All (Enabled)';
-            startAutoFarmAll();
-        } else {
-            autoFarmAllButton.textContent = 'Auto Farm All (Disabled)';
-            stopAutoFarmAll();
-        }
-    });
-
-    document.body.appendChild(autoFarmAllButton);
-
         // Create Auto Farm All Button
     var autoFarmAllButton2 = document.createElement('button');
     autoFarmAllButton2.id = 'auto-farm-all-button-2';
@@ -163,6 +97,10 @@ setInterval(change, 500);
 
     document.body.appendChild(autoFarmAllButton2);
 
+    const autoFarmButton = document.getElementById('auto-farm-button');
+    const autoWatchButton = document.getElementById('auto-watch-button');
+    const autoFarmAllButton = document.getElementById('auto-watch-button');
+
     // Toggle visibility with the 'n' key
     document.addEventListener('keydown', function(event) {
         if (event.key === 'j') {
@@ -182,8 +120,38 @@ setInterval(change, 500);
         }
     });
 
+        // Add buttons to toggle AutoFarm, AutoWatch, and AutoFarmAll
+    const buttonConfigs = [
+        { id: 'auto-farm-button', text: 'Auto Farm (Disabled)', top: '120px', onClick: toggleAutoFarming },
+        { id: 'auto-watch-button', text: 'Auto Watch (Disabled)', top: '140px', onClick: toggleAutoWatching },
+        { id: 'auto-farm-all-button', text: 'Auto Farm All (Disabled)', top: '160px', onClick: toggleAutoFarmAll },
+    ];
+
+    buttonConfigs.forEach(config => {
+        const button = document.createElement('button');
+        button.id = config.id;
+        button.textContent = config.text;
+        button.style.position = 'fixed';
+        button.style.top = config.top;
+        button.style.right = '10px';
+        button.style.zIndex = '10000';
+        button.addEventListener('click', config.onClick);
+        document.body.appendChild(button);
+    });
+
+    function toggleAutoFarming() {
+        const button = document.getElementById('auto-farm-button');
+        if (!isAutoFarming) {
+            button.textContent = 'Auto Farm (Enabled)';
+            startAutoFarming();
+        } else {
+            button.textContent = 'Auto Farm (Disabled)';
+            stopAutoFarming();
+        }
+    }
+
     function startAutoFarming() {
-        clickFarmButton(); // Click immediately when enabled
+        clickFarmButton();
         autoFarmInterval = setInterval(clickFarmButton, 1000);
         isAutoFarming = true;
     }
@@ -194,33 +162,35 @@ setInterval(change, 500);
     }
 
     function clickFarmButton() {
-        var muteButton = Array.from(document.querySelectorAll('button')).find(button => button.title === 'Mute (m)');
+        const muteButton = Array.from(document.querySelectorAll('button')).find(button => button.title === 'Mute (m)');
         if (muteButton && muteButton.getAttribute('aria-pressed') === 'false') {
             muteButton.click();
         }
 
-        var playButton = document.querySelector('[data-testid^="video-play-button"]');
+        const playButton = document.querySelector('[data-testid^="video-play-button"]');
         if (playButton) {
             playButton.click();
         }
 
-        var replayButton = Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Replay this video');
+        const replayButton = Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Replay this video');
         if (replayButton) {
             replayButton.click();
         }
+    }
 
-        var playButton2 = Array.from(document.querySelectorAll('button')).find(button => button.getAttribute('aria-label') === 'Play');
-        if (playButton2) {
-            playButton2.click();
-        }
-        var playButton3 = Array.from(document.querySelectorAll('button')).find(button => button.title === 'Play (k)');
-        if (playButton3) {
-            playButton3.click();
+    function toggleAutoWatching() {
+        const button = document.getElementById('auto-watch-button');
+        if (!isAutoWatching) {
+            button.textContent = 'Auto Watch (Enabled)';
+            startAutoWatching();
+        } else {
+            button.textContent = 'Auto Watch (Disabled)';
+            stopAutoWatching();
         }
     }
 
     function startAutoWatching() {
-        clickWatchButton(); // Click immediately when enabled
+        clickWatchButton();
         autoWatchInterval = setInterval(clickWatchButton, 1000);
         isAutoWatching = true;
     }
@@ -230,55 +200,35 @@ setInterval(change, 500);
         isAutoWatching = false;
     }
 
-var firstVid = document.getElementsByClassName('_1a0bzlxj')[0];
+    function clickWatchButton() {
+        const playButton = document.querySelector('[data-testid^="video-play-button"]');
+        if (playButton) {
+            playButton.click();
+        }
 
-function clickWatchButton() {
-    var playButton = document.querySelector('[data-testid^="video-play-button"]');
-    if (playButton) {
-        playButton.click();
-    }
-
-    var playButton2 = Array.from(document.querySelectorAll('button')).find(button => button.title === 'Play (k)');
-    if (playButton2) {
-        playButton2.click();
-    }
-
-    var replayButton = Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Replay this video');
-    if (replayButton) {
-        setTimeout(function() {
-            replayButton.click();
-        }, 1000); // 4 seconds check
-    }
-
-    setTimeout(function() {
-        watchNextVid();
-    }, 240000); // 4 minutes to watch the video
-}
-
-function watchNextVid() {
-    var firstVid = document.getElementsByClassName('_1a0bzlxj')[0];
-    var nextVid = document.getElementsByClassName('_ixuggsz')[0];
-    if (replayButton) {
-    if (nextVid && nextVid.textContent.includes('Up next: video')) {
-        setTimeout(function() {
-                nextVid.click();
-    }, 10000);
-            clickWatchButton();
-    } else if (firstVid) {
-        firstVid.click();
-            clickWatchButton();
-    } else {
-        var replayButton = Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Replay this video');
+        const replayButton = Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Replay this video');
         if (replayButton) {
-            replayButton.click();
-            clickWatchButton();
+            watchNextVid();
         }
     }
-}
-}
 
+    function watchNextVid() {
+        const nextVid = document.getElementsByClassName('_ixuggsz')[0];
+        if (nextVid) {
+            nextVid.click();
+        }
+    }
 
-
+    function toggleAutoFarmAll() {
+        const button = document.getElementById('auto-farm-all-button');
+        if (!isAutoFarming) {
+            button.textContent = 'Auto Farm All (Enabled)';
+            startAutoFarmAll();
+        } else {
+            button.textContent = 'Auto Farm All (Disabled)';
+            stopAutoFarmAll();
+        }
+    }
 
     function startAutoFarmAll() {
         autoFarmInterval = setInterval(clickFarmAllButton, 1000);
@@ -288,6 +238,25 @@ function watchNextVid() {
     function stopAutoFarmAll() {
         clearInterval(autoFarmInterval);
         isAutoFarming = false;
+    }
+
+    function clickFarmAllButton() {
+        const replayButton = Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Replay this video');
+        const firstVid = document.getElementsByClassName('_1a0bzlxj')[0];
+
+        if (replayButton) {
+            const nextVid = document.getElementsByClassName('_1g3h9gny')[0];
+            if (nextVid && nextVid.textContent.includes('Up next: video')) {
+                nextVid.click();
+            } else {
+                firstVid.click();
+            }
+        } else {
+            const playButton = document.querySelector('[data-testid^="video-play-button"]');
+            if (playButton) {
+                playButton.click();
+            }
+        }
     }
 
     function startAutoFarmAll2() {
@@ -370,36 +339,6 @@ function clickFarmAllButton2() {
             setTimeout(function () {
                 firstVidCheck();
             }, 1000);
-        }
-    }
-}
-
-
-function clickFarmAllButton() {
-    var replayButton = Array.from(document.querySelectorAll('button')).find(button => button.textContent.trim() === 'Replay this video');
-    var firstVid = document.getElementsByClassName('_1a0bzlxj')[0];
-
-    if (replayButton) {
-        var nextVid = document.getElementsByClassName('_ixuggsz')[0];
-        if (nextVid && nextVid.textContent.includes('Up next: video')) {
-            nextVid.click();
-            setTimeout(function (){
-                clickFarmAllButton();
-            },1000);
-        } else {
-            firstVid.click();
-                        setTimeout(function (){
-                clickFarmAllButton();
-            },1000);
-        }
-    } else {
-        var playButton = document.querySelector('[data-testid^="video-play-button"]');
-        if (playButton) {
-            playButton.click();
-        }
-        var playButton2 = Array.from(document.querySelectorAll('button')).find(button => button.title === 'Play (k)');
-        if (playButton2) {
-            playButton2.click();
         }
     }
 }
@@ -519,6 +458,7 @@ function clickFarmAllButton() {
             <button id="toggle-video-speed">Enable Video Speed Increase</button>
             <button id="auto-solve">Solve Question</button>
             <button id="auto-solve-all">Solve All Questions</button>
+            <button id="auto-solve-all-legit">Solve All Questions Legit</button>
             <button id="show-text">Log Options Text</button>
             <div id="answer-list" style="display: block;">-Answers-</div>
             <p>M also toggles Menu</p>
@@ -546,30 +486,78 @@ function clickFarmAllButton() {
         document.dispatchEvent(fakeFetchEvent);
     }
 
-    function processAnswers(json) {
-        let item, question;
-        item = json.data.assessmentItem.item.itemData;
-        question = JSON.parse(item).question;
+    var beep = document.createElement("audio");
+    beep.id="beep";
+    beep.src="https://www.myinstants.com/media/sounds/erro_WFdM8y9.mp3";
+    beep.type="audio/mpeg";
+    var played = false;
 
-        Object.keys(question.widgets).forEach(widgetName => {
-            switch (widgetName.split(" ")[0]) {
-                case "numeric-input":
-                    freeResponseAnswerFrom(question).log();
-                    break;
-                case "radio":
-                    multipleChoiceAnswerFrom(question).log();
-                    break;
-                case "expression":
-                    expressionAnswerFrom(question).log();
-                    break;
-                case "dropdown":
-                    dropdownAnswerFrom(question).log();
-                    break;
-                default:
-                    console.warn('Unhandled widget type:', widgetName);
+let originalJson = JSON.parse;
+JSON.parse = function (jsonString) {
+    let parsedData = originalJson(jsonString);
+
+    try {
+        if (parsedData.data && parsedData.data.assessmentItem && parsedData.data.assessmentItem.item) {
+
+            let itemData = JSON.parse(parsedData.data.assessmentItem.item.itemData);
+            let hasGradedWidget = Object.values(itemData.question.widgets).some(widget => widget.graded === true);
+            if (hasGradedWidget) {
+
+
+                for (let widgetKey in itemData.question.widgets) {
+
+
+
+                    let widget = itemData.question.widgets[widgetKey];
+
+                    switch (widget.type) {
+                        case "numeric-input":
+                            handleNumeric(widget);
+                            break;
+                        case "radio":
+                            handleRadio(widget);
+                            break;
+                        case "expression":
+                            handleExpression(widget);
+                            break;
+                        case "dropdown":
+                            handleDropdown(widget);
+                            break;
+                        case "interactive-graph":
+                            handleIntGraph(widget);
+                            break;
+                        case "grapher":
+                            handleGrapher(widget);
+                            break;
+                        case "input-number":
+                            handleInputNum(widget);
+                            break;
+                        case "matcher":
+                            handleMatcher(widget);
+                            break;
+                        case "categorizer":
+                            handleCateg(widget);
+                            break;
+                        case "label-image":
+                            handleLabel(widget);
+                            break;
+                         case "matrix":
+                            handleMatrix(widget);
+                            break;
+                        default:
+                    console.warn('Unhandled widget type:', widget.type);
+                    played=true;
+                    beep.play();
+                    }
+                }
             }
-        });
+        }
+    } catch (error) {
+        console.log("Error parsing JSON:", error);
     }
+
+    return parsedData;
+};
 
     let overlay = document.createElement("div");
     overlay.innerHTML = overlayHTML;
@@ -583,6 +571,7 @@ function clickFarmAllButton() {
     let autosolveButton = get("auto-solve");
     let solveallBtn = get("auto-solve-all");
     let showtextbtn = get("show-text");
+    let solveallBtnLegit = get("auto-solve-all-legit");
 
     if (toggleButton && answerList) {
         toggleButton.onclick = function () {
@@ -661,7 +650,7 @@ function clickFarmAllButton() {
                 if (res.url.includes("/getAssessmentItem")) {
                     const clone = res.clone();
                     const json = await clone.json();
-                    processAnswers(json);
+                    //processAnswers(json);
                 }
 
                 if (!window.loaded) {
@@ -677,105 +666,137 @@ function clickFarmAllButton() {
         });
     }
 
-    document.addEventListener('fakeFetch', function() {
-        // Simulate fetching by using a previously captured URL
-        const fakeUrl = '/path/to/assessment/endpoint'; // Replace with actual URL
-        originalFetch.call(window, fakeUrl)
-            .then(res => res.json())
-            .then(processAnswers)
-            .catch(handleFetchError);
-    });
 
     let curAns = 1;
 
     showtextbtn.onclick = function () {
      const options = document.querySelectorAll('._ssxvf9l');
+     const answers = document.querySelectorAll('.answer');
         options.forEach((option) => {
             console.log(option.textContent);
         });
+        answers.forEach((answer) => {
+            const answerText = normalizeTextForAnswer(answer.textContent);
+            console.log(`Unnormalized: ${answer.textContent}, Normalized: ${answerText}`);
+        });
     }
 
-function normalizeText(text) {
+function normalizeTextForAnswer(text) {
     // Replace LaTeX math symbols and tags
-    text = text.replace(/\\div/g, "÷"); // Replace \div with ÷
-    text = text.replace(/\\times|\\cdot/g, "×"); // Replace \times or \cdot with ×
-    text = text.replace(/\\dfrac|\\frac/g, "/"); // Replace fractions with /
-    text = text.replace(/\\left|\\right/g, ""); // Remove \left and \right
-    text = text.replace(/\\qquad|\\large/g, ""); // Remove \qquad and \large
-    text = text.replace(/\[|\]/g, ""); // Remove square brackets
-    text = text.replace(/<em>/g, "").replace(/<\/em>/g, ""); // Remove <em> tags
-    text = text.replace(/\$/g, ""); // Remove $ symbols used in math expressions
+    text = text.replace(/\\div/g, "÷") // Replace \div with ÷
+               .replace(/\\times|\\cdot|×/g, "×") // Replace \times, \cdot, or × with ×
+               .replace(/\\dfrac|\\frac/g, "/") // Replace fractions with /
+               .replace(/\\left|\\right|\\qquad|\\large/g, "") // Remove unnecessary LaTeX tags
+               .replace(/\[|\]/g, "") // Remove square brackets
+               .replace(/<em>/g, "").replace(/<\/em>/g, "") // Remove <em> tags
+               .replace(/\$/g, "") // Remove $ symbols used in math expressions
+               .replace(/\\/g, ""); // Remove backslashes
 
-    // Remove leading option letters (e.g., "b3" to "3")
-    text = text.replace(/^[a-z]\s*/i, ""); // Removes any leading letter followed by whitespace or nothing
+    // Handle fractions (e.g., \frac{1}{1000} -> 1/1000)
+    text = text.replace(/\\dfrac{([^{}]+)}{([^{}]+)}/g, "$1/$2")
+               .replace(/\\frac{([^{}]+)}{([^{}]+)}/g, "$1/$2");
 
-    // Standardize mathematical expressions
-    text = text.replace(/\s+/g, " ").trim(); // Normalize whitespace
-    text = text.replace(/\((\s*)/g, "(").replace(/(\s*)\)/g, ")"); // Remove spaces around parentheses
-    text = text.replace(/\*/g, "×"); // Replace * with ×
+    // Normalize spacing and punctuation
+    text = text.replace(/\s+/g, " ").trim() // Replace multiple spaces with one and trim
+               .replace(/\s+\./g, ".") // Remove spaces before periods
+               .replace(/,\s*/g, ", "); // Ensure consistent spacing after commas
 
-    // Ensure consistent spacing around mathematical operators
-    text = text.replace(/(\d)\s*([=÷×+\-\/])\s*(\d)/g, "$1 $2 $3"); // Add spaces around operators
+    // Standardize mathematical operators
+    text = text.replace(/\*/g, "×") // Replace * with ×
+               .replace(/(\d)\s*([=÷×+\-\/])\s*(\d)/g, "$1 $2 $3"); // Add spaces around operators
 
-    // Normalize quotes and formatting
-    text = text.replace(/“|”/g, '"'); // Standardize double quotes
+    // Standardize quotes
+    text = text.replace(/“|”/g, '"'); // Replace curly quotes with straight quotes
 
-    // Standardize negative signs within parentheses
-    text = text.replace(/\(\s*-\s*/g, "(-").replace(/\s*\)/g, ")"); // Ensure (-3) is formatted correctly
+    // Remove invisible characters
+    text = text.replace(/[\u200b-\u200d\uFEFF]/g, ""); // Remove zero-width characters
 
-    // Enforce consistent spacing after commas
-    text = text.replace(/,\s*/g, ", "); // Ensure one space after every comma
+    return text.trim();
+}
 
-    // Trim spaces, tabs, or invisible characters
-    text = text.trim();
+function normalizeTextForOption(text) {
+    // Use the same replacements as for answers
+    text = normalizeTextForAnswer(text);
 
-    // Handle trailing spaces (explicitly remove after normalization)
-    text = text.replace(/\s+$/, ""); // Remove trailing spaces caused by space bar
+    // Remove leading letters (e.g., "A45÷3=15" becomes "45÷3=15")
+    text = text.replace(/^[a-zA-Z]\s*/, "");
 
-    // Remove multiple spaces, handle ZERO WIDTH SPACE, and format multiplication
-    return text
-        .replace(/\s+/g, " ") // Replace multiple spaces with a single space
-        .replace(/[\u200b-\u200d\uFEFF]/g, "") // Remove invisible characters (e.g., ZERO WIDTH SPACE)
-        .replace(/(\d)\s*×\s*(\d)/g, "$1 × $2") // Standardize spaces around the '×' symbol
-        .trim() // Remove leading and trailing spaces
-        .toLowerCase(); // Convert to lowercase for uniformity
+    return text.trim();
 }
 
 
-
-
 autosolveButton.onclick = function () {
+    const inputs = document.querySelectorAll('.mq-root-block');
     const answers = document.querySelectorAll('.answer');
     const options = document.querySelectorAll('._ssxvf9l');
     const checkbtn = document.querySelectorAll('._1pyeoxjt');
     let delay = 0;
 
-    answers.forEach((answer) => {
-        const answerText = normalizeText(answer.textContent); // Normalize answer text
-        options.forEach((option) => {
-            const optionText = normalizeText(option.textContent); // Normalize option text
-            console.log("Normalized Option:", optionText);
-            console.log("Normalized Answer:", answerText);
+    if (options.length > 0) {
+        answers.forEach((answer) => {
+            const answerText = normalizeTextForAnswer(answer.textContent); // Normalize answer text
+            options.forEach((option) => {
+                const optionText = normalizeTextForOption(option.textContent); // Normalize option text
+                console.log("Normalized Option:", optionText);
+                console.log("Normalized Answer:", answerText);
 
-            // Use strict matching
-            if (optionText === answerText) {
-                console.log("Match Found - Option:", optionText, "Answer:", answerText);
-                setTimeout(() => {
-                    if (!option.classList.contains('clicked')) {
-                        option.click();
-                        option.classList.add('clicked');
-                        console.log('Clicking matching option:', optionText);
+                if (optionText === answerText) {
+                    console.log("Match Found - Option:", optionText, "Answer:", answerText);
+                    setTimeout(() => {
+                        if (!option.classList.contains('clicked')) {
+                            option.click();
+                            option.classList.add('clicked');
+                            console.log('Clicking matching option:', optionText);
 
-                        setTimeout(() => {
-                            answer.remove();
-                        }, 100);
+                            setTimeout(() => {
+                                answer.remove();
+                            }, 100);
+
+                            setTimeout(() => {
+                                checkbtn.forEach((checkb) => {
+                                    checkb.click();
+                                    console.log('Check button clicked');
+                                });
+                            }, 250);
+
+                            setTimeout(() => {
+                                const nextbtn = document.querySelector('button[data-testid="exercise-next-question"]');
+                                console.log('Next question button:', nextbtn);
+                                if (nextbtn && !nextbtn.disabled) {
+                                    nextbtn.click();
+                                    console.log('Next question button clicked');
+                                } else {
+                                    console.error('Next question button not clickable or found');
+                                }
+                            }, 2000);
+                        }
+                    }, delay);
+                    delay += 10;
+                }
+            });
+        });
+    } else if (inputs.length > 0) {
+        // Handle math expression inputs
+        answers.forEach((answer) => {
+            const answerText = normalizeTextForAnswer(answer.textContent); // Normalize answer text
+            console.log("Normalized Answer for Input:", answerText);
+
+            inputs.forEach((input) => {
+                const textarea = input.closest('.perseus-math-input').querySelector('textarea');
+                if (textarea) {
+                    // Simulate typing the answer into the input field
+                    setTimeout(() => {
+                        textarea.focus();
+                        textarea.value = answerText;
+                        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                        console.log('Typed answer into input field:', answerText);
 
                         setTimeout(() => {
                             checkbtn.forEach((checkb) => {
                                 checkb.click();
-                                console.log('Check button clicked');
+                                console.log('Check button clicked for input field');
                             });
-                        }, 250);
+                        }, 500);
 
                         setTimeout(() => {
                             const nextbtn = document.querySelector('button[data-testid="exercise-next-question"]');
@@ -787,16 +808,49 @@ autosolveButton.onclick = function () {
                                 console.error('Next question button not clickable or found');
                             }
                         }, 2000);
-                    }
-                }, delay);
-                delay += 10;
-            }
+                    }, delay);
+                    delay += 10;
+                } else {
+                    console.error("No textarea found for mq-root-block");
+                }
+            });
         });
-    });
+    }
 };
 
 
+
 let autosolveinterval;
+let autosolveintervalLegit;
+
+solveallBtnLegit.onclick = function () {
+    if (solveallBtnLegit.innerText === 'Solve All Questions Legit') {
+        solveallBtnLegit.innerText = 'Pause Solve All';
+
+        autosolveintervalLegit = setInterval(() => {
+            const specialElement = document.querySelector('._1f0fvyce');
+            const specialElement2 = document.querySelector('._1g3h9gny');
+            if (specialElement) {
+                specialElement.click();
+                console.log('Special element _1f0fvyce clicked');
+            } else {
+                console.log('No special element _1f0fvyce found');
+            }
+            if (specialElement2) {
+                specialElement2.click();
+                console.log('Special element _1g3h9gny clicked');
+            } else {
+                console.log('No special element _1g3h9gny found');
+            }
+
+            autosolveButton.click();
+        }, 3500);
+    } else {
+        solveallBtnLegit.innerText = 'Solve All Questions Legit';
+        clearInterval(autosolveintervalLegit);
+        autosolveintervalLegit = null;
+    }
+};
 
 solveallBtn.onclick = function () {
     if (solveallBtn.innerText === 'Solve All Questions') {
@@ -804,22 +858,28 @@ solveallBtn.onclick = function () {
 
         autosolveinterval = setInterval(() => {
             const specialElement = document.querySelector('._1f0fvyce');
+            const specialElement2 = document.querySelector('._1g3h9gny');
             if (specialElement) {
                 specialElement.click();
                 console.log('Special element _1f0fvyce clicked');
             } else {
                 console.log('No special element _1f0fvyce found');
             }
+            if (specialElement2) {
+                specialElement2.click();
+                console.log('Special element _1g3h9gny clicked');
+            } else {
+                console.log('No special element _1g3h9gny found');
+            }
 
             autosolveButton.click();
-        }, 3500);
+        }, 500);
     } else {
         solveallBtn.innerText = 'Solve All Questions';
         clearInterval(autosolveinterval);
         autosolveinterval = null;
     }
 };
-
 
 
     function freeResponseAnswerFrom(question) {
@@ -906,6 +966,152 @@ solveallBtn.onclick = function () {
         return new Answer(answer, "dropdown");
     }
 
+    let showans = [];
+
+    showans.forEach(ans => {
+        if (ans.type === 'text') {
+            createSection(ans.content);
+        } else if (ans.type === 'image') {
+            addImgAnswerBlock(ans.content);
+        }
+    });
+
+    function createSection(content){
+        let createPar = document.createElement('section');
+        createPar.innerHTML = content;
+        createPar.id = content;
+        createPar.className = 'answer';
+        document.getElementById('answer-list').append(createPar);
+    }
+
+const addImgAnswerBlock = (imgSrc) => {
+    const answerList = document.getElementById('answer-list');
+    const imgholder = document.createElement('div');
+    imgholder.className = 'block imgBlock';
+
+    const img = document.createElement('img');
+    img.src = imgSrc;
+
+    imgholder.appendChild(img);
+    answerList.appendChild(imgholder);
+};
+
+
+    function handleRadio(widget) {
+    let corAns = widget.options.choices.filter(item => item.correct === true).map(item => item.content);
+    let ansArr = [];
+    let isNone = widget.options.choices.filter(item => item.isNoneOfTheAbove === true && item.correct === true)
+
+    if (isNone.length > 0) {
+        createSection("None of the above");
+        return;
+    }
+
+    corAns.forEach(answer => {
+        const hasGraphie = answer.includes('web+graphie')
+        const hasNotGraphie = answer.includes('![]')
+
+        if(hasGraphie || hasNotGraphie == true) {
+            if(hasGraphie == true) {
+                const split = answer.split('web+graphie');
+                const midUrl = split[1].slice(0, -1);
+                const finalUrl = 'https' + midUrl + '.svg';
+                addImgAnswerBlock(finalUrl);
+            } else if(hasNotGraphie == true) {
+                const finalUrl = answer.slice(4, -1)
+                addImgAnswerBlock(finalUrl);
+            }
+        } else {
+            let cleaned = normalizeTextForAnswer(answer)
+            ansArr.push(cleaned)
+        }
+
+
+    })
+
+    if(ansArr.length) {
+        createSection(ansArr.join("|"));
+    }
+
+}
+
+function handleLabel(widget) {
+    let corAns = widget.options.markers.filter(item => item.answers).map(item => item.answers)
+    let labels = widget.options.markers.filter(item => item.label).map(item => item.label)
+    let ansArr = []
+
+    corAns.forEach((answer, index) => {
+        if(labels == 0) {
+            let cleaned = normalizeTextForAnswer(answer.toString());
+            ansArr.push(cleaned)
+
+        } else {
+        let cleaned = normalizeTextForAnswer(answer.toString());
+        let finLabel = labels[index].replace('Point ', '').replace(/[.]/g, '').trim() || "";
+        let labeledAnswer = `${finLabel}: ${cleaned}`;
+        ansArr.push(labeledAnswer)
+        }
+
+    })
+
+    if(ansArr.length) {
+        createSection(ansArr.join("|"));
+    }
+
+
+}
+
+function handleNumeric(widget) {
+    console.log(widget)
+    const numericAnswer = widget.options.answers[0].value;
+    createSection(numericAnswer);
+}
+
+function handleExpression(widget) {
+    let expressionAnswer = widget.options.answerForms[0].value;
+    let cleaned = normalizeTextForAnswer(expressionAnswer)
+    createSection(cleaned);
+}
+
+function handleDropdown(widget) {
+    let content = widget.options.choices.filter(item => item.correct === true).map(item => item.content);
+    createSection(content[0]);
+}
+
+function handleIntGraph(widget) {
+    let coords = widget.options.correct.coords;
+    let validCoords = coords.filter(coord => coord !== undefined);
+    createSection(validCoords.join(' | '));
+}
+
+function handleInputNum(widget) {
+    let inputNumAnswer = widget.options.value;
+    createSection(inputNumAnswer);
+}
+
+function handleMatcher(widget) {
+    let matchAnswer = widget.options.right;
+    createSection(matchAnswer);
+}
+
+function handleGrapher(widget) {
+    let coords = widget.options.correct.coords;
+    createSection(coords.join(' | '));
+}
+
+function handleCateg(widget) {
+    let values = widget.options.values;
+    let categories = widget.options.categories;
+    let labeledValues = values.map(value => categories[value]);
+
+    createSection(labeledValues);
+}
+
+function handleMatrix(widget) {
+    let arrs = widget.options.answers;
+    createSection(arrs.join(' | '));
+}
+
     toggleVideoSpeedButton.onclick = function () {
         if (toggleVideoSpeedButton.innerText === 'Enable Video Speed Increase') {
             toggleVideoSpeedButton.innerText = 'Disable Video Speed Increase';
@@ -915,4 +1121,5 @@ solveallBtn.onclick = function () {
             document.getElementsByTagName('video')[0].playbackRate = 2;
         }
     };
+})();
 
