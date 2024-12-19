@@ -97,10 +97,6 @@ setInterval(change, 500);
 
     document.body.appendChild(autoFarmAllButton2);
 
-    const autoFarmButton = document.getElementById('auto-farm-button');
-    const autoWatchButton = document.getElementById('auto-watch-button');
-    const autoFarmAllButton = document.getElementById('auto-watch-button');
-
     // Toggle visibility with the 'n' key
     document.addEventListener('keydown', function(event) {
         if (event.key === 'j') {
@@ -120,24 +116,73 @@ setInterval(change, 500);
         }
     });
 
-        // Add buttons to toggle AutoFarm, AutoWatch, and AutoFarmAll
-    const buttonConfigs = [
-        { id: 'auto-farm-button', text: 'Auto Farm (Disabled)', top: '120px', onClick: toggleAutoFarming },
-        { id: 'auto-watch-button', text: 'Auto Watch (Disabled)', top: '140px', onClick: toggleAutoWatching },
-        { id: 'auto-farm-all-button', text: 'Auto Farm All (Disabled)', top: '160px', onClick: toggleAutoFarmAll },
-    ];
+            // Create Auto Farm Button
+    var autoFarmButton = document.createElement('button');
+    autoFarmButton.id = 'auto-farm-button';
+    autoFarmButton.textContent = 'Auto Farm (Disabled)';
+    autoFarmButton.style.position = 'fixed';
+    autoFarmButton.style.top = '120px';
+    autoFarmButton.style.right = '10px';
+    autoFarmButton.style.zIndex = '10000';
+    autoFarmButton.style.display = 'block'; // Ensure it's visible initially
+    autoFarmButton.title = 'Automatically Farm Points';
 
-    buttonConfigs.forEach(config => {
-        const button = document.createElement('button');
-        button.id = config.id;
-        button.textContent = config.text;
-        button.style.position = 'fixed';
-        button.style.top = config.top;
-        button.style.right = '10px';
-        button.style.zIndex = '10000';
-        button.addEventListener('click', config.onClick);
-        document.body.appendChild(button);
+    autoFarmButton.addEventListener('click', function() {
+        if (!isAutoFarming) {
+            autoFarmButton.textContent = 'Auto Farm (Enabled)';
+            startAutoFarming();
+        } else {
+            autoFarmButton.textContent = 'Auto Farm (Disabled)';
+            stopAutoFarming();
+        }
     });
+
+    // Create Auto Watch Button
+    var autoWatchButton = document.createElement('button');
+    autoWatchButton.id = 'auto-watch-button';
+    autoWatchButton.textContent = 'Auto Watch (Disabled)';
+    autoWatchButton.style.position = 'fixed';
+    autoWatchButton.style.top = '140px';
+    autoWatchButton.style.right = '10px';
+    autoWatchButton.style.zIndex = '10000';
+    autoWatchButton.style.display = 'block'; // Ensure it's visible initially
+    autoWatchButton.title = 'Automatically Watch Videos';
+
+    autoWatchButton.addEventListener('click', function() {
+        if (!isAutoWatching) {
+            autoWatchButton.textContent = 'Auto Watch (Enabled)';
+            startAutoWatching();
+        } else {
+            autoWatchButton.textContent = 'Auto Watch (Disabled)';
+            stopAutoWatching();
+        }
+    });
+
+
+    // Create Auto Farm All Button
+    var autoFarmAllButton = document.createElement('button');
+    autoFarmAllButton.id = 'auto-farm-all-button';
+    autoFarmAllButton.textContent = 'Auto Farm All (Disabled)';
+    autoFarmAllButton.style.position = 'fixed';
+    autoFarmAllButton.style.top = '160px';
+    autoFarmAllButton.style.right = '10px';
+    autoFarmAllButton.style.zIndex = '10000';
+    autoFarmAllButton.style.display = 'block'; // Ensure it's visible initially
+    autoFarmAllButton.title = 'Automatically Farms All Videos';
+
+    autoFarmAllButton.addEventListener('click', function() {
+        if (!isAutoFarming) {
+            autoFarmAllButton.textContent = 'Auto Farm All (Enabled)';
+            startAutoFarmAll();
+        } else {
+            autoFarmAllButton.textContent = 'Auto Farm All (Disabled)';
+            stopAutoFarmAll();
+        }
+    });
+
+    document.body.appendChild(autoFarmButton);
+    document.body.appendChild(autoWatchButton);
+    document.body.appendChild(autoFarmAllButton);
 
     function toggleAutoFarming() {
         const button = document.getElementById('auto-farm-button');
