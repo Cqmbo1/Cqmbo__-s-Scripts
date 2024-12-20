@@ -128,7 +128,7 @@ function attachButtonListeners() {
 	confirmer = confirm('Are you sure you want to set back your cookies? You will lose your infinite power! :) ');
 	}
         if(confirmer === true){
-	if(!Game.cookies === Infinity && !Game.cookiesEarned === Infinity){
+	if(Game.cookies === !Infinity && Game.cookiesEarned === !Infinity){
             Game.cookies = Infinity;
             Game.cookiesEarned = Infinity;
 	} else {
