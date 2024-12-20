@@ -121,23 +121,23 @@ document.body.insertAdjacentHTML('beforeend', Buttons);
 
 // Attach event listeners to each button
 function attachButtonListeners() {
-    document.getElementById('infinite-button').addEventListener('click', () => {
-	if(!Game.cookies === Infinity && !Game.cookiesEarned === Infinity){
-        confirmer = confirm('Are you sure you want Infinite Cookies? This cannot be reversed! (It can, but not completely:( ).')
-	} else {
-	confirmer = confirm('Are you sure you want to set back your cookies? You will lose your infinite power! :) ');
-	}
-        if(confirmer === true){
-	if(Game.cookies === !Infinity && Game.cookiesEarned === !Infinity){
+	document.getElementById('infinite-button').addEventListener('click', () => {
+    	if (Game.cookies !== Infinity && Game.cookiesEarned !== Infinity) {
+        	confirmer = confirm('Are you sure you want Infinite Cookies? This cannot be reversed! (It can, but not completely:( ).');
+    	} else {
+        	confirmer = confirm('Are you sure you want to set back your cookies? You will lose your infinite power! :) ');
+    	}
+    	if (confirmer === true) {
+        if (Game.cookies !== Infinity && Game.cookiesEarned !== Infinity) {
             Game.cookies = Infinity;
             Game.cookiesEarned = Infinity;
-	} else {
-	ans = prompt('How many cookies do you want to set your cookies to?')
+        } else {
+            ans = prompt('How many cookies do you want to set your cookies to?');
             Game.cookies = Number(ans);
             Game.cookiesEarned = Number(ans);
-	}
         }
-    })
+    }
+});
     document.getElementById('free-cookies-button').addEventListener('click', () => {
          ans = prompt('How many cookies do you want to earn?');
             if (ans === "" || ans === null) {
