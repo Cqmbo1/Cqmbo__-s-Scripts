@@ -537,6 +537,33 @@ function clickFarmAllButton2() {
     beep.type="audio/mpeg";
     var played = false;
 
+    function processAnswers(json) {
+        let item, question;
+        item = json.data.assessmentItem.item.itemData;
+        question = JSON.parse(item).question;
+
+        Object.keys(question.widgets).forEach(widgetName => {
+            switch (widgetName.split(" ")[0]) {
+                case "numeric-input":
+                    freeResponseAnswerFrom(question).log();
+                    break;
+                case "radio":
+                    multipleChoiceAnswerFrom(question).log();
+                    break;
+                case "expression":
+                    expressionAnswerFrom(question).log();
+                    break;
+                case "dropdown":
+                    dropdownAnswerFrom(question).log();
+                    break;
+                default:
+                    console.warn('Unhandled widget type:', widgetName);
+                    played=true;
+                    beep.play();
+            }
+        });
+    }
+
 let originalJson = JSON.parse;
 JSON.parse = function (jsonString) {
     let parsedData = originalJson(jsonString);
@@ -556,39 +583,38 @@ JSON.parse = function (jsonString) {
                     let widget = itemData.question.widgets[widgetKey];
 
                     switch (widget.type) {
-                        case "numeric-input":
-                            handleNumeric(widget);
-                            break;
-                        case "radio":
-                            handleRadio(widget);
-                            break;
-                        case "expression":
-                            handleExpression(widget);
-                            break;
-                        case "dropdown":
-                            handleDropdown(widget);
-                            break;
-                        case "interactive-graph":
-                            handleIntGraph(widget);
-                            break;
-                        case "grapher":
-                            handleGrapher(widget);
-                            break;
-                        case "input-number":
-                            handleInputNum(widget);
-                            break;
-                        case "matcher":
-                            handleMatcher(widget);
-                            break;
-                        case "categorizer":
-                            handleCateg(widget);
-                            break;
-                        case "label-image":
-                            handleLabel(widget);
-                            break;
-                         case "matrix":
-                            handleMatrix(widget);
-                            break;
+    case "numeric-input":
+        handleNumeric(widget);
+        console.log('numeric-input:', widget);
+        break;
+    case "interactive-graph":
+        handleIntGraph(widget);
+        console.log('interactive-graph:', widget);
+        break;
+    case "grapher":
+        handleGrapher(widget);
+        console.log('grapher:', widget);
+        break;
+    case "input-number":
+        handleInputNum(widget);
+        console.log('input-number:', widget);
+        break;
+    case "matcher":
+        handleMatcher(widget);
+        console.log('matcher:', widget);
+        break;
+    case "categorizer":
+        handleCateg(widget);
+        console.log('categorizer:', widget);
+        break;
+    case "label-image":
+        handleLabel(widget);
+        console.log('label-image:', widget);
+        break;
+    case "matrix":
+        handleMatrix(widget);
+        console.log('matrix:', widget);
+        break;
                         default:
                     console.warn('Unhandled widget type:', widget.type);
                     played=true;
@@ -695,7 +721,7 @@ JSON.parse = function (jsonString) {
                 if (res.url.includes("/getAssessmentItem")) {
                     const clone = res.clone();
                     const json = await clone.json();
-                    //processAnswers(json);
+                    processAnswers(json);
                 }
 
                 if (!window.loaded) {
@@ -735,7 +761,8 @@ function normalizeTextForAnswer(text) {
                .replace(/\[|\]/g, "") // Remove square brackets
                .replace(/<em>/g, "").replace(/<\/em>/g, "") // Remove <em> tags
                .replace(/\$/g, "") // Remove $ symbols used in math expressions
-               .replace(/\\/g, ""); // Remove backslashes
+               .replace(/\\/g, "") // Remove backslashes
+               .replace(/\_/g, ""); // Remove underscores
 
     // Handle fractions (e.g., \frac{1}{1000} -> 1/1000)
     text = text.replace(/\\dfrac{([^{}]+)}{([^{}]+)}/g, "$1/$2")
@@ -1075,7 +1102,7 @@ const addImgAnswerBlock = (imgSrc) => {
     })
 
     if(ansArr.length) {
-        createSection(ansArr.join("|"));
+        createSection(ansArr);
     }
 
 }
@@ -1100,16 +1127,8 @@ function handleLabel(widget) {
     })
 
     if(ansArr.length) {
-        createSection(ansArr.join("|"));
+        createSection(ansArr);
     }
-
-
-}
-
-function handleNumeric(widget) {
-    console.log(widget)
-    const numericAnswer = widget.options.answers[0].value;
-    createSection(numericAnswer);
 }
 
 function handleExpression(widget) {
@@ -1123,12 +1142,6 @@ function handleDropdown(widget) {
     createSection(content[0]);
 }
 
-function handleIntGraph(widget) {
-    let coords = widget.options.correct.coords;
-    let validCoords = coords.filter(coord => coord !== undefined);
-    createSection(validCoords.join(' | '));
-}
-
 function handleInputNum(widget) {
     let inputNumAnswer = widget.options.value;
     createSection(inputNumAnswer);
@@ -1136,25 +1149,30 @@ function handleInputNum(widget) {
 
 function handleMatcher(widget) {
     let matchAnswer = widget.options.right;
-    createSection(matchAnswer);
+    matchAnswer.forEach(Answer => createSection(Answer));
 }
 
 function handleGrapher(widget) {
     let coords = widget.options.correct.coords;
-    createSection(coords.join(' | '));
+    coords.forEach(coord => createSection(coord));
 }
 
 function handleCateg(widget) {
     let values = widget.options.values;
     let categories = widget.options.categories;
     let labeledValues = values.map(value => categories[value]);
-
-    createSection(labeledValues);
+    labeledValues.forEach(label => createSection(label));
 }
 
 function handleMatrix(widget) {
     let arrs = widget.options.answers;
-    createSection(arrs.join(' | '));
+    arrs.forEach(arr => createSection(arr));
+}
+
+function handleNumeric(widget) {
+    console.log(widget);
+    const numericAnswer = widget.options.answers[0].value;
+    numericAnswer.forEach(Answer => createSection(numericAnswer));
 }
 
     toggleVideoSpeedButton.onclick = function () {
