@@ -863,36 +863,40 @@ autosolveButton.onclick = function () {
                 }
             });
         });
-    } else if (inputs.length > 0) {
+} else if (inputs.length > 0) {
     // Handle math expression inputs
     answers.forEach((answer) => {
         const answerText = normalizeTextForAnswer(answer.textContent); // Normalize answer text
-        const answerTextArray = answerText.match(/(\d+|[a-zA-Z]+|\W)/g); // Split into components (e.g., "7x11" -> ['7', 'x', '11'])
+        const answerTextArray = answerText.match(/(\d+|[a-zA-Z]+|\W)/g); // Split into components (e.g., "7 × 11" -> ['7', ' ', '×', ' ', '11'])
         console.log("Answer split into components:", answerTextArray);
 
         inputs.forEach((input) => {
-            const textarea = document.querySelector('.mq-root-block.mq-empty')[0];
-            console.log(input);
-            console.log(textarea);
+            const textarea = input.closest('.perseus-math-input').querySelector('textarea');
             if (textarea) {
                 textarea.focus();
-                textarea.click(); // Simulate a click on the textarea
-                console.log('Textarea clicked');
+                textarea.value = ""; // Clear any existing value in the textarea
+                console.log('Textarea cleared and focused');
 
+                setTimeout(()=> {
                 answerTextArray.forEach((char, index) => {
                     setTimeout(() => {
-                        const keydownEvent = new KeyboardEvent('keydown', {
-                            key: char,
-                            code: `Key${char.toUpperCase()}`,
-                            charCode: char.charCodeAt(0),
-                            keyCode: char.charCodeAt(0),
-                            bubbles: true,
-                        });
-                        textarea.dispatchEvent(keydownEvent); // Simulate a keydown event
-                        console.log(`Simulated keydown for: ${char}`);
-                    }, index * 100); // Add delay between keydown events
+                        // Simulate keypresses for each character
+                        textarea.value += char; // Append the character to the textarea value
+                        textarea.dispatchEvent(new Event('input')); // Trigger an input event
+                        console.log(char)
+                                                        const keydownEvent = new KeyboardEvent('keydown', {
+                                    key: char,
+                                    code: `Key${char.toUpperCase()}`,
+                                    charCode: char.charCodeAt(0),
+                                    keyCode: char.charCodeAt(0),
+                                    bubbles: true,
+                                });
+                                textarea.dispatchEvent(keydownEvent); // Simulate a keydown event
+                        console.log(keydownEvent);
+                        console.log(`Typed '${char}' into textarea`);
+                    }, index * 100); // Add delay between keypresses
                 });
-
+                },500);
                 setTimeout(() => {
                     checkbtn.forEach((checkb) => {
                         checkb.click();
@@ -911,15 +915,13 @@ autosolveButton.onclick = function () {
                     }
                 }, answerTextArray.length * 100 + 2000);
             } else {
-                console.error("No textarea found for mq-root-block");
+                console.error("No textarea found for perseus-math-input");
             }
         });
     });
 }
 
-};
-
-
+}
 
 let autosolveinterval;
 let autosolveintervalLegit;
