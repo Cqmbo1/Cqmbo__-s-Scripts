@@ -1,3 +1,15 @@
+// ==UserScript==
+// @name         Cqmbo Client + khan hack
+// @namespace    http://tampermonkey.net/
+// @version      2024-08-08
+// @description  Try to take over the world!
+// @author       Cqmbo__
+// @match        https://www.khanacademy.org/*
+// @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
+// @grant        none
+// ==/UserScript==
+
+// @exclude      https://www.khanacademy.org/math/pre-algebra/pre-algebra-factors-multiples/pre-algebra-factors-mult/e/factor-pairs
 (function() {
     'use strict';
 
@@ -548,7 +560,7 @@ function clickFarmAllButton2() {
                     freeResponseAnswerFrom(question).log();
                     break;
                 case "radio":
-                    multipleChoiceAnswerFrom(question).log();
+                    //multipleChoiceAnswerFrom(question).log();
                     break;
                 case "expression":
                     expressionAnswerFrom(question).log();
@@ -591,6 +603,9 @@ JSON.parse = function (jsonString) {
         handleIntGraph(widget);
         console.log('interactive-graph:', widget);
         break;
+                        case "radio":
+                            handleRadio(widget);
+                            break;
     case "grapher":
         handleGrapher(widget);
         console.log('grapher:', widget);
@@ -750,6 +765,7 @@ JSON.parse = function (jsonString) {
             const answerText = normalizeTextForAnswer(answer.textContent);
             console.log(`Unnormalized: ${answer.textContent}, Normalized: ${answerText}`);
         });
+        console.log('Grouped: '+answers);
     }
 
 function normalizeTextForAnswer(text) {
@@ -848,46 +864,59 @@ autosolveButton.onclick = function () {
             });
         });
     } else if (inputs.length > 0) {
-        // Handle math expression inputs
-        answers.forEach((answer) => {
-            const answerText = normalizeTextForAnswer(answer.textContent); // Normalize answer text
-            console.log("Normalized Answer for Input:", answerText);
+    // Handle math expression inputs
+    answers.forEach((answer) => {
+        const answerText = normalizeTextForAnswer(answer.textContent); // Normalize answer text
+        const answerTextArray = answerText.match(/(\d+|[a-zA-Z]+|\W)/g); // Split into components (e.g., "7x11" -> ['7', 'x', '11'])
+        console.log("Answer split into components:", answerTextArray);
 
-            inputs.forEach((input) => {
-                const textarea = input.closest('.perseus-math-input').querySelector('textarea');
-                if (textarea) {
-                    // Simulate typing the answer into the input field
+        inputs.forEach((input) => {
+            const textarea = document.querySelector('.mq-root-block.mq-empty')[0];
+            console.log(input);
+            console.log(textarea);
+            if (textarea) {
+                textarea.focus();
+                textarea.click(); // Simulate a click on the textarea
+                console.log('Textarea clicked');
+
+                answerTextArray.forEach((char, index) => {
                     setTimeout(() => {
-                        textarea.focus();
-                        textarea.value = answerText;
-                        textarea.dispatchEvent(new Event('input', { bubbles: true }));
-                        console.log('Typed answer into input field:', answerText);
+                        const keydownEvent = new KeyboardEvent('keydown', {
+                            key: char,
+                            code: `Key${char.toUpperCase()}`,
+                            charCode: char.charCodeAt(0),
+                            keyCode: char.charCodeAt(0),
+                            bubbles: true,
+                        });
+                        textarea.dispatchEvent(keydownEvent); // Simulate a keydown event
+                        console.log(`Simulated keydown for: ${char}`);
+                    }, index * 100); // Add delay between keydown events
+                });
 
-                        setTimeout(() => {
-                            checkbtn.forEach((checkb) => {
-                                checkb.click();
-                                console.log('Check button clicked for input field');
-                            });
-                        }, 500);
+                setTimeout(() => {
+                    checkbtn.forEach((checkb) => {
+                        checkb.click();
+                        console.log('Check button clicked for input field');
+                    });
+                }, answerTextArray.length * 100 + 500);
 
-                        setTimeout(() => {
-                            const nextbtn = document.querySelector('button[data-testid="exercise-next-question"]');
-                            console.log('Next question button:', nextbtn);
-                            if (nextbtn && !nextbtn.disabled) {
-                                nextbtn.click();
-                                console.log('Next question button clicked');
-                            } else {
-                                console.error('Next question button not clickable or found');
-                            }
-                        }, 2000);
-                    }, delay);
-                    delay += 10;
-                } else {
-                    console.error("No textarea found for mq-root-block");
-                }
-            });
+                setTimeout(() => {
+                    const nextbtn = document.querySelector('button[data-testid="exercise-next-question"]');
+                    console.log('Next question button:', nextbtn);
+                    if (nextbtn && !nextbtn.disabled) {
+                        nextbtn.click();
+                        console.log('Next question button clicked');
+                    } else {
+                        console.error('Next question button not clickable or found');
+                    }
+                }, answerTextArray.length * 100 + 2000);
+            } else {
+                console.error("No textarea found for mq-root-block");
+            }
         });
-    }
+    });
+}
+
 };
 
 
@@ -1069,7 +1098,7 @@ const addImgAnswerBlock = (imgSrc) => {
 };
 
 
-    function handleRadio(widget) {
+function handleRadio(widget) {
     let corAns = widget.options.choices.filter(item => item.correct === true).map(item => item.content);
     let ansArr = [];
     let isNone = widget.options.choices.filter(item => item.isNoneOfTheAbove === true && item.correct === true)
@@ -1102,7 +1131,9 @@ const addImgAnswerBlock = (imgSrc) => {
     })
 
     if(ansArr.length) {
-        createSection(ansArr);
+        ansArr.forEach((ans) => {
+        createSection(ans);
+        });
     }
 
 }
@@ -1127,7 +1158,9 @@ function handleLabel(widget) {
     })
 
     if(ansArr.length) {
-        createSection(ansArr);
+        ansArr.forEach((ans) => {
+        createSection(ans);
+        });
     }
 }
 
@@ -1173,6 +1206,14 @@ function handleNumeric(widget) {
     console.log(widget);
     const numericAnswer = widget.options.answers[0].value;
     numericAnswer.forEach(Answer => createSection(numericAnswer));
+}
+
+function handleIntGraph(widget) {
+    let coords = widget.options.correct.coords;
+    let validCoords = coords.filter(coord => coord !== undefined);
+    validCoords.forEach((validCoord) => {
+        createSection(validCoord);
+    });;
 }
 
     toggleVideoSpeedButton.onclick = function () {
