@@ -558,15 +558,19 @@ function clickFarmAllButton2() {
             switch (widgetName.split(" ")[0]) {
                 case "numeric-input":
                     freeResponseAnswerFrom(question).log();
+                    console.log(question);
                     break;
                 case "radio":
-                    //multipleChoiceAnswerFrom(question).log();
+                    multipleChoiceAnswerFrom(question).log();
+                    console.log(question);
                     break;
                 case "expression":
                     expressionAnswerFrom(question).log();
+                    console.log(question);
                     break;
                 case "dropdown":
                     dropdownAnswerFrom(question).log();
+                    console.log(question);
                     break;
                 default:
                     console.warn('Unhandled widget type:', widgetName);
@@ -603,9 +607,6 @@ JSON.parse = function (jsonString) {
         handleIntGraph(widget);
         console.log('interactive-graph:', widget);
         break;
-                        case "radio":
-                            handleRadio(widget);
-                            break;
     case "grapher":
         handleGrapher(widget);
         console.log('grapher:', widget);
@@ -770,19 +771,18 @@ JSON.parse = function (jsonString) {
 
 function normalizeTextForAnswer(text) {
     // Replace LaTeX math symbols and tags
-    text = text.replace(/\\div/g, "÷") // Replace \div with ÷
-               .replace(/\\times|\\cdot|×/g, "×") // Replace \times, \cdot, or × with ×
+    text = text.replace(/\\div/g, "÷") // Replace \\div with ÷
+               .replace(/\\times|\\cdot|×/g, "×") // Replace \\times, \\cdot, or × with ×
                .replace(/\\dfrac|\\frac/g, "/") // Replace fractions with /
                .replace(/\\left|\\right|\\qquad|\\large/g, "") // Remove unnecessary LaTeX tags
-               .replace(/\[|\]/g, "") // Remove square brackets
-               .replace(/<em>/g, "").replace(/<\/em>/g, "") // Remove <em> tags
+               .replace(/<em>/g, "").replace(/<\\em>/g, "") // Remove <em> tags
                .replace(/\$/g, "") // Remove $ symbols used in math expressions
                .replace(/\\/g, "") // Remove backslashes
                .replace(/\_/g, ""); // Remove underscores
 
-    // Handle fractions (e.g., \frac{1}{1000} -> 1/1000)
-    text = text.replace(/\\dfrac{([^{}]+)}{([^{}]+)}/g, "$1/$2")
-               .replace(/\\frac{([^{}]+)}{([^{}]+)}/g, "$1/$2");
+    // Handle fractions (e.g., \\frac{1}{1000} -> 1/1000)
+    text = text.replace(/\\dfrac{([^{}]+)}{([^{}]+)}/g, "$1 / $2")
+               .replace(/\\frac{([^{}]+)}{([^{}]+)}/g, "$1 / $2");
 
     // Normalize spacing and punctuation
     text = text.replace(/\s+/g, " ").trim() // Replace multiple spaces with one and trim
@@ -791,7 +791,8 @@ function normalizeTextForAnswer(text) {
 
     // Standardize mathematical operators
     text = text.replace(/\*/g, "×") // Replace * with ×
-               .replace(/(\d)\s*([=÷×+\-\/])\s*(\d)/g, "$1 $2 $3"); // Add spaces around operators
+               .replace(/([=÷×+\-\/])/g, " $1 ") // Add spaces around operators
+               .replace(/\s{2,}/g, " "); // Remove extra spaces if any
 
     // Standardize quotes
     text = text.replace(/“|”/g, '"'); // Replace curly quotes with straight quotes
@@ -811,7 +812,6 @@ function normalizeTextForOption(text) {
 
     return text.trim();
 }
-
 
 autosolveButton.onclick = function () {
     const inputs = document.querySelectorAll('.mq-root-block');
@@ -860,66 +860,126 @@ autosolveButton.onclick = function () {
                         }
                     }, delay);
                     delay += 10;
-                }
+} else if (answerText.includes('![') && answerText.includes(']')) {
+    console.log('hi');
+    const text = answerText.split('![')[1].split(']')[0];
+    console.log('Extracted text:', text);
+
+    options.forEach((option, index) => {
+        const webimg = option.querySelector('.unresponsive-svg-image img'); // Find img inside the current option
+
+        if (webimg) {
+            console.log('Found image:', webimg, 'Alt text:', webimg.alt);
+
+            const imgalttext = normalizeTextForAnswer(webimg.alt);
+            console.log('Normalized alt text:', imgalttext);
+
+            if (imgalttext === text) {
+                setTimeout(() => {
+                    if (!option.classList.contains('clicked')) {
+                        option.click(); // Click the option
+                        option.classList.add('clicked');
+                        console.log('Clicking matching option:', imgalttext);
+
+                        setTimeout(() => {
+                            answer.remove();
+                        }, 100);
+
+                        setTimeout(() => {
+                            checkbtn.forEach((checkb) => {
+                                checkb.click();
+                                console.log('Check button clicked');
+                            });
+                        }, 250);
+
+                        setTimeout(() => {
+                            const nextbtn = document.querySelector('button[data-testid="exercise-next-question"]');
+                            console.log('Next question button:', nextbtn);
+                            if (nextbtn && !nextbtn.disabled) {
+                                nextbtn.click();
+                                console.log('Next question button clicked');
+                            } else {
+                                console.error('Next question button not clickable or found');
+                            }
+                        }, 2000);
+                    }
+                }, delay);
+                delay += 10;
+            }
+        } else {
+            console.log(`No image found in option at index ${index}`);
+        }
+    });
+}
+
             });
         });
-} else if (inputs.length > 0) {
-    // Handle math expression inputs
-    answers.forEach((answer) => {
-        const answerText = normalizeTextForAnswer(answer.textContent); // Normalize answer text
-        const answerTextArray = answerText.match(/(\d+|[a-zA-Z]+|\W)/g); // Split into components (e.g., "7 × 11" -> ['7', ' ', '×', ' ', '11'])
+    } else if (inputs.length > 0) {
+    const firstAnswer = answers[0]; // Select the first answer
+    if (firstAnswer) {
+        const answerText = normalizeTextForAnswer(firstAnswer.textContent); // Normalize answer text
+        const answerTextArray = answerText.match(/(\d+|[a-zA-Z]+|\W)/g); // Split into components
         console.log("Answer split into components:", answerTextArray);
 
         inputs.forEach((input) => {
-            const textarea = input.closest('.perseus-math-input').querySelector('textarea');
+            const textarea = document.querySelector('.mq-root-block');
             if (textarea) {
-                textarea.focus();
-                textarea.value = ""; // Clear any existing value in the textarea
-                console.log('Textarea cleared and focused');
-
-                setTimeout(()=> {
-                answerTextArray.forEach((char, index) => {
-                    setTimeout(() => {
-                        // Simulate keypresses for each character
-                        textarea.value += char; // Append the character to the textarea value
-                        textarea.dispatchEvent(new Event('input')); // Trigger an input event
-                        console.log(char)
-                                                        const keydownEvent = new KeyboardEvent('keydown', {
-                                    key: char,
-                                    code: `Key${char.toUpperCase()}`,
-                                    charCode: char.charCodeAt(0),
-                                    keyCode: char.charCodeAt(0),
-                                    bubbles: true,
-                                });
-                                textarea.dispatchEvent(keydownEvent); // Simulate a keydown event
-                        console.log(keydownEvent);
-                        console.log(`Typed '${char}' into textarea`);
-                    }, index * 100); // Add delay between keypresses
-                });
-                },500);
-                setTimeout(() => {
-                    checkbtn.forEach((checkb) => {
-                        checkb.click();
-                        console.log('Check button clicked for input field');
-                    });
-                }, answerTextArray.length * 100 + 500);
-
-                setTimeout(() => {
-                    const nextbtn = document.querySelector('button[data-testid="exercise-next-question"]');
-                    console.log('Next question button:', nextbtn);
-                    if (nextbtn && !nextbtn.disabled) {
-                        nextbtn.click();
-                        console.log('Next question button clicked');
-                    } else {
-                        console.error('Next question button not clickable or found');
+                answerTextArray.forEach((component) => {
+                    let element;
+                    if (component.trim() === "") {
+                        return; // Ignore spaces
+                    } else if (/[a-zA-Z]/.test(component)) {
+                        if (component === 'f') {
+                            element = document.createElement('var');
+                            element.className = 'mq-f';
+                            element.textContent = 'f';
+                        } else {
+                            element = document.createElement('var');
+                            element.textContent = component;
+                        }
+                    } else if (/[×÷+-]/.test(component)) {
+                        element = document.createElement('span');
+                        element.className = 'mq-binary-operator';
+                        element.textContent = component;
+                    } else if (/\d/.test(component)) {
+                        element = document.createElement('span');
+                        element.className = 'mq-digit';
+                        element.textContent = component;
                     }
-                }, answerTextArray.length * 100 + 2000);
+                    if (element) {
+                        textarea.appendChild(element);
+                    }
+                });
+
+                setTimeout(() => {
+                    console.log('Typed answer into input field:', answerText);
+
+                    setTimeout(() => {
+                        checkbtn.forEach((checkb) => {
+                            checkb.click();
+                            console.log('Check button clicked for input field');
+                        });
+                    }, 500);
+
+                    setTimeout(() => {
+                        const nextbtn = document.querySelector('button[data-testid="exercise-next-question"]');
+                        console.log('Next question button:', nextbtn);
+                        if (nextbtn && !nextbtn.disabled) {
+                            nextbtn.click();
+                            console.log('Next question button clicked');
+                        } else {
+                            console.error('Next question button not clickable or found');
+                        }
+                    }, 2000);
+                }, delay);
+                delay += 10;
             } else {
                 console.error("No textarea found for perseus-math-input");
             }
         });
-    });
+    }
 }
+
 
 }
 
