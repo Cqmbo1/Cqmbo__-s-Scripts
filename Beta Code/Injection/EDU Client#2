@@ -921,14 +921,39 @@ autosolveButton.onclick = function () {
         const answerTextArray = answerText.match(/(\d+|[a-zA-Z]+|\W)/g); // Split into components
         console.log("Answer split into components:", answerTextArray);
 
+        const binaryOperatorsLatex = {
+            '+': 'plus',
+            '-': 'minus',
+            '*': 'times',
+            '⋅': 'cdot',
+            '/': 'div',
+            '=': '=',
+            '≠': 'neq',
+            '<': '<',
+            '>': '>',
+            '≤': 'leq',
+            '≥': 'geq',
+            '±': 'pm',
+            '∞': 'infty',
+            '∑': 'sum',
+            '∫': 'int',
+            '∂': 'partial',
+            '∇': 'nabla',
+        };
+
         inputs.forEach((input) => {
             const textarea = document.querySelector('.mq-root-block');
-            if (textarea) {
+            const mathInputBox = document.querySelector('.mq-textarea textarea'); // Target span.mq-textarea
+            if (textarea && mathInputBox) {
+                let ariaLabel = 'Math input box: ';
+
                 answerTextArray.forEach((component) => {
                     let element;
+
                     if (component.trim() === "") {
                         return; // Ignore spaces
                     } else if (/[a-zA-Z]/.test(component)) {
+                        // Handle letters
                         if (component === 'f') {
                             element = document.createElement('var');
                             element.className = 'mq-f';
@@ -937,19 +962,34 @@ autosolveButton.onclick = function () {
                             element = document.createElement('var');
                             element.textContent = component;
                         }
-                    } else if (/[×÷+-]/.test(component)) {
+                        ariaLabel += `"${component}" `;
+                    } else if (binaryOperatorsLatex.hasOwnProperty(component)) {
+                        // Handle binary operators
                         element = document.createElement('span');
                         element.className = 'mq-binary-operator';
                         element.textContent = component;
+                        console.log(component);
+                        ariaLabel += `"${component}" (LaTeX: ${binaryOperatorsLatex[component]}) `;
                     } else if (/\d/.test(component)) {
-                        element = document.createElement('span');
-                        element.className = 'mq-digit';
-                        element.textContent = component;
+                        // Split multi-digit numbers into single digits
+                        component.split('').forEach((digit) => {
+                            const digitElement = document.createElement('span');
+                            digitElement.className = 'mq-digit';
+                            digitElement.textContent = digit;
+                            textarea.appendChild(digitElement);
+                            ariaLabel += digit + ' ';
+                        });
+                        return; // Skip further processing for this component
                     }
+
                     if (element) {
                         textarea.appendChild(element);
                     }
                 });
+
+                // Set the aria-label with the constructed string
+                mathInputBox.setAttribute('aria-label', ariaLabel.trim());
+                console.log('Aria-label set:', ariaLabel);
 
                 setTimeout(() => {
                     console.log('Typed answer into input field:', answerText);
@@ -974,12 +1014,11 @@ autosolveButton.onclick = function () {
                 }, delay);
                 delay += 10;
             } else {
-                console.error("No textarea found for perseus-math-input");
+                console.error("No textarea or mq-textarea found for perseus-math-input");
             }
         });
     }
 }
-
 
 }
 
