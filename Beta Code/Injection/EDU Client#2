@@ -821,9 +821,10 @@ autosolveButton.onclick = function () {
     let delay = 0;
 
 if (options.length > 0) {
-    const element = document.querySelector('._1w6i3h1')[0]; // Adjust the selector if necessary
+    const element = document.querySelectorAll('._1w6i3h1')[0]; // Adjust the selector if necessary
+console.log(element);
 
-    if (element && window.getComputedStyle(element).borderRadius === '24px') {
+    if (element && element.style.borderRadius === '24px') {
         const firstanswer = answers[0];
         if (firstanswer) {
             const answerText = normalizeTextForAnswer(firstanswer.textContent); // Normalize answer text
@@ -864,56 +865,7 @@ if (options.length > 0) {
                         }
                     }, delay);
                     delay += 10;
-                }
-            });
-        }
-    } else if (element && window.getComputedStyle(element).borderRadius === '3px') {
-        answers.forEach((answer) => {
-            const answerText = normalizeTextForAnswer(answer.textContent); // Normalize answer text
-            options.forEach((option) => {
-                const optionText = normalizeTextForOption(option.textContent); // Normalize option text
-                console.log("Normalized Option:", optionText);
-                console.log("Normalized Answer:", answerText);
-
-                if (optionText === answerText) {
-                    console.log("Match Found - Option:", optionText, "Answer:", answerText);
-                    setTimeout(() => {
-                        if (!option.classList.contains('clicked')) {
-                            option.click();
-                            option.classList.add('clicked');
-                            console.log('Clicking matching option:', optionText);
-
-                            setTimeout(() => {
-                                answer.remove();
-                            }, 100);
-
-                            setTimeout(() => {
-                                checkbtn.forEach((checkb) => {
-                                    checkb.click();
-                                    console.log('Check button clicked');
-                                });
-                            }, 250);
-
-                            setTimeout(() => {
-                                const nextbtn = document.querySelector('button[data-testid="exercise-next-question"]');
-                                console.log('Next question button:', nextbtn);
-                                if (nextbtn && !nextbtn.disabled) {
-                                    nextbtn.click();
-                                    console.log('Next question button clicked');
-                                } else {
-                                    console.error('Next question button not clickable or found');
-                                }
-                            }, 2000);
-                        }
-                    }, delay);
-                    delay += 10;
-                }
-            });
-        });
-    } else {
-        console.warn("Element not found or borderRadius is not 24px or 3px.");
-    }
-} else if (answerText.includes('![') && answerText.includes(']')) {
+                } else if (answerText.includes('![') && answerText.includes(']')) {
     console.log('hi');
     const text = answerText.split('![')[1].split(']')[0];
     console.log('Extracted text:', text);
@@ -936,7 +888,7 @@ if (options.length > 0) {
 
                         setTimeout(() => {
                             firstanswer.remove();
-                        }, 100);
+                        }, 50);
 
                         setTimeout(() => {
                             checkbtn.forEach((checkb) => {
@@ -964,9 +916,104 @@ if (options.length > 0) {
         }
     });
 }
-
             });
-        };
+        }
+    } else if (element && element.style.borderRadius === '3px') {
+        answers.forEach((answer) => {
+            const answerText = normalizeTextForAnswer(answer.textContent); // Normalize answer text
+            options.forEach((option) => {
+                const optionText = normalizeTextForOption(option.textContent); // Normalize option text
+                console.log("Normalized Option:", optionText);
+                console.log("Normalized Answer:", answerText);
+
+                if (optionText === answerText) {
+                    console.log("Match Found - Option:", optionText, "Answer:", answerText);
+                    setTimeout(() => {
+                        if (!option.classList.contains('clicked')) {
+                            option.click();
+                            option.classList.add('clicked');
+                            console.log('Clicking matching option:', optionText);
+
+                            setTimeout(() => {
+                                answer.remove();
+                            }, 50);
+
+                            setTimeout(() => {
+                                checkbtn.forEach((checkb) => {
+                                    checkb.click();
+                                    console.log('Check button clicked');
+                                });
+                            }, 250);
+
+                            setTimeout(() => {
+                                const nextbtn = document.querySelector('button[data-testid="exercise-next-question"]');
+                                console.log('Next question button:', nextbtn);
+                                if (nextbtn && !nextbtn.disabled) {
+                                    nextbtn.click();
+                                    console.log('Next question button clicked');
+                                } else {
+                                    console.error('Next question button not clickable or found');
+                                }
+                            }, 2000);
+                        }
+                    }, delay);
+                    delay += 10;
+                } else if (answerText.includes('![') && answerText.includes(']')) {
+    console.log('hi');
+    const text = answerText.split('![')[1].split(']')[0];
+    console.log('Extracted text:', text);
+
+    options.forEach((option, index) => {
+        const webimg = option.querySelector('.unresponsive-svg-image img'); // Find img inside the current option
+
+        if (webimg) {
+            console.log('Found image:', webimg, 'Alt text:', webimg.alt);
+
+            const imgalttext = normalizeTextForAnswer(webimg.alt);
+            console.log('Normalized alt text:', imgalttext);
+
+            if (imgalttext === text) {
+                setTimeout(() => {
+                    if (!option.classList.contains('clicked')) {
+                        option.click(); // Click the option
+                        option.classList.add('clicked');
+                        console.log('Clicking matching option:', imgalttext);
+
+                        setTimeout(() => {
+                            answer.remove();
+                        }, 50);
+
+                        setTimeout(() => {
+                            checkbtn.forEach((checkb) => {
+                                checkb.click();
+                                console.log('Check button clicked');
+                            });
+                        }, 250);
+
+                        setTimeout(() => {
+                            const nextbtn = document.querySelector('button[data-testid="exercise-next-question"]');
+                            console.log('Next question button:', nextbtn);
+                            if (nextbtn && !nextbtn.disabled) {
+                                nextbtn.click();
+                                console.log('Next question button clicked');
+                            } else {
+                                console.error('Next question button not clickable or found');
+                            }
+                        }, 2000);
+                    }
+                }, delay);
+                delay += 10;
+            }
+        } else {
+            console.log(`No image found in option at index ${index}`);
+        }
+    });
+}
+            });
+        });
+    } else {
+        console.warn("Element not found or borderRadius is not 24px or 3px.");
+    }
     } else if (inputs.length > 0) {
     const firstAnswer = answers[0]; // Select the first answer
     if (firstAnswer) {
