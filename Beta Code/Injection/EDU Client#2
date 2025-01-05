@@ -1028,6 +1028,7 @@ let autosolveintervalLegit;
 solveallBtnLegit.onclick = function () {
     if (solveallBtnLegit.innerText === 'Solve All Questions Legit') {
         solveallBtnLegit.innerText = 'Pause Solve All';
+        localStorage.setItem('Solve All Legit', true);
 
         autosolveintervalLegit = setInterval(() => {
             const specialElement = document.querySelector('._1f0fvyce');
@@ -1051,25 +1052,31 @@ solveallBtnLegit.onclick = function () {
         solveallBtnLegit.innerText = 'Solve All Questions Legit';
         clearInterval(autosolveintervalLegit);
         autosolveintervalLegit = null;
+        localStorage.setItem('Solve All Legit', false);
     }
 };
 
 solveallBtn.onclick = function () {
     if (solveallBtn.innerText === 'Solve All Questions') {
         solveallBtn.innerText = 'Pause Solve All';
+        localStorage.setItem('Solve All', true);
 
         autosolveinterval = setInterval(() => {
             const specialElement = document.querySelector('._1f0fvyce');
             const specialElement2 = document.querySelector('._1g3h9gny');
             if (specialElement) {
-                specialElement.click();
-                console.log('Special element _1f0fvyce clicked');
+                setTimeout(() => {
+                    specialElement.click();
+                    console.log('Special element _1f0fvyce clicked');
+                }, 50);
             } else {
                 console.log('No special element _1f0fvyce found');
             }
             if (specialElement2) {
-                specialElement2.click();
-                console.log('Special element _1g3h9gny clicked');
+                setTimeout(() => {
+                    specialElement2.click();
+                    console.log('Special element _1g3h9gny clicked');
+                }, 500);
             } else {
                 console.log('No special element _1g3h9gny found');
             }
@@ -1080,9 +1087,30 @@ solveallBtn.onclick = function () {
         solveallBtn.innerText = 'Solve All Questions';
         clearInterval(autosolveinterval);
         autosolveinterval = null;
+        localStorage.setItem('Solve All', false);
     }
 };
 
+
+function shouldDo() {
+    const shouldSolveAllLegit = localStorage.getItem('Solve All Legit');
+    console.log(shouldSolveAllLegit);
+    if (shouldSolveAllLegit === 'true' || shouldSolveAllLegit === true) {
+        solveallBtnLegit.click();
+    }
+
+    const shouldSolveAll = localStorage.getItem('Solve All');
+    console.log(shouldSolveAll);
+    if (shouldSolveAll === 'true' || shouldSolveAll === true) {
+        solveallBtn.click();
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    shouldDo();
+});
+
+    shouldDo();
 
     function freeResponseAnswerFrom(question) {
         const answer = Object.values(question.widgets).flatMap((widget) => {
@@ -1327,4 +1355,3 @@ function handleIntGraph(widget) {
         }
     };
 })();
-
