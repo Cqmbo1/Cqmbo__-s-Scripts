@@ -821,8 +821,9 @@ autosolveButton.onclick = function () {
     let delay = 0;
 
     if (options.length > 0) {
-        answers.forEach((answer) => {
-            const answerText = normalizeTextForAnswer(answer.textContent); // Normalize answer text
+        const firstanswer = answers[0];
+        if(firstanswer) {
+            const answerText = normalizeTextForAnswer(firstanswer.textContent); // Normalize answer text
             options.forEach((option) => {
                 const optionText = normalizeTextForOption(option.textContent); // Normalize option text
                 console.log("Normalized Option:", optionText);
@@ -837,8 +838,8 @@ autosolveButton.onclick = function () {
                             console.log('Clicking matching option:', optionText);
 
                             setTimeout(() => {
-                                answer.remove();
-                            }, 100);
+                                firstanswer.remove();
+                            }, 50);
 
                             setTimeout(() => {
                                 checkbtn.forEach((checkb) => {
@@ -882,7 +883,7 @@ autosolveButton.onclick = function () {
                         console.log('Clicking matching option:', imgalttext);
 
                         setTimeout(() => {
-                            answer.remove();
+                            firstanswer.remove();
                         }, 100);
 
                         setTimeout(() => {
@@ -913,7 +914,7 @@ autosolveButton.onclick = function () {
 }
 
             });
-        });
+        };
     } else if (inputs.length > 0) {
     const firstAnswer = answers[0]; // Select the first answer
     if (firstAnswer) {
@@ -1002,7 +1003,7 @@ autosolveButton.onclick = function () {
                     }, 500);
 
                     setTimeout(() => {
-                        const nextbtn = document.querySelector('button[data-testid="exercise-next-question"]');
+                        const nextbtn = document.querySelector('button[data-testid="exercise-next-question"]' || 'button[data-testid="exercise-check-answer"]');
                         console.log('Next question button:', nextbtn);
                         if (nextbtn && !nextbtn.disabled) {
                             nextbtn.click();
