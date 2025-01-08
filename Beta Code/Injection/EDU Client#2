@@ -517,6 +517,7 @@ function clickFarmAllButton2() {
             <button id="auto-solve-all">Solve All Questions</button>
             <button id="auto-solve-all-legit">Solve All Questions Legit</button>
             <button id="show-text">Log Options Text</button>
+            <button id="debug-mode">Toggle Debug Mode</button>
             <div id="answer-list" style="display: block;">-Answers-</div>
             <p>M also toggles Menu</p>
         </div>
@@ -549,6 +550,14 @@ function clickFarmAllButton2() {
     beep.type="audio/mpeg";
     var played = false;
 
+    var debugmode = localStorage.getItem('shouldtoggledebugmode') || false;
+
+    function playerrorsound() {
+        if (debugmode === true){
+        played=true;
+        beep.play();
+        }
+    }
     function processAnswers(json) {
         let item, question;
         item = json.data.assessmentItem.item.itemData;
@@ -574,8 +583,7 @@ function clickFarmAllButton2() {
                     break;
                 default:
                     console.warn('Unhandled widget type:', widgetName);
-                    played=true;
-                    beep.play();
+                    playerrorsound();
             }
         });
     }
@@ -633,8 +641,7 @@ JSON.parse = function (jsonString) {
         break;
                         default:
                     console.warn('Unhandled widget type:', widget.type);
-                    played=true;
-                    beep.play();
+playerrorsound();
                     }
                 }
             }
@@ -659,6 +666,7 @@ JSON.parse = function (jsonString) {
     let solveallBtn = get("auto-solve-all");
     let showtextbtn = get("show-text");
     let solveallBtnLegit = get("auto-solve-all-legit");
+    let debugmodebtn = get("debug-mode");
 
     if (toggleButton && answerList) {
         toggleButton.onclick = function () {
@@ -768,6 +776,17 @@ JSON.parse = function (jsonString) {
         });
         console.log('Grouped: '+answers);
     }
+    debugmodebtn.onclick = function () {
+        debugmode = !debugmode
+        debugmodebtn.textContent = debugmode ? 'Toggle Debug Mode: On' : 'Toggle Debug Mode: Off';
+        localStorage.setItem('shouldtoggledebugmode', debugmode);
+    }
+
+    setInterval(() => {
+        debugmode = localStorage.getItem('shouldtoggledebugmode') || false;
+      debugmodebtn.textContent = debugmode === true ? 'Toggle Debug Mode: On' : 'Toggle Debug Mode: Off';
+    },10);
+
 
 function normalizeTextForAnswer(text) {
     // Replace LaTeX math symbols and tags
@@ -794,6 +813,19 @@ function normalizeTextForAnswer(text) {
                .replace(/([=÷×+\-\/])/g, " $1 ") // Add spaces around operators
                .replace(/\s{2,}/g, " "); // Remove extra spaces if any
 
+    // Strip specific patterns
+    text = text.replace(/ - \| : - : /g, "") // Remove " - | : - : "
+               .replace(/ - \| :-: /g, "") // Remove " - | :-: "
+               .replace(/ : - : \| : - : /g, "") // Remove " : - : | : - : "
+               .replace(/ :-: \| :-: /g, "") // Remove " :-: | :-: "
+               .replace(/\| /g, "") // Remove "| "
+               .replace(/ \| /g, "") // Remove " | " without leaving space
+               .replace(/\$\|/g, "") // Remove "$|"
+               .replace(/ - \| - /g, "") // Remove " - | - "
+               .replace(/- - /g, "") // Remove "- - "
+               .replace(/ \| /g, "") // Ensure removal of any stray pipe space
+               .replace(/\|/g, ""); // Remove remaining pipes without leaving space
+
     // Standardize quotes
     text = text.replace(/“|”/g, '"'); // Replace curly quotes with straight quotes
 
@@ -813,11 +845,17 @@ function normalizeTextForOption(text) {
     return text.trim();
 }
 
+
+
 autosolveButton.onclick = function () {
     const inputs = document.querySelectorAll('.mq-root-block');
     const answers = document.querySelectorAll('.answer');
     const options = document.querySelectorAll('._ssxvf9l');
     const checkbtn = document.querySelectorAll('._1pyeoxjt');
+    const dropdown = document.querySelectorAll('._');
+    const categorizerbtns = document.querySelectorAll('._');
+    const categorizertypes = document.querySelectorAll('._');
+
     let delay = 0;
 
 if (options.length > 0) {
@@ -1014,6 +1052,53 @@ console.log(element);
     } else {
         console.warn("Element not found or borderRadius is not 24px or 3px.");
     }
+} else if (dropdown.length > 0) {
+for(let i = 0; i < dropdown.length; i++) {
+
+const seldropdown = dropdown[i];
+seldropdown.click();
+const selans = answers[i].textContent;
+const answerText = normalizeTextForAnswer(selans)
+const dropdownoptions = seldropdown.querySelectorAll('._');
+dropdownoptions.forEach((option) => {
+const OptionText = normalizeTextForAnswer(option.textContent);
+if (OptionText === answerText) {
+	if (!option.classList.contains('clicked')) {
+              option.click();
+  option.classList.add('clicked');
+  setTimeout(() => {
+answers[i].remove();
+}, 50);
+setTimeout(() => {
+                                checkbtn.forEach((checkb) => {
+                                    checkb.click();
+                                    console.log('Check button clicked');
+                                });
+                            }, 250);
+
+                            setTimeout(() => {
+                                const nextbtn = document.querySelector('button[data-testid="exercise-next-question"]');
+                                console.log('Next question button:', nextbtn);
+                                if (nextbtn && !nextbtn.disabled) {
+                                    nextbtn.click();
+                                    console.log('Next question button clicked');
+                                } else {
+                                    console.error('Next question button not clickable or found');
+                                }
+                            }, 2000);
+};
+}
+});
+                        }
+
+
+} else if (categorizerbtns.length > 0) {
+const a = categorizerbtns.length / (categorizertypes.length || 2)
+for(let i=0; i < a; i++) {
+ const selans = answers[i]
+if (selans.textContent === 'Prime') {
+}
+}
     } else if (inputs.length > 0) {
     const firstAnswer = answers[0]; // Select the first answer
     if (firstAnswer) {
@@ -1455,3 +1540,4 @@ function handleIntGraph(widget) {
         }
     };
 })();
+
