@@ -808,7 +808,7 @@ function normalizeTextForAnswer(text) {
                .replace(/ - \| :-: /g, "") // Remove " - | :-: "
                .replace(/ : - : \| : - : /g, "") // Remove " : - : | : - : "
                .replace(/ :-: \| :-: /g, "") // Remove " :-: | :-: "
-               .replace(/\| /g, "") // Remove "| "
+               .replace(/\| /g, " ") // Remove "| "
                .replace(/ \| /g, "") // Remove " | " without leaving space
                .replace(/\$\|/g, "") // Remove "$|"
                .replace(/ - \| - /g, "") // Remove " - | - "
@@ -1325,8 +1325,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     .filter(choice => choice.correct)
                     .map(choice => {
                         let createPar = document.createElement('section');
-                        createPar.innerHTML = choice.content;
-                        createPar.id = choice.content;
+                        createPar.innerHTML = normalizeTextForAnswer(choice.content);
+                        createPar.id = normalizeTextForAnswer(choice.content);
                     createPar.className = 'answer';
                         document.getElementById('answer-list').append(createPar);
                         curAns++;
