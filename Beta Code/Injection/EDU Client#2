@@ -803,17 +803,7 @@ function normalizeTextForAnswer(text) {
     text = text.replace(/\\dfrac{([^{}]+)}{([^{}]+)}/g, "$1 / $2")
                .replace(/\\frac{([^{}]+)}{([^{}]+)}/g, "$1 / $2");
 
-    // Normalize spacing and punctuation
-    text = text.replace(/\s+/g, " ").trim() // Replace multiple spaces with one and trim
-               .replace(/\s+\./g, ".") // Remove spaces before periods
-               .replace(/,\s*/g, ", "); // Ensure consistent spacing after commas
-
-    // Standardize mathematical operators
-    text = text.replace(/\*/g, "×") // Replace * with ×
-               .replace(/([=÷×+\-\/])/g, " $1 ") // Add spaces around operators
-               .replace(/\s{2,}/g, " "); // Remove extra spaces if any
-
-    // Strip specific patterns
+        // Strip specific patterns
     text = text.replace(/ - \| : - : /g, "") // Remove " - | : - : "
                .replace(/ - \| :-: /g, "") // Remove " - | :-: "
                .replace(/ : - : \| : - : /g, "") // Remove " : - : | : - : "
@@ -825,6 +815,16 @@ function normalizeTextForAnswer(text) {
                .replace(/- - /g, "") // Remove "- - "
                .replace(/ \| /g, "") // Ensure removal of any stray pipe space
                .replace(/\|/g, ""); // Remove remaining pipes without leaving space
+
+    // Normalize spacing and punctuation
+    text = text.replace(/\s+/g, " ").trim() // Replace multiple spaces with one and trim
+               .replace(/\s+\./g, ".") // Remove spaces before periods
+               .replace(/,\s*/g, ", "); // Ensure consistent spacing after commas
+
+    // Standardize mathematical operators
+    text = text.replace(/\*/g, "×") // Replace * with ×
+               .replace(/([=÷×+\-\/])/g, " $1 ") // Add spaces around operators
+               .replace(/\s{2,}/g, " "); // Remove extra spaces if any
 
     // Standardize quotes
     text = text.replace(/“|”/g, '"'); // Replace curly quotes with straight quotes
@@ -851,7 +851,7 @@ autosolveButton.onclick = function () {
     const inputs = document.querySelectorAll('.mq-root-block');
     const answers = document.querySelectorAll('.answer');
     const options = document.querySelectorAll('._ssxvf9l');
-    const checkbtn = document.querySelectorAll('._1pyeoxjt');
+    const checkbtn = document.querySelectorAll('button[data-testid="exercise-check-answer"]');
     const dropdown = document.querySelectorAll('._');
     const categorizerbtns = document.querySelectorAll('._');
     const categorizertypes = document.querySelectorAll('._');
