@@ -799,41 +799,64 @@ function normalizeTextForAnswer(text) {
                .replace(/\\/g, "") // Remove backslashes
                .replace(/\_/g, ""); // Remove underscores
 
-    // Handle fractions (e.g., \\frac{1}{1000} -> 1/1000)
+    // Handle fractions (e.g., \\\\frac{1}{1000} -> 1/1000)
     text = text.replace(/\\dfrac{([^{}]+)}{([^{}]+)}/g, "$1 / $2")
                .replace(/\\frac{([^{}]+)}{([^{}]+)}/g, "$1 / $2");
 
-        // Strip specific patterns
-    text = text.replace(/ - \| : - : /g, "") // Remove " - | : - : "
-               .replace(/ - \| :-: /g, "") // Remove " - | :-: "
-               .replace(/ : - : \| : - : /g, "") // Remove " : - : | : - : "
-               .replace(/ :-: \| :-: /g, "") // Remove " :-: | :-: "
-               .replace(/\| /g, " ") // Remove "| "
-               .replace(/ \| /g, "") // Remove " | " without leaving space
-               .replace(/\$\|/g, "") // Remove "$|"
-               .replace(/ - \| - /g, "") // Remove " - | - "
-               .replace(/- - /g, "") // Remove "- - "
-               .replace(/ \| /g, "") // Ensure removal of any stray pipe space
-               .replace(/\|/g, ""); // Remove remaining pipes without leaving space
+    // Strip specific patterns
+    text = text.replace(/ - \| : - : /g, "")
+               .replace(/ - \| :-: /g, "")
+               .replace(/ : - : \| : - : /g, "")
+               .replace(/ :-: \| :-: /g, "")
+               .replace(/\| /g, " ")
+               .replace(/ \| /g, "")
+               .replace(/\$\|/g, "")
+               .replace(/ - \| - /g, "")
+               .replace(/- - /g, "")
+               .replace(/ \| /g, "")
+               .replace(/\|/g, "");
+
+    // Remove "text{ " and "}" and also handle "text {"
+    text = text.replace(/text\{\s*/g, "")
+               .replace(/text \{/g, "")
+               .replace(/\}/g, "");
+
+    // Replace 'ell' with 'ℓ'
+    text = text.replace(/\bell\b/g, "ℓ");
+
+    // Simplify nested braces and fractions
+    text = text.replace(/\{([^{}]+)\}/g, "$1") // Remove single braces
+               .replace(/(\d+)\s*\/\s*\{([^{}]*)\}/g, "$1$2") // Flatten fractions with braces
+               .replace(/(\d+)\{([^{}]+)\}/g, "$1$2"); // Flatten nested numbers
 
     // Normalize spacing and punctuation
-    text = text.replace(/\s+/g, " ").trim() // Replace multiple spaces with one and trim
-               .replace(/\s+\./g, ".") // Remove spaces before periods
-               .replace(/,\s*/g, ", "); // Ensure consistent spacing after commas
+    text = text.replace(/\s+/g, " ").trim()
+               .replace(/\s+\./g, ".")
+               .replace(/,\s*/g, ", ");
 
     // Standardize mathematical operators
-    text = text.replace(/\*/g, "×") // Replace * with ×
-               .replace(/([=÷×+\-\/])/g, " $1 ") // Add spaces around operators
-               .replace(/\s{2,}/g, " "); // Remove extra spaces if any
+    text = text.replace(/\*/g, "×")
+               .replace(/([=÷×+\-/])/g, " $1 ")
+               .replace(/\s{2,}/g, " ");
+
+    // Add space between letters and numbers if missing
+    text = text.replace(/([a-zA-Z])(?=\d)/g, "$1 ");
+
+    // Add space between a number and a lowercase letter if missing
+    text = text.replace(/(\d)(?=[a-z])/g, "$1 ");
+
+    // Add space between lowercase and uppercase letters if missing
+    text = text.replace(/([a-z])(?=[A-Z])/g, "$1 ");
 
     // Standardize quotes
-    text = text.replace(/“|”/g, '"'); // Replace curly quotes with straight quotes
+    text = text.replace(/“|”/g, '"');
 
     // Remove invisible characters
-    text = text.replace(/[\u200b-\u200d\uFEFF]/g, ""); // Remove zero-width characters
+    text = text.replace(/[\u200b-\u200d\uFEFF]/g, "");
 
     return text.trim();
 }
+
 
 function normalizeTextForOption(text) {
     // Use the same replacements as for answers
@@ -844,8 +867,6 @@ function normalizeTextForOption(text) {
 
     return text.trim();
 }
-
-
 
 autosolveButton.onclick = function () {
     const inputs = document.querySelectorAll('.mq-root-block');
@@ -1218,6 +1239,13 @@ solveallBtnLegit.onclick = function () {
         autosolveintervalLegit = setInterval(() => {
             const specialElement = document.querySelector('._1f0fvyce');
             const specialElement2 = document.querySelector('._1g3h9gny');
+            const specialElement3 = document.querySelector('._1rihsjro');
+            if (specialElement3) {
+                specialElement3.click();
+                console.log('Special element _1rihsjro clicked');
+            } else {
+                console.log('No special element _1rihsjro found');
+            }
             if (specialElement) {
                 specialElement.click();
                 console.log('Special element _1f0fvyce clicked');
@@ -1249,6 +1277,15 @@ solveallBtn.onclick = function () {
         autosolveinterval = setInterval(() => {
             const specialElement = document.querySelector('._1f0fvyce');
             const specialElement2 = document.querySelector('._1g3h9gny');
+            const specialElement3 = document.querySelector('._1rihsjro');
+            if (specialElement3) {
+                setTimeout(() => {
+                specialElement3.click();
+                }, 50);
+                console.log('Special element _1rihsjro clicked');
+            } else {
+                console.log('No special element _1rihsjro found');
+            }
             if (specialElement) {
                 setTimeout(() => {
                     specialElement.click();
