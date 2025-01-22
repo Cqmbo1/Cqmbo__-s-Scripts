@@ -1240,6 +1240,13 @@ solveallBtnLegit.onclick = function () {
             const specialElement = document.querySelector('._1f0fvyce');
             const specialElement2 = document.querySelector('._1g3h9gny');
             const specialElement3 = document.querySelector('._1rihsjro');
+            const specialElement4 = document.querySelector('._feq9us8');
+            if (specialElement4) {
+                specialElement4.click();
+                console.log('Special element _feq9us8 clicked');
+            } else {
+                console.log('No special element _feq9us8 found');
+            }
             if (specialElement3) {
                 specialElement3.click();
                 console.log('Special element _1rihsjro clicked');
@@ -1285,6 +1292,15 @@ solveallBtn.onclick = function () {
                 console.log('Special element _1rihsjro clicked');
             } else {
                 console.log('No special element _1rihsjro found');
+            }
+            const specialElement4 = document.querySelector('._feq9us8');
+            if (specialElement4) {
+                setTimeout(() => {
+                specialElement4.click();
+                }, 50);
+                console.log('Special element _feq9us8 clicked');
+            } else {
+                console.log('No special element _feq9us8 found');
             }
             if (specialElement) {
                 setTimeout(() => {
