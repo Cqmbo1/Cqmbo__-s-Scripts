@@ -825,14 +825,20 @@ function normalizeTextForAnswer(text) {
     text = text.replace(/\bell\b/g, "ℓ");
 
     // Simplify nested braces and fractions
-    text = text.replace(/\{([^{}]+)\}/g, "$1") // Remove single braces
-               .replace(/(\d+)\s*\/\s*\{([^{}]*)\}/g, "$1$2") // Flatten fractions with braces
-               .replace(/(\d+)\{([^{}]+)\}/g, "$1$2"); // Flatten nested numbers
+    text = text.replace(/(\d+)\s*\/\s*\{([^{}]+)\}/g, "$1$2") // Flatten fractions with braces
+               .replace(/(\d+)\{([^{}]+)\}/g, "$1$2") // Flatten nested numbers
+               .replace(/\{([^{}]+)\}/g, "$1"); // Remove remaining single braces
+
+    // Remove words with 1-10 letters followed by {
+    text = text.replace(/\b[a-zA-Z]{1,10}\{/g, "");
+
+    // Remove all commas
+    text = text.replace(/,/g, "");
 
     // Normalize spacing and punctuation
     text = text.replace(/\s+/g, " ").trim()
                .replace(/\s+\./g, ".")
-               .replace(/,\s*/g, ", ");
+               .replace(/,\s*/g, "");
 
     // Standardize mathematical operators
     text = text.replace(/\*/g, "×")
@@ -856,6 +862,7 @@ function normalizeTextForAnswer(text) {
 
     return text.trim();
 }
+
 
 
 function normalizeTextForOption(text) {
@@ -1241,6 +1248,13 @@ solveallBtnLegit.onclick = function () {
             const specialElement2 = document.querySelector('._1g3h9gny');
             const specialElement3 = document.querySelector('._1rihsjro');
             const specialElement4 = document.querySelector('._feq9us8');
+            const specialElement5 = document.querySelector('._1wa2w148');
+            if (specialElement5) {
+                specialElement5.click();
+                console.log('Special element _1wa2w148 clicked');
+            } else {
+                console.log('No special element _1wa2w148 found');
+            }
             if (specialElement4) {
                 specialElement4.click();
                 console.log('Special element _feq9us8 clicked');
@@ -1285,6 +1299,24 @@ solveallBtn.onclick = function () {
             const specialElement = document.querySelector('._1f0fvyce');
             const specialElement2 = document.querySelector('._1g3h9gny');
             const specialElement3 = document.querySelector('._1rihsjro');
+            const specialElement4 = document.querySelector('._feq9us8');
+            const specialElement5 = document.querySelector('._1wa2w148');
+            if (specialElement5) {
+                setTimeout(() => {
+                specialElement5.click();
+                }, 50);
+                console.log('Special element _1wa2w148 clicked');
+            } else {
+                console.log('No special element _1wa2w148 found');
+            }
+            if (specialElement4) {
+                setTimeout(() => {
+                specialElement4.click();
+                }, 50);
+                console.log('Special element _feq9us8 clicked');
+            } else {
+                console.log('No special element _feq9us8 found');
+            }
             if (specialElement3) {
                 setTimeout(() => {
                 specialElement3.click();
