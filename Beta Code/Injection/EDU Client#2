@@ -1325,15 +1325,6 @@ solveallBtn.onclick = function () {
             } else {
                 console.log('No special element _1rihsjro found');
             }
-            const specialElement4 = document.querySelector('._feq9us8');
-            if (specialElement4) {
-                setTimeout(() => {
-                specialElement4.click();
-                }, 50);
-                console.log('Special element _feq9us8 clicked');
-            } else {
-                console.log('No special element _feq9us8 found');
-            }
             if (specialElement) {
                 setTimeout(() => {
                     specialElement.click();
