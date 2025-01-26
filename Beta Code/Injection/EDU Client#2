@@ -799,7 +799,7 @@ function normalizeTextForAnswer(text) {
                .replace(/\\/g, "") // Remove backslashes
                .replace(/\_/g, ""); // Remove underscores
 
-    // Handle fractions (e.g., \\\\frac{1}{1000} -> 1/1000)
+    // Handle fractions (e.g., \\frac{1}{1000} -> 1/1000)
     text = text.replace(/\\dfrac{([^{}]+)}{([^{}]+)}/g, "$1 / $2")
                .replace(/\\frac{([^{}]+)}{([^{}]+)}/g, "$1 / $2");
 
@@ -823,6 +823,12 @@ function normalizeTextForAnswer(text) {
 
     // Replace 'ell' with 'ℓ'
     text = text.replace(/\bell\b/g, "ℓ");
+
+    // Replace "⋅" with "×"
+    text = text.replace(/⋅/g, "×");
+
+    // Replace " / {X{" with number X
+    text = text.replace(/\/\s*\{(\d+)\{/g, "$1");
 
     // Simplify nested braces and fractions
     text = text.replace(/(\d+)\s*\/\s*\{([^{}]+)\}/g, "$1$2") // Flatten fractions with braces
