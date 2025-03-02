@@ -1,5 +1,5 @@
 let autoclickerinterval;
-let autospawngoldencookieinterval;
+let autospawngoldencookieinterval = null;
 let autobuyupginterval;
 let autobuyiteminterval;
 let autobuyheavenlyupgsinterval
@@ -169,29 +169,28 @@ function attachButtonListeners() {
                 alert('Cancelled.');
             }
     });
+
 document.getElementById('auto-spawn-golden-button').addEventListener('click', () => {
     if (autospawngoldencookieinterval) {
         clearInterval(autospawngoldencookieinterval);
-        autospawngoldencookieinterval = null; // Reset interval
+        autospawngoldencookieinterval = null;
         alert('Auto Spawn Golden Cookies disabled.');
     } else {
         let ans = confirm('Do you want to automatically spawn golden cookies? Turning on auto clicker is recommended to prevent lag.');
         if (ans) {
-            autospawngoldencookieinterval = setInterval(spawnGoldenCookie, 1000);
-        } else {
-            alert('Cancelled.');
+            autospawngoldencookieinterval = setInterval(spawngcookie, 1000);
+            alert('Auto Spawn Golden Cookies enabled.');
         }
     }
 });
 
-function spawnGoldenCookie() {
+function spawngcookie() {
     let maxIterations = 69;
-    while (forCookies.ctr < maxIterations) {
-        new Game.shimmer("golden");
-        console.log(`Golden cookie spawned.\nIteration ${forCookies.ctr + 1} completed.\nIterations remaining: ${maxIterations - forCookies.ctr - 1}`);
-        forCookies.ctr++;
+
+    for (let i = 0; i < maxIterations; i++) {
+        new Game.shimmer("golden"); // Create a golden cookie
+        console.log(`Golden cookie spawned. Iteration ${i + 1} of ${maxIterations}`);
     }
-    forCookies.ctr = 0; // Reset counter after spawning all cookies
 }
 
 document.getElementById('autoclicker-button').addEventListener('click', () => {
