@@ -8,6 +8,7 @@ let autokillwrinklersinterval;
 let autobuyitemCinterval;
 let autobuyitemcustominterval;
 let autoremovebadeffectsinterval;
+let speedEnabled = false;
 
 setInterval(()=>{
 document.querySelectorAll('#ascend').forEach((a) => {
@@ -115,6 +116,7 @@ const Buttons = `
         <button id="multiplier-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Multiplier</button>
         <button id="effect-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">No Bad Effects</button>
         <button id="notes-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Hide Notifications</button>
+	<button id="speed-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Speed Up Game</button>
         <button id="infinite-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Infinite Cookies</button>
         <button id="wrinkler-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Kill All Wrinklers</button>
         <button id="reset-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Reset Game</button>
@@ -169,6 +171,32 @@ function attachButtonListeners() {
                 alert('Cancelled.');
             }
     });
+
+let gameSpeedValue = 2;
+const originalDateNow = Date.now;
+
+document.getElementById('speed-button').addEventListener('click', () => {
+    if (speedEnabled) {
+        // Disable speed, restore normal Date.now
+        Date.now = originalDateNow;
+        console.log("Gun fire rate increase disabled");
+        speedEnabled = false;
+    } else {
+        // Prompt to set speed multiplier
+        let ans = prompt('How much do you want to speed up your game?');
+
+        if (!(ans === "" || ans === null) && Number(ans) > 0) {
+            gameSpeedValue = Number(ans);
+            // Enable speed and modify Date.now
+            Date.now = () => originalDateNow() * gameSpeedValue;
+            console.log("Gun fire rate increase enabled");
+            speedEnabled = true;
+        } else {
+            alert('Cancelled.');
+        }
+    }
+});
+
 
 let spawnInterval = 1000; // Default spawn interval (1 second)
 
