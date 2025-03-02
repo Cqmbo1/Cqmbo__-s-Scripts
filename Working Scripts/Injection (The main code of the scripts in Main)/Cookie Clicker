@@ -222,8 +222,8 @@ document.getElementById('autoclicker-button').addEventListener('click', () => {
         alert('Autoclicker disabled.');
     }
 
-    let ans = prompt('Enter interval (delay) between clicks in ms (1 ms -> 1000 ms.)\n(press \'c\' to disable autoclicker)');
-    if (ans === null || ans === "" || ans === '0' || Number(ans) < 1) {
+    let ans = prompt('Enter interval (delay) between clicks in ms (eg: 0.001 ms -> 1000 ms.)\n(press \'c\' to disable autoclicker)');
+    if (ans === null || ans === "" || ans === '0') {
         alert('Cancelled.');
     } else {
         autoclickerinterval = setInterval(clickcookie, Number(ans));
@@ -854,6 +854,8 @@ const goldencookies = document.querySelectorAll('shimmer');
 
 function clickcookie() {
     cookie.click();
+
+Game.ClickCookie();
 
         let isMouseDown = false;
 
