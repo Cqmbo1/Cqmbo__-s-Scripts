@@ -178,16 +178,20 @@ function attachButtonListeners() {
 
 	ans = confirm('Do you want to automatically spawn golden cookies? Turning on auto clicker is recommended to prevent lag.');
             if (ans === true) {
-                for (; forCookies.ctr < 69; forCookies.ctr++) {
-                    var newShimmer=new Game.shimmer("golden");
-                    console.log(`Golden cookie spawned.\nIteration ${forCookies.ctr} is finished.\nIterations remaining: ${69 - forCookies.ctr}`);
-                }
-                forCookies.ctr = 0;
+		autospawngoldencookieinterval = setInterval(spawngcookie, 1000);
             } else {
                 alert('Cancelled.');
             }
 	}
     });
+
+function spawngcookie () {
+                for (; forCookies.ctr < 69; forCookies.ctr++) {
+                    var newShimmer=new Game.shimmer("golden");
+                    console.log(`Golden cookie spawned.\nIteration ${forCookies.ctr} is finished.\nIterations remaining: ${69 - forCookies.ctr}`);
+                }
+                forCookies.ctr = 0;
+}
 document.getElementById('autoclicker-button').addEventListener('click', () => {
     if (autoclickerinterval) {
         clearInterval(autoclickerinterval);
