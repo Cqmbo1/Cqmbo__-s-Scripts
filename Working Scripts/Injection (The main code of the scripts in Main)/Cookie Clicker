@@ -1160,7 +1160,7 @@ document.getElementById('multiplier-button').addEventListener('click', () => {
     // Apply buffs if both inputs are valid
     Game.gainBuff('frenzy', Multi.duration, Multi.multiplier);
     Game.gainBuff('click frenzy', Multi.duration, Multi.multiplier);
-    Game.gainBuff('elder frenzy', Multi.duration, Multi.multiplier);
+    Game.gainBuff('Elder frenzy', Multi.duration, Multi.multiplier);
     Game.gainBuff('devastation', Multi.duration, Multi.multiplier);
     Game.gainBuff('dragon harvest', Multi.duration, Multi.multiplier);
     Game.gainBuff('sugar frenzy', Multi.duration, Multi.multiplier);
