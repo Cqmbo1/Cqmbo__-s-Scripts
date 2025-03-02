@@ -8,6 +8,12 @@ let autobuyitemCinterval;
 let autobuyitemcustominterval;
 let autoremovebadeffectsinterval;
 
+setInterval(()=>{
+document.querySelectorAll('#ascend').forEach((a) => {
+a.style.zIndex = '9999';
+});
+},100);
+
 var ans = '';
     var confirmer = false;
 
