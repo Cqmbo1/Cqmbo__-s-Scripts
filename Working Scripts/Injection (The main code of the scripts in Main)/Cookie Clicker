@@ -170,28 +170,33 @@ function attachButtonListeners() {
             }
     });
 
+
 document.getElementById('auto-spawn-golden-button').addEventListener('click', () => {
     if (autospawngoldencookieinterval) {
         clearInterval(autospawngoldencookieinterval);
         autospawngoldencookieinterval = null;
         alert('Auto Spawn Golden Cookies disabled.');
     } else {
-        let ans = confirm('Do you want to automatically spawn golden cookies? Turning on auto clicker is recommended to prevent lag.');
-        if (ans) {
-            autospawngoldencookieinterval = setInterval(spawngcookie, 1000);
-            alert('Auto Spawn Golden Cookies enabled.');
+        let ans = prompt('How many golden cookies do you want to spawn per second? (Enter a number)');
+
+        // Validate input
+        let cookieCount = parseInt(ans, 10);
+        if (!isNaN(cookieCount) && cookieCount > 0) {
+            autospawngoldencookieinterval = setInterval(() => spawngcookie(cookieCount), 1000);
+            alert(`Auto Spawn Golden Cookies enabled. Spawning ${cookieCount} golden cookies per second.`);
+        } else {
+            alert('Invalid input. Auto-spawn not enabled.');
         }
     }
 });
 
-function spawngcookie() {
-    let maxIterations = 69;
-
-    for (let i = 0; i < maxIterations; i++) {
+function spawngcookie(cookieCount) {
+    for (let i = 0; i < cookieCount; i++) {
         new Game.shimmer("golden"); // Create a golden cookie
-        console.log(`Golden cookie spawned. Iteration ${i + 1} of ${maxIterations}`);
+        console.log(`Golden cookie spawned. Iteration ${i + 1} of ${cookieCount}`);
     }
 }
+
 
 document.getElementById('autoclicker-button').addEventListener('click', () => {
     if (autoclickerinterval) {
