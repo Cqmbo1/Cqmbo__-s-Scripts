@@ -170,6 +170,7 @@ function attachButtonListeners() {
             }
     });
 
+let spawnInterval = 1000; // Default spawn interval (1 second)
 
 document.getElementById('auto-spawn-golden-button').addEventListener('click', () => {
     if (autospawngoldencookieinterval) {
@@ -177,15 +178,32 @@ document.getElementById('auto-spawn-golden-button').addEventListener('click', ()
         autospawngoldencookieinterval = null;
         alert('Auto Spawn Golden Cookies disabled.');
     } else {
-        let ans = prompt('How many golden cookies do you want to spawn per second? (Enter a number)');
+        let choice = prompt('Choose an option:\n1️⃣ Set how many golden cookies to spawn per interval.\n2️⃣ Set how often golden cookies spawn (in milliseconds).');
 
-        // Validate input
-        let cookieCount = parseInt(ans, 10);
-        if (!isNaN(cookieCount) && cookieCount > 0) {
-            autospawngoldencookieinterval = setInterval(() => spawngcookie(cookieCount), 1000);
-            alert(`Auto Spawn Golden Cookies enabled. Spawning ${cookieCount} golden cookies per second.`);
-        } else {
-            alert('Invalid input. Auto-spawn not enabled.');
+        if (choice === '1') {
+            let ans = prompt('Do you want to automatically spawn golden cookies? Turning on auto clicker is recommended to prevent lag.\n\nEnter the number of golden cookies to spawn per interval:');
+            let cookieCount = parseInt(ans, 10);
+
+            if (!isNaN(cookieCount) && cookieCount > 0) {
+                autospawngoldencookieinterval = setInterval(() => spawngcookie(cookieCount), spawnInterval);
+                alert(`Auto Spawn Golden Cookies enabled. Spawning ${cookieCount} golden cookies per ${spawnInterval} milliseconds.`);
+            } else {
+                alert('Invalid input or cancelled. Auto-spawn not enabled.');
+            }
+        } 
+        else if (choice === '2') {
+            let ans = prompt('Enter how often golden cookies should spawn (in milliseconds, e.g., 1000 for 1 second):');
+            let interval = parseInt(ans, 10);
+
+            if (!isNaN(interval) && interval > 0) {
+                spawnInterval = interval;
+                alert(`Golden cookies will now spawn every ${spawnInterval} milliseconds.`);
+            } else {
+                alert('Invalid input or cancelled. Auto-spawn interval not changed.');
+            }
+        } 
+        else {
+            alert('Invalid choice. Auto-spawn not enabled.');
         }
     }
 });
