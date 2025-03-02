@@ -179,7 +179,8 @@ document.getElementById('speed-button').addEventListener('click', () => {
     if (speedEnabled) {
         // Disable speed, restore normal Date.now
         Date.now = originalDateNow;
-        console.log("Gun fire rate increase disabled");
+	alert("Speed increase disabled");
+        console.log("Speed increase disabled");
         speedEnabled = false;
     } else {
         // Prompt to set speed multiplier
@@ -189,7 +190,7 @@ document.getElementById('speed-button').addEventListener('click', () => {
             gameSpeedValue = Number(ans);
             // Enable speed and modify Date.now
             Date.now = () => originalDateNow() * gameSpeedValue;
-            console.log("Gun fire rate increase enabled");
+            console.log("Speed increase enabled");
             speedEnabled = true;
         } else {
             alert('Cancelled.');
