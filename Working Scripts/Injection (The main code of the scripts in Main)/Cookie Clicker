@@ -1,4 +1,5 @@
 let autoclickerinterval;
+let autospawngoldencookieinterval;
 let autobuyupginterval;
 let autobuyiteminterval;
 let autobuyheavenlyupgsinterval
@@ -102,6 +103,7 @@ const Buttons = `
         <button id="free-cookies-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Free Cookies</button>
         <button id="chip-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Free Heavenly Chips</button>
         <button id="spawn-golden-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Spawn Golden Cookies</button>
+	<button id="auto-spawn-golden-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Auto Spawn Golden Cookies</button>
         <button id="autoclicker-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Autoclicker</button>
         <button id="scroll-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Click on Scroll</button>
         <button id="buy-free-button" style="display: block; margin-bottom: 10px; background-color: #2196f3; color: white;">Buy for Free</button>
@@ -166,6 +168,25 @@ function attachButtonListeners() {
             } else {
                 alert('Cancelled.');
             }
+    });
+    document.getElementById('auto-spawn-golden-button').addEventListener('click', () => {
+	if (autospawngoldencookieinterval) {
+        	clearInterval(autospawngoldencookieinterval);
+        	autospawngoldencookieinterval = null; // Reset interval
+        	alert('Auto Spawn Golden Cookies disabled.');
+	} else {
+
+	ans = confirm('Do you want to automatically spawn golden cookies? Turning on auto clicker is recommended to prevent lag.');
+            if (ans === true) {
+                for (; forCookies.ctr < 69; forCookies.ctr++) {
+                    var newShimmer=new Game.shimmer("golden");
+                    console.log(`Golden cookie spawned.\nIteration ${forCookies.ctr} is finished.\nIterations remaining: ${69 - forCookies.ctr}`);
+                }
+                forCookies.ctr = 0;
+            } else {
+                alert('Cancelled.');
+            }
+	}
     });
 document.getElementById('autoclicker-button').addEventListener('click', () => {
     if (autoclickerinterval) {
