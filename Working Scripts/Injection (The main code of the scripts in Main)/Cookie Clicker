@@ -141,10 +141,12 @@ function attachButtonListeners() {
         if (Game.cookies !== Infinity && Game.cookiesEarned !== Infinity) {
             Game.cookies = Infinity;
             Game.cookiesEarned = Infinity;
+	    Game.cookiesd = Infinity;
         } else {
             ans = prompt('How many cookies do you want to set your cookies to?');
             Game.cookies = Number(ans);
             Game.cookiesEarned = Number(ans);
+	    Game.cookiesd = Number(ans);
         }
     }
 });
@@ -155,6 +157,7 @@ function attachButtonListeners() {
             } else {
                 Game.cookies += Number(ans);
                 Game.cookiesEarned += Number(ans);
+		Game.cookiesd += Number(ans);
             }
     });
     document.getElementById('spawn-golden-button').addEventListener('click', () => {
