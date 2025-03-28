@@ -13,6 +13,10 @@
 (function() {
     'use strict';
 
+function isArrayNotEmpty(arr) {
+    return Array.isArray(arr) && arr.length > 0;
+}
+
 function change() {
     const streaks = document.getElementsByClassName('_776naao');
     const rainbowColors = ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#4b0082', '#9400d3'];
@@ -109,19 +113,30 @@ setInterval(change, 500);
 
     document.body.appendChild(autoFarmAllButton2);
 
-    // Toggle visibility with the 'n' key
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'j') {
-            autoFarmButton.style.display = autoFarmButton.style.display === 'block' ? 'none' : 'block';
-            autoWatchButton.style.display = autoWatchButton.style.display === 'block' ? 'none' : 'block';
-            autoFarmAllButton.style.display = autoFarmAllButton.style.display === 'block' ? 'none' : 'block';
-            autoFarmAllButton2.style.display = autoFarmAllButton2.style.display === 'block' ? 'none' : 'block';
-            toggleMusicPlayer();
-            toggleYoutubeIframe();
-        }
-    });
+// Toggle visibility with the 'j' key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'j') {
+        const elements = [
+            document.getElementById('auto-farm-button'),
+            document.getElementById('auto-watch-button'),
+            document.getElementById('auto-farm-all-button'),
+            document.getElementById('auto-farm-all-button-2')
+        ];
 
-        // Toggle visibility with the 'n' key
+        let shouldShow = elements.some(el => el && window.getComputedStyle(el).display === 'none');
+
+        elements.forEach(el => {
+            if (el) el.style.display = shouldShow ? 'block' : 'none';
+        });
+
+        toggleMusicPlayer();
+        toggleYoutubeIframe();
+
+        localStorage.setItem('ishidden2', shouldShow ? 'false' : 'true');
+    }
+});
+
+        // Toggle visibility with the 'l' key
     document.addEventListener('keydown', function(event) {
         if (event.key === 'l') {
             toggleYoutubeIframe();
@@ -412,6 +427,7 @@ function clickFarmAllButton2() {
     musicPlayerContainer.style.padding = '10px';
     musicPlayerContainer.style.borderRadius = '5px';
     musicPlayerContainer.style.zIndex = '10000';
+    musicPlayerContainer.id = 'musicPlayerContainer';
     musicPlayerContainer.style.display = 'block'; // Initially visible
 
     var youtubeInput = document.createElement('input');
@@ -518,6 +534,8 @@ function clickFarmAllButton2() {
             <button id="auto-solve-all-legit">Solve All Questions Legit</button>
             <button id="show-text">Log Options Text</button>
             <button id="debug-mode">Toggle Debug Mode</button>
+            <button id="auto-hide">Keep Hack Display on Reload</button>
+            <button id="reload">Should Reload on Solve</button>
             <div id="answer-list" style="display: block;">-Answers-</div>
             <p>M also toggles Menu</p>
         </div>
@@ -639,8 +657,16 @@ JSON.parse = function (jsonString) {
         handleMatrix(widget);
         console.log('matrix:', widget);
         break;
+                        case "orderer":
+                            handleOrderer(widget)
+                            console.log('orderer:', widget);
+                            break;
+                        case "sorter":
+                            handleSorter(widget)
+                            console.log('sorter:', widget);
+                            break;
                         default:
-                    console.warn('Unhandled widget type:', widget.type);
+                    console.warn('Unhandled widget type 2:', widget.type, widget);
 playerrorsound();
                     }
                 }
@@ -657,42 +683,88 @@ playerrorsound();
     overlay.innerHTML = overlayHTML;
     document.body.appendChild(overlay);
 
-    let toggleButton = get("toggle-menu");
-    let resetButton = get("reset-answers");
-    let toggleVideoSpeedButton = get('toggle-video-speed');
-    let answerList = get("answer-list");
-    let khOverlay = get("khanhack-overlay");
-    let autosolveButton = get("auto-solve");
-    let solveallBtn = get("auto-solve-all");
-    let showtextbtn = get("show-text");
-    let solveallBtnLegit = get("auto-solve-all-legit");
-    let debugmodebtn = get("debug-mode");
+let toggleButton = get("toggle-menu");
+let resetButton = get("reset-answers");
+let toggleVideoSpeedButton = get('toggle-video-speed');
+let answerList = get("answer-list");
+let khOverlay = get("khanhack-overlay");
+let autosolveButton = get("auto-solve");
+let solveallBtn = get("auto-solve-all");
+let showtextbtn = get("show-text");
+let solveallBtnLegit = get("auto-solve-all-legit");
+let debugmodebtn = get("debug-mode");
+let autohidebtn = get("auto-hide");
+let reloadbtn = get("reload");
 
-    if (toggleButton && answerList) {
-        toggleButton.onclick = function () {
-            if (answerList.style.display === "none") {
-                answerList.style.display = "block";
-            } else {
-                answerList.style.display = "none";
-            }
+// Retrieve localStorage values
+let ishidden = localStorage.getItem('hidden') === 'true';
+let ishidden2 = localStorage.getItem('ishidden2') === 'true';
+let shouldhide = localStorage.getItem('shouldhide') === 'true' || localStorage.getItem('shouldhide') === null;
+let shouldreload = localStorage.getItem('shouldreload') === 'true' || localStorage.getItem('shouldreload') === null;
+
+if (ishidden && shouldhide) {
+    khOverlay.style.display = 'none';
+}
+
+if (ishidden2 && shouldhide) {
+    const elementsToHide = document.querySelectorAll(
+        '#auto-farm-all-button, #auto-watch-button, #auto-farm-button, #auto-farm-all-button-2, #musicPlayerContainer'
+    );
+
+    for (let e of elementsToHide) {
+        e.style.display = 'none';
+    }
+}
+
+
+// **Ensure button text reflects the state on load**
+if (autohidebtn) {
+    autohidebtn.textContent = `Keep Hack Display on Reload (${shouldhide})`;
+}
+if (reloadbtn) {
+    reloadbtn.textContent = `Should Reload on Solve (${shouldreload})`;
+}
+
+// **Toggle Answer List**
+if (toggleButton && answerList) {
+    toggleButton.onclick = function () {
+        answerList.style.display = answerList.style.display === "none" ? "block" : "none";
+    };
+}
+
+// **Reset Answers Button**
+if (resetButton) {
+    resetButton.onclick = resetAnswers;
+}
+
+// **Auto-hide Button Functionality**
+if (autohidebtn) {
+    autohidebtn.onclick = function () {
+        shouldhide = !shouldhide;
+        autohidebtn.textContent = `Keep Hack Display on Reload (${shouldhide})`;
+        localStorage.setItem('shouldhide', shouldhide);
+    };
+}
+
+if (reloadbtn) {
+    reloadbtn.onclick = function () {
+        shouldreload = !shouldreload;
+        reloadbtn.textContent = `Should Reload on Solve (${shouldreload})`;
+        localStorage.setItem('shouldreload', shouldreload);
+    };
+}
+
+
+// **Toggle Overlay with 'K' Key**
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'k') {
+        if (khOverlay) {
+            let isHidden = khOverlay.style.display === "none";
+            khOverlay.style.display = isHidden ? "block" : "none";
+            localStorage.setItem('hidden', isHidden ? "false" : "true");
         }
     }
-
-    if (resetButton) {
-        resetButton.onclick = resetAnswers;
-    }
-
-    document.addEventListener('keydown', (event) => {
-        if (event.key === 'k') {
-            if (khOverlay) {
-                if (khOverlay.style.display === "none" || khOverlay.style.display === "") {
-                    khOverlay.style.display = "block";
-                } else {
-                    khOverlay.style.display = "none";
-                }
-            }
-        }
-    });
+});
 
     'use strict';
     window.loaded = false;
@@ -794,7 +866,7 @@ function normalizeTextForAnswer(text) {
                .replace(/\\times|\\cdot|×/g, "×") // Replace \\times, \\cdot, or × with ×
                .replace(/\\dfrac|\\frac/g, "/") // Replace fractions with /
                .replace(/\\left|\\right|\\qquad|\\large/g, "") // Remove unnecessary LaTeX tags
-               .replace(/<em>/g, "").replace(/<\\em>/g, "") // Remove <em> tags
+               .replace(/<em>/g, "×").replace(/<\/em>/g, "×") // Replace <em> and </em> with ×
                .replace(/\$/g, "") // Remove $ symbols used in math expressions
                .replace(/\\/g, "") // Remove backslashes
                .replace(/\_/g, ""); // Remove underscores
@@ -830,16 +902,25 @@ function normalizeTextForAnswer(text) {
     // Replace " / {X{" with number X
     text = text.replace(/\/\s*\{(\d+)\{/g, "$1");
 
-    // Simplify nested braces and fractions
-    text = text.replace(/(\d+)\s*\/\s*\{([^{}]+)\}/g, "$1$2") // Flatten fractions with braces
-               .replace(/(\d+)\{([^{}]+)\}/g, "$1$2") // Flatten nested numbers
-               .replace(/\{([^{}]+)\}/g, "$1"); // Remove remaining single braces
+    // Remove "{" if surrounded by two numbers (e.g., "1{0" -> "10")
+    text = text.replace(/(\d)\{(\d)/g, "$1$2");
 
     // Remove words with 1-10 letters followed by {
     text = text.replace(/\b[a-zA-Z]{1,10}\{/g, "");
 
     // Remove all commas
     text = text.replace(/,/g, "");
+
+    // Remove "×" between two letters (e.g., "e × h" -> "e h")
+    text = text.replace(/([a-zA-Z])\s*×\s*([a-zA-Z])/g, "$1 $2");
+
+    // Remove "×" between a letter and a closing bracket (e.g., "e × ]" -> "e]")
+    text = text.replace(/([a-zA-Z])\s*×\s*\]/g, "$1]");
+
+    // Ensure "e ]" becomes "e]" instead of " e]"
+    text = text.replace(/(\S)\s*\]/g, "$1]");
+
+
 
     // Normalize spacing and punctuation
     text = text.replace(/\s+/g, " ").trim()
@@ -848,11 +929,42 @@ function normalizeTextForAnswer(text) {
 
     // Standardize mathematical operators
     text = text.replace(/\*/g, "×")
-               .replace(/([=÷×+\-/])/g, " $1 ")
+               .replace(/([=÷×+\-/])/g, "$1")
                .replace(/\s{2,}/g, " ");
+    // Replace hyphens and small dashes with a proper minus sign
+text = text.replace(/[-‐]/g, "−");
+
+// Ensure no space between "−" and a number
+text = text.replace(/−\s*(\d)/g, "−$1");
+
+text = text.replace(/ <\s+/g, " <")
+           .replace(/ >\s+/g, " >");
+
+text = text.replace(/−\//g, "−");
+
+text = text.replace(/(\d)(<)(\d)/g, "$1 <$3") // Ensure space after "<" when between numbers
+           .replace(/(\d)(>)(\d)/g, "$1 >$3"); // Ensure space after ">" when between numbers
+
+text = text.replace(/\s>(−)/g, ">$1");
+
+    text = text.replace(/lvert\s*/g, "|")
+           .replace(/\s*rvert/g, "|");
+
+text = text.replace(/ degree /g, "°");
+
+    text = text.replace(/ ×/g, " ");
+
+    text = text.replace(/×([A-Z])/g, "$1");
+
+    text = text.replace(/([a-zA-Z])×\./g, "$1.");
 
     // Add space between letters and numbers if missing
     text = text.replace(/([a-zA-Z])(?=\d)/g, "$1 ");
+
+    text = text.replace(/([a-zA-Z])×/g, "$1");
+
+    text = text.replace(/\s*ℓ\s*/g, "ℓ");
+
 
     // Add space between a number and a lowercase letter if missing
     text = text.replace(/(\d)(?=[a-z])/g, "$1 ");
@@ -871,6 +983,22 @@ function normalizeTextForAnswer(text) {
 
 
 
+    const specialElements = [
+            '._1f0fvyce',
+            '._1g3h9gny',
+            '._1rihsjro',
+            '._feq9us8',
+            '._1wa2w148',
+    '._19uopuu',
+        '._ek84n5e',
+        '._5cekegk',
+        '._avakewe',
+        '._1r8cd7xe',
+        '._s6zfc1u',
+        '._o1fpoie',
+    ];
+
+
 function normalizeTextForOption(text) {
     // Use the same replacements as for answers
     text = normalizeTextForAnswer(text);
@@ -881,7 +1009,66 @@ function normalizeTextForOption(text) {
     return text.trim();
 }
 
+let loaded = false;
+
+window.onload = function () {
+loaded = true;
+}
+
+function getAllOptionTexts() {
+    const options = document.querySelectorAll('._ssxvf9l');
+    return Array.from(options).map(option => option.textContent.trim());
+}
+
+function validateAnswers() {
+    const answers = document.querySelectorAll('.answer');
+    const optionTexts = getAllOptionTexts();
+    const nextQuestionButton = document.querySelector('button[data-testid="exercise-next-question"]');
+    const checkAnsButton = document.querySelector('button[data-testid="exercise-check-answer"]');
+
+if (shouldreload) {
+if (nextQuestionButton) {
+    return;
+}
+
+
+    // Check if there are options but no answers
+    if (optionTexts.length > 0 && answers.length === 0) {
+        console.warn("There are options but no answers! Reloading page...");
+        setTimeout(() => {
+            location.reload();
+        }, 5000);
+        return;
+    }
+
+    // Ensure all options are captured
+    if (optionTexts.length !== document.querySelectorAll('._ssxvf9l').length) {
+        console.error("Not all option texts were captured!");
+        return; // Exit early if some options are missing
+    }
+
+    // Check if each answer exists in the options array
+    let allAnswersExist = true;
+    answers.forEach(answer => {
+        if (!optionTexts.includes(answer.textContent.trim())) {
+            console.warn(`Missing answer: ${answer.textContent.trim()}`);
+            allAnswersExist = false;
+        }
+    });
+
+    // Only reload **after checking all answers**
+    if (!allAnswersExist) {
+        console.warn("Some answers are missing from the options. Reloading page...");
+        setTimeout(() => {
+            location.reload();
+        }, 5000);
+    }
+}
+}
+
 autosolveButton.onclick = function () {
+    validateAnswers();
+
     const inputs = document.querySelectorAll('.mq-root-block');
     const answers = document.querySelectorAll('.answer');
     const options = document.querySelectorAll('._ssxvf9l');
@@ -889,19 +1076,33 @@ autosolveButton.onclick = function () {
     const dropdown = document.querySelectorAll('._');
     const categorizerbtns = document.querySelectorAll('._');
     const categorizertypes = document.querySelectorAll('._');
+    const errorbtn = document.querySelectorAll('._abw475');
+    errorbtn.forEach((btn) => {
+        if (btn && btn.textContent === 'refresh'){
+            btn.click();
+        }
+    });
+
+const answerTexts = [];
+
+answers.forEach((answer) => {
+answerTexts.push(answer.textContent.trim());
+});
+
 
     let delay = 0;
 
 if (options.length > 0) {
-    const element = document.querySelectorAll('._1w6i3h1')[0]; // Adjust the selector if necessary
+    const element = document.querySelectorAll('._ya75gi')[0]; // Adjust the selector if necessary
 console.log(element);
 
-    if (element && element.style.borderRadius === '24px') {
+    if (element && (element.style.borderRadius === '24px' || element.style.borderRadius === '50%')) {
         const firstanswer = answers[0];
         if (firstanswer) {
             const answerText = normalizeTextForAnswer(firstanswer.textContent); // Normalize answer text
             options.forEach((option) => {
                 const optionText = normalizeTextForOption(option.textContent); // Normalize option text
+                console.log("Unnormalized Option:", option.textContent);
                 console.log("Normalized Option:", optionText);
                 console.log("Normalized Answer:", answerText);
 
@@ -913,9 +1114,7 @@ console.log(element);
                             option.classList.add('clicked');
                             console.log('Clicking matching option:', optionText);
 
-                            setTimeout(() => {
                                 firstanswer.remove();
-                            }, 50);
 
                             setTimeout(() => {
                                 checkbtn.forEach((checkb) => {
@@ -931,7 +1130,8 @@ console.log(element);
                                     nextbtn.click();
                                     console.log('Next question button clicked');
                                 } else {
-                                    console.error('Next question button not clickable or found');
+                                    console.error('Next question button not clickable or found, reloading page.');
+                                    window.location.reload();
                                 }
                             }, 2000);
                         }
@@ -958,9 +1158,7 @@ console.log(element);
                         option.classList.add('clicked');
                         console.log('Clicking matching option:', imgalttext);
 
-                        setTimeout(() => {
                             firstanswer.remove();
-                        }, 50);
 
                         setTimeout(() => {
                             checkbtn.forEach((checkb) => {
@@ -976,7 +1174,8 @@ console.log(element);
                                 nextbtn.click();
                                 console.log('Next question button clicked');
                             } else {
-                                console.error('Next question button not clickable or found');
+                                    console.error('Next question button not clickable or found, reloading page.');
+                                    window.location.reload();
                             }
                         }, 2000);
                     }
@@ -988,13 +1187,24 @@ console.log(element);
         }
     });
 }
+                console.log('options length: ' + options.length
+  + ', answers length: ' + answers.length
+  + ', is answerTexts array not empty: ' + isArrayNotEmpty(answerTexts)
+  + ', loaded: ' + loaded
+  + ', is optionText in answerTexts: ' + !answerTexts[optionText]
+  + ', next question button: ' + document.querySelector('button[data-testid="exercise-next-question"]')
+  + ', next question button text: ' + (document.querySelector('button[data-testid="exercise-next-question"]') ? document.querySelector('button[data-testid="exercise-next-question"]').textContent !== 'Show summary' : '')
+);
+
             });
         }
-    } else if (element && element.style.borderRadius === '3px') {
+    } else if (element && (element.style.borderRadius === '3px' || element.style.borderRadius === '5px')
+) {
         answers.forEach((answer) => {
             const answerText = normalizeTextForAnswer(answer.textContent); // Normalize answer text
             options.forEach((option) => {
                 const optionText = normalizeTextForOption(option.textContent); // Normalize option text
+                console.log("Unnormalized Option:", option.textContent);
                 console.log("Normalized Option:", optionText);
                 console.log("Normalized Answer:", answerText);
 
@@ -1006,9 +1216,7 @@ console.log(element);
                             option.classList.add('clicked');
                             console.log('Clicking matching option:', optionText);
 
-                            setTimeout(() => {
                                 answer.remove();
-                            }, 50);
 
                             setTimeout(() => {
                                 checkbtn.forEach((checkb) => {
@@ -1024,7 +1232,8 @@ console.log(element);
                                     nextbtn.click();
                                     console.log('Next question button clicked');
                                 } else {
-                                    console.error('Next question button not clickable or found');
+                                    console.error('Next question button not clickable or found, reloading page.');
+                                    window.location.reload();
                                 }
                             }, 2000);
                         }
@@ -1051,9 +1260,7 @@ console.log(element);
                         option.classList.add('clicked');
                         console.log('Clicking matching option:', imgalttext);
 
-                        setTimeout(() => {
                             answer.remove();
-                        }, 50);
 
                         setTimeout(() => {
                             checkbtn.forEach((checkb) => {
@@ -1069,7 +1276,8 @@ console.log(element);
                                 nextbtn.click();
                                 console.log('Next question button clicked');
                             } else {
-                                console.error('Next question button not clickable or found');
+                                    console.error('Next question button not clickable or found, reloading page.');
+                                    window.location.reload();
                             }
                         }, 2000);
                     }
@@ -1081,6 +1289,19 @@ console.log(element);
         }
     });
 }
+                console.log('options length: ' + options.length
+  + ', answers length: ' + answers.length
+  + ', is answerTexts array not empty: ' + isArrayNotEmpty(answerTexts)
+  + ', loaded: ' + loaded
+  + ', is optionText in answerTexts: ' + !answerTexts[optionText]
+  + ', next question button: ' + document.querySelector('button[data-testid="exercise-next-question"]')
+  + ', next question button text: ' + (document.querySelector('button[data-testid="exercise-next-question"]') ? document.querySelector('button[data-testid="exercise-next-question"]').textContent !== 'Show summary' : '')
+);
+                if (document.querySelector('button[data-testid="exercise-next-question"]') && document.querySelector('button[data-testid="exercise-next-question"]').textContent === 'Show summary') {
+                document.querySelectorAll('.answer').forEach((a) => {
+                    a.remove();
+                });
+                };
             });
         });
     } else {
@@ -1244,47 +1465,27 @@ if (selans.textContent === 'Prime') {
 let autosolveinterval;
 let autosolveintervalLegit;
 
+
+
 solveallBtnLegit.onclick = function () {
     if (solveallBtnLegit.innerText === 'Solve All Questions Legit') {
         solveallBtnLegit.innerText = 'Pause Solve All';
         localStorage.setItem('Solve All Legit', true);
 
         autosolveintervalLegit = setInterval(() => {
-            const specialElement = document.querySelector('._1f0fvyce');
-            const specialElement2 = document.querySelector('._1g3h9gny');
-            const specialElement3 = document.querySelector('._1rihsjro');
-            const specialElement4 = document.querySelector('._feq9us8');
-            const specialElement5 = document.querySelector('._1wa2w148');
-            if (specialElement5) {
-                specialElement5.click();
-                console.log('Special element _1wa2w148 clicked');
-            } else {
-                console.log('No special element _1wa2w148 found');
-            }
-            if (specialElement4) {
-                specialElement4.click();
-                console.log('Special element _feq9us8 clicked');
-            } else {
-                console.log('No special element _feq9us8 found');
-            }
-            if (specialElement3) {
-                specialElement3.click();
-                console.log('Special element _1rihsjro clicked');
-            } else {
-                console.log('No special element _1rihsjro found');
-            }
-            if (specialElement) {
-                specialElement.click();
-                console.log('Special element _1f0fvyce clicked');
-            } else {
-                console.log('No special element _1f0fvyce found');
-            }
-            if (specialElement2) {
-                specialElement2.click();
-                console.log('Special element _1g3h9gny clicked');
-            } else {
-                console.log('No special element _1g3h9gny found');
-            }
+
+            specialElements.forEach((n) => {
+                const e = document.querySelector(n);
+                if (e) {
+                    setTimeout(() => {
+                    e.click();
+                    }, 50);
+                    console.log(`Special element ${n} clicked`);
+                } else {
+                    console.log(`No special element ${n} found`);
+                }
+            });
+
 
             autosolveButton.click();
         }, 3500);
@@ -1302,51 +1503,17 @@ solveallBtn.onclick = function () {
         localStorage.setItem('Solve All', true);
 
         autosolveinterval = setInterval(() => {
-            const specialElement = document.querySelector('._1f0fvyce');
-            const specialElement2 = document.querySelector('._1g3h9gny');
-            const specialElement3 = document.querySelector('._1rihsjro');
-            const specialElement4 = document.querySelector('._feq9us8');
-            const specialElement5 = document.querySelector('._1wa2w148');
-            if (specialElement5) {
-                setTimeout(() => {
-                specialElement5.click();
-                }, 50);
-                console.log('Special element _1wa2w148 clicked');
-            } else {
-                console.log('No special element _1wa2w148 found');
-            }
-            if (specialElement4) {
-                setTimeout(() => {
-                specialElement4.click();
-                }, 50);
-                console.log('Special element _feq9us8 clicked');
-            } else {
-                console.log('No special element _feq9us8 found');
-            }
-            if (specialElement3) {
-                setTimeout(() => {
-                specialElement3.click();
-                }, 50);
-                console.log('Special element _1rihsjro clicked');
-            } else {
-                console.log('No special element _1rihsjro found');
-            }
-            if (specialElement) {
-                setTimeout(() => {
-                    specialElement.click();
-                    console.log('Special element _1f0fvyce clicked');
-                }, 50);
-            } else {
-                console.log('No special element _1f0fvyce found');
-            }
-            if (specialElement2) {
-                setTimeout(() => {
-                    specialElement2.click();
-                    console.log('Special element _1g3h9gny clicked');
-                }, 500);
-            } else {
-                console.log('No special element _1g3h9gny found');
-            }
+
+                        specialElements.forEach((n) => {
+                const e = document.querySelector(n);
+                if (e) {
+                    console.log(e)
+                    e.click();
+                    console.log(`Special element ${n} clicked`);
+                } else {
+                    console.log(`No special element ${n} found`);
+                }
+            });
 
             autosolveButton.click();
         }, 500);
@@ -1609,8 +1776,20 @@ function handleIntGraph(widget) {
     let validCoords = coords.filter(coord => coord !== undefined);
     validCoords.forEach((validCoord) => {
         createSection(validCoord);
-    });;
+    });
 }
+
+    function handleOrderer(widget) {
+        let correctoptions = widget.options.correctOptions
+        let plainText = correctoptions.join(' ');
+        createSection(normalizeTextForAnswer(plainText));
+    }
+
+    function handleSorter(widget) {
+        let correctOptions = widget.options.correct
+        let plainText = correctOptions.join(' ');
+        createSection(normalizeTextForAnswer(plainText));
+    };
 
     toggleVideoSpeedButton.onclick = function () {
         if (toggleVideoSpeedButton.innerText === 'Enable Video Speed Increase') {
@@ -1622,4 +1801,8 @@ function handleIntGraph(widget) {
         }
     };
 })();
+
+
+
+
 
