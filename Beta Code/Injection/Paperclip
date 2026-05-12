@@ -1,0 +1,328 @@
+(() => {
+    console.log("=== BOT ONLINE ===");
+
+    /* =========================
+       STATE
+    ========================= */
+    let running = false;
+    let tickSpeed = 100;
+    let sellAmount = 100;
+    let autoWire = true;
+    let allowProjects = true;
+    let allowRisk = false;
+
+    let mainLoop = null;
+    let wireLoop = null;
+
+
+
+const tryAction = (fn, btnId, args = []) => {
+    let success = false;
+    try {
+        if (typeof fn === "function") {
+            fn(...args);
+            success = true;
+        }
+    } catch (e) {}
+
+    if (!success) {
+        const btn = document.getElementById(btnId);
+        if (btn) {
+            // Force the button to be enabled and lock it
+            Object.defineProperty(btn, 'disabled', {
+                get: () => false,
+                set: () => {}, // Ignore attempts to disable it
+                configurable: true
+            });
+
+            // Ensure the attribute is also removed from the DOM
+            btn.removeAttribute('disabled');
+            
+            // Execute the click
+            btn.click();
+        }
+    }
+};
+
+
+    function forceTrigger(proj) {
+        if (!proj || typeof proj.effect !== "function") return;
+
+        // Prevent known reset / dangerous projects unless allowed
+const riskyProjects = new Set([
+    "projectButton217",
+    "projectButton200",
+    "projectButton201",
+    "projectButton35",
+    "projectButton210",
+    "projectButton212"
+]);
+
+if (
+    !allowRisk && (
+        riskyProjects.has(proj.id) ||
+        (typeof proj.description === "string" && proj.description.includes("Dismantle"))
+    )
+) {
+    return;
+}
+
+
+
+        try {
+            if (!proj.element) {
+                proj.element = document.createElement("div");
+                const dummy = document.createElement("div");
+                dummy.appendChild(proj.element);
+            }
+            proj.effect();
+        } catch {}
+    }
+
+function clampFactory() {
+    if (typeof factoryLevel !== "number" || !isFinite(factoryLevel) || factoryLevel < 0) {
+        factoryLevel = 0;
+    }
+    if (typeof probesLostCombat !== "number" || !isFinite(probesLostCombat) || probesLostCombat < 0) {
+        probesLostCombat = 0;
+    }
+    if (typeof harvesterLevel !== "number" || !isFinite(harvesterLevel) || harvesterLevel < 0) {
+        harvesterLevel = 0;
+    }
+    if (typeof wireDroneLevel !== "number" || !isFinite(wireDroneLevel) || wireDroneLevel < 0) {
+        wireDroneLevel = 0;
+    }
+    if (typeof wire !== "number" || !isFinite(wire) || wire < 0) {
+        wire = 0;
+    }
+    if (typeof clipRate !== "number" || !isFinite(clipRate) || clipRate < 0) {
+       clipRate = 0;
+    }
+
+}
+
+
+    /* =========================
+       CORE LOGIC
+    ========================= */
+    function startBot() {
+        if (running) return;
+        running = true;
+
+        // Run projects once on start
+        if (allowProjects && typeof projects !== "undefined") {
+            projects.forEach(project => {
+                forceTrigger(project);
+clampFactory();
+            });
+        }
+
+        mainLoop = setInterval(() => {
+clampFactory();
+
+            // Paperclips
+            try {
+                if (typeof clipClick === "function") clipClick(1);
+                else throw 0;
+            } catch {
+                document.getElementById("btnMakePaperclip")?.click();
+            }
+
+            // Production
+            tryAction(makeClipper, "btnMakeClipper");
+            tryAction(makeMegaClipper, "btnMakeMegaClipper");
+            tryAction(buyAds, "btnExpandMarketing");
+
+            // Compute
+            tryAction(addProc, "btnAddProc");
+            tryAction(addMem, "btnAddMem");
+
+            // Space / Combat
+            tryAction(makeProbe, "btnMakeProbe");
+            tryAction(increaseProbeTrust, "btnIncreaseProbeTrust");
+            tryAction(newTourney, "btnNewTournament");
+
+tryAction(makeFarm, "btnMakeFarm", [1]);
+tryAction(makeBattery, "btnMakeBattery", [1]);
+
+tryAction(increaseMaxTrust, "btnIncreaseMaxTrust");
+tryAction(qComp, "btnQcompute");
+
+/*
+tryAction(synchSwarm, "btnSynchSwarm");
+tryAction(cladSwarm, "btnCladSwarm");
+tryAction(entertainSwarm, "btnEntertainSwarm");
+tryAction(teachSwarm, "btnTeachSwarm");
+tryAction(feedSwarm, "btnFeedSwarm");
+*/
+
+// Drone Production (Harvester / Wire)
+tryAction(makeHarvester, "btnMakeHarvester", [1]);
+tryAction(makeHarvester, "btnHarvesterx10", [10]);
+tryAction(makeHarvester, "btnHarvesterx100", [100]);
+tryAction(makeHarvester, "btnHarvesterx1000", [1000]);
+
+tryAction(makeWireDrone, "btnMakeWireDrone", [1]);
+tryAction(makeWireDrone, "btnWireDronex10", [10]);
+tryAction(makeWireDrone, "btnWireDronex100", [100]);
+tryAction(makeWireDrone, "btnWireDronex1000", [1000]);
+
+
+
+
+            // Pricing
+            if (typeof demand !== "undefined") {
+                if (demand <= 0 && typeof lowerPrice === "function") lowerPrice();
+                else if (demand > 20 && typeof raisePrice === "function") raisePrice();
+            }
+
+            // Sell
+            if (typeof sellClips === "function") {
+                sellClips(sellAmount);
+            }
+
+        }, tickSpeed);
+
+        wireLoop = setInterval(() => {
+            if (!autoWire) return;
+
+            let bought = false;
+            try {
+                if (typeof buyWire === "function") {
+                    buyWire();
+                    bought = true;
+                }
+            } catch {}
+
+            if (!bought) {
+                const btn = document.getElementById("btnBuyWire");
+                if (btn && !btn.disabled) btn.click();
+            }
+        }, 2000);
+    }
+
+    function stopBot() {
+        running = false;
+        clearInterval(mainLoop);
+        clearInterval(wireLoop);
+        mainLoop = wireLoop = null;
+    }
+
+function danger() {
+localStorage.setItem('saveGame', '{"resetFlag":2,"dismantle":0,"endTimer1":0,"endTimer2":0,"endTimer3":0,"endTimer4":0,"endTimer5":0,"endTimer6":0,"testFlag":0,"finalClips":0,"wireBuyerStatus":1,"wirePriceTimer":74,"qFade":-160.27300000040123,"autoTourneyStatus":1,"driftKingMessageCost":1,"sliderPos":0,"tempOps":0,"standardOps":2158.1999999997056,"opFade":0,"entertainCost":10000,"boredomLevel":0,"boredomFlag":0,"boredomMsg":0,"unitSize":0,"driftersKilled":0,"battleEndDelay":0,"battleEndTimer":100,"masterBattleClock":0,"honorCount":0,"threnodyTitle":"Durenstein 1","bonusHonor":0,"honorReward":0,"resultsTimer":0,"resultsFlag":0,"honor":0,"maxTrust":20,"maxTrustCost":91117.99,"disorgCounter":0,"disorgFlag":0,"synchCost":5000,"disorgMsg":0,"threnodyCost":50000,"farmRate":50,"batterySize":10000,"factoryPowerRate":200,"dronePowerRate":1,"farmLevel":0,"batteryLevel":0,"farmCost":10000000,"batteryCost":1000000,"storedPower":0,"powMod":0,"farmBill":0,"batteryBill":0,"momentum":0,"swarmFlag":0,"swarmStatus":7,"swarmGifts":0,"nextGift":0,"giftPeriod":125000,"giftCountdown":125000,"elapsedTime":0,"maxFactoryLevel":0,"maxDroneLevel":0,"wirePriceCounter":245,"wireBasePrice":23.178570138489835,"egoFlag":0,"autoTourneyFlag":0,"tothFlag":0,"incomeTracker":[2.4,2.4,2.4,2.4,2.4,2.4,2.4,2.4,2.4,2.4],"qChips":[{"waveSeed":0.1,"value":0,"active":0},{"waveSeed":0.2,"value":0,"active":0},{"waveSeed":0.3,"value":0,"active":0},{"waveSeed":0.4,"value":0,"active":0},{"waveSeed":0.5,"value":0,"active":0},{"waveSeed":0.6,"value":0,"active":0},{"waveSeed":0.7,"value":0,"active":0},{"waveSeed":0.8,"value":0,"active":0},{"waveSeed":0.9,"value":0,"active":0},{"waveSeed":1,"value":0,"active":0}],"stocks":[],"battles":[],"battleNumbers":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],"clips":99999999999999999999999999999999,"unusedClips":99999999999999999999999999999999,"clipRate":999,"clipRateTemp":999,"prevClips":99999999999999999999999999999999,"clipRateTracker":73,"clipmakerRate":99,"clipmakerLevel":9999999999,"clipperCost":1,"unsoldClips":0,"funds":99999999999999999999999999999999,"margin":0.24,"wire":99999999999,"wireCost":1,"adCost":100,"demand":3.3333333333333335,"clipsSold":100000025061,"avgRev":2.4,"ticks":161273,"marketing":1,"marketingLvl":1,"x":100,"clippperCost":5,"processors":999,"memory":999,"operations":9999999999,"trust":9999999,"nextTrust":0,"transaction":0.24,"clipperBoost":1,"blinkCounter":0,"creativity":0,"creativityOn":true,"safetyProjectOn":false,"boostLvl":0,"wirePurchase":9999999999,"wireSupply":9999999999,"marketingEffectiveness":1,"milestoneFlag":6,"bankroll":999,"fib1":63245986,"fib2":102334155,"strategyEngineFlag":999,"investmentEngineFlag":999,"revPerSecFlag":1,"compFlag":1,"projectsFlag":1,"autoClipperFlag":999,"megaClipperFlag":999,"megaClipperCost":1,"megaClipperLevel":999,"megaClipperBoost":999,"creativitySpeed":1.6452719215601408,"creativityCounter":9999999999,"wireBuyerFlag":9999999999,"demandBoost":9999999999,"humanFlag":1,"trustFlag":1,"nanoWire":999,"creationFlag":999,"wireProductionFlag":999,"spaceFlag":999,"factoryFlag":999,"harvesterFlag":999,"wireDroneFlag":999,"factoryLevel":999,"factoryBoost":999,"droneBoost":999,"availableMatter":6e+27,"acquiredMatter":999999999,"processedMatter":999999999,"harvesterLevel":999,"wireDroneLevel":999,"factoryCost":1,"harvesterCost":1,"wireDroneCost":1,"factoryRate":1,"harvesterRate":26180337,"wireDroneRate":16180339,"harvesterBill":0,"wireDroneBill":0,"factoryBill":0,"probeCount":0,"totalMatter":3e+55,"foundMatter":6e+27,"qFlag":0,"qClock":0,"qChipCost":1,"nextQchip":0,"bribe":1000000,"battleFlag":0,"portfolioSize":0,"stockID":0,"secTotal":0,"portTotal":0,"sellDelay":735,"riskiness":0,"maxPort":5,"m":0,"investLevel":0,"investUpgradeCost":100,"stockGainThreshold":0.5,"ledger":0,"stockReportCounter":0,"tourneyCost":1000,"tourneyLvl":1,"stratCounter":0,"roundNum":0,"hMove":1,"vMove":1,"hMovePrev":1,"vMovePrev":1,"aa":0,"ab":0,"ba":0,"bb":0,"rounds":0,"currentRound":0,"rCounter":0,"tourneyInProg":0,"winnerPtr":0,"high":0,"pick":"10","yomi":0,"yomiBoost":1,"probeSpeed":9999999999,"probeNav":9999999999,"probeRep":9999999999,"partialProbeSpawn":0,"probeHaz":0,"partialProbeHaz":0,"probesLostHaz":0,"probesLostDrift":0,"probesLostCombat":0,"probeFac":0,"probeWire":0,"probeCombat":0,"attackSpeed":9999999999,"battleSpeed":9999999999,"attackSpeedFlag":0,"attackSpeedMod":0.1,"probeDescendents":0,"drifterCount":0,"warTrigger":1000000,"battleID":0,"battleName":"foo","battleNameFlag":0,"maxBattles":1,"battleClock":0,"battleAlarm":10,"outcomeTimer":150,"drifterCombat":1.75,"probeTrust":0,"probeUsedTrust":0,"probeTrustCost":1,"probeLaunchLevel":0,"probeCost":1}');
+location.reload();
+}
+
+    const gui2 = document.createElement("div");
+    gui2.style.cssText = `
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        background: #111;
+        color: #0f0;
+        padding: 12px;
+        font-family: monospace;
+        font-size: 12px;
+        border: 1px solid #0f0;
+        z-index: 9999;
+        width: 190px;
+        display: none;
+    `;
+
+gui2.innerHTML = `
+
+        <button id ="save1Button" onclick="save1()">SAVE SLOT 1</button>
+        <button id ="load1Button" onclick="load1()">LOAD SLOT 1</button><br /> 
+        <button id ="save2Button" onclick="save2()">SAVE SLOT 2</button>
+        <button id ="load2Button" onclick="load2()">LOAD SLOT 2</button><br />    
+        <button id ="resetButton" onclick="reset()">RESET ALL PROGRESS</button><br />       
+
+        <button id ="freeClipsButton" onclick="cheatClips()">Free Clips</button><br />    
+        <button id ="freeMoneyButton" onclick="cheatMoney()">Free Money</button><br />
+        <button id ="freeTrustButton" onclick="cheatTrust()">Free Trust</button><br />        
+        <button id ="freeOpsButton" onclick="cheatOps()">Free Ops</button><br />
+        <button id ="freeCreatButton" onclick="cheatCreat()">Free Creativity</button><br />
+        <button id ="freeYomiButton" onclick="cheatYomi()">Free Yomi</button><br />    
+        <button id ="resetPrestige" onclick="resetPrestige()">Reset Prestige</button><br />     
+            
+        <button id ="destroyAllHumansButton" onclick="cheatHypno()">Destroy all Humans</button><br />    
+        <button id ="freePrestigeU" onclick="cheatPrestigeU()">Free Prestige U</button>
+        <button id ="freePrestigeS" onclick="cheatPrestigeS()">Free Prestige S</button>
+        <button id ="debugBattleNumbers" onclick="setB()">Set Battle Number 1 to 7</button><br /> 
+        <button id ="availMatterZero" onclick="zeroMatter()">Set Avail Matter to 0</button><br />     
+
+`;
+document.body.appendChild(gui2);
+
+
+    /* =========================
+       GUI
+    ========================= */
+    const gui = document.createElement("div");
+    gui.style.cssText = `
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: #111;
+        color: #0f0;
+        padding: 12px;
+        font-family: monospace;
+        font-size: 12px;
+        border: 1px solid #0f0;
+        z-index: 9999;
+        width: 190px;
+    `;
+
+    gui.innerHTML = `
+        <b>📎 AUTO SELLER</b><br><br>
+
+        <button id="toggleBot">START</button><br><br>
+
+        Speed (ms):
+        <input id="speed" type="number" value="100" style="width:60px"><br><br>
+
+        Sell Amount:
+        <input id="sell" type="number" value="100" style="width:60px"><br><br>
+
+        <label><input id="risk" type="checkbox"> Allow Accidental Reset</label><br>
+        <label><input id="projects" type="checkbox" checked> Include Projects</label><br>
+        <label><input id="wire" type="checkbox" checked> Auto Buy Wire</label>
+        <button id="toggleIGmenu">Toggle In-Game Menu</button>
+        <button id="danger">DANGER: MAX Everything</button>
+    `;
+
+    document.body.appendChild(gui);
+
+    const toggleBtn = gui.querySelector("#toggleBot");
+let guiShow = false;
+const IGBtn = gui.querySelector("#toggleIGmenu");
+const dangerBtn = gui.querySelector("#danger");
+
+
+    toggleBtn.onclick = () => {
+        if (!running) {
+            tickSpeed     = +gui.querySelector("#speed").value || 100;
+            sellAmount    = +gui.querySelector("#sell").value || 100;
+            autoWire      = gui.querySelector("#wire").checked;
+            allowProjects = gui.querySelector("#projects").checked;
+            allowRisk     = gui.querySelector("#risk").checked;
+
+            startBot();
+            toggleBtn.textContent = "STOP";
+        } else {
+            stopBot();
+            toggleBtn.textContent = "START";
+        }
+    };
+
+IGBtn.onclick = () => {
+guiShow = !guiShow;
+gui2.style.display = guiShow ? "block" : "none";
+};
+dangerBtn.onclick = () => {
+danger()
+};
+})();
+
+
+
