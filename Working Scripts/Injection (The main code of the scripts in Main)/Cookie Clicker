@@ -1,3 +1,17 @@
+// ==UserScript==
+// @name         Cookie Grinder X
+// @namespace    http://tampermonkey.net/
+// @version      1.5
+// @description  Cookie Clicker Hack & Mod Menu (Optimized for Speed & Mobile) - Merged
+// @author       Cqmbo__
+// @match        *://orteil.dashnet.org/cookieclicker/*
+// @match        *://orteil.dashnet.org/cookieclicker/
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=dashnet.org
+// @grant        none
+// @license      MIT
+// ==/UserScript==
+
+// --- INTERVALS & RUNTIME STATE ---
 let autoclickerinterval = null;
 let autospawngoldencookieinterval = null;
 let autobuyupginterval = null;
@@ -28,188 +42,237 @@ var getFree = { itemName: '', wrongItem: false };
 var CookiePatcher = {
     patchedGrimoireBackfire: function(spell) { return 0; },
     originalGrimoireBackfire: function(spell) {
-        var failChance=0.15;
-        if(Game.hasBuff('Magic adept'))failChance*=0.1;
-        if(Game.hasBuff('Magic inept'))failChance*=5;
-        if(spell.failFunc)failChance=spell.failFunc(failChance);
+        var failChance = 0.15;
+        if (Game.hasBuff('Magic adept')) failChance *= 0.1;
+        if (Game.hasBuff('Magic inept')) failChance *= 5;
+        if (spell.failFunc) failChance = spell.failFunc(failChance);
         return failChance;
     }
 };
 
-// NATIVE UI REPLACEMENTS FOR MOBILE / PERFORMANCE 
+// ============================================================
+// --- CGX CONFIG SYSTEM (localStorage persistence) ---
+// ============================================================
+const CGX_KEY = 'cgx_config';
+
+// Get the full saved config object
+function cgxConfigGet() {
+    try { return JSON.parse(localStorage.getItem(CGX_KEY) || '{}'); }
+    catch (e) { return {}; }
+}
+
+// Save a key. Pass value=null to delete the key (i.e. feature is disabled).
+function cgxConfigSave(key, value) {
+    const c = cgxConfigGet();
+    if (value === null) { delete c[key]; } else { c[key] = value; }
+    localStorage.setItem(CGX_KEY, JSON.stringify(c));
+}
+
+// Read one key from the config
+function cgxConfigRead(key) {
+    return cgxConfigGet()[key] ?? null;
+}
+
+// Toggle the green "active" highlight on a button
+function setButtonActive(id, active) {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    if (active) btn.classList.add('cgx-btn-active');
+    else btn.classList.remove('cgx-btn-active');
+}
+
+// Wait for the Cookie Clicker Game object to finish loading, then call cb()
+function waitForGame(cb, maxTries = 120, delay = 500) {
+    let tries = 0;
+    const poll = setInterval(() => {
+        if (typeof Game !== 'undefined' && typeof Game.Upgrades !== 'undefined') {
+            clearInterval(poll);
+            cb();
+        } else if (++tries >= maxTries) {
+            clearInterval(poll);
+        }
+    }, delay);
+}
+
+// ============================================================
+// --- NATIVE UI REPLACEMENTS (mobile-friendly, no alert/confirm/prompt) ---
+// ============================================================
 window.cgxResolve = null;
-window.cgxPrompt = function(text, type='text') {
+window.cgxPrompt = function(text, type = 'text') {
     return new Promise(resolve => {
         Game.Prompt(`<h3>⚙️ Cookie Grinder X</h3><div class="block" style="margin-bottom:10px;">${text}</div><div class="block"><input id="cgx-input" type="${type}" style="text-align:center;width:80%;padding:10px;font-size:16px;border-radius:4px;border:1px solid #ccc;color:#000;"></div>`, [
             ['Confirm', 'Game.ClosePrompt(); window.cgxResolve(document.getElementById("cgx-input").value);'],
-            ['Cancel', 'Game.ClosePrompt(); window.cgxResolve(null);']
+            ['Cancel',  'Game.ClosePrompt(); window.cgxResolve(null);']
         ]);
         window.cgxResolve = resolve;
-        setTimeout(()=> { if(document.getElementById('cgx-input')) document.getElementById('cgx-input').focus(); }, 50);
+        setTimeout(() => { if (document.getElementById('cgx-input')) document.getElementById('cgx-input').focus(); }, 50);
     });
-}
+};
 window.cgxConfirm = function(text) {
     return new Promise(resolve => {
         Game.Prompt(`<h3>⚙️ Cookie Grinder X</h3><div class="block" style="margin-bottom:10px;">${text}</div>`, [
             ['Yes', 'Game.ClosePrompt(); window.cgxResolve(true);'],
-            ['No', 'Game.ClosePrompt(); window.cgxResolve(false);']
+            ['No',  'Game.ClosePrompt(); window.cgxResolve(false);']
         ]);
         window.cgxResolve = resolve;
     });
-}
-window.cgxAlert = function(text, title='Cookie Grinder X') {
+};
+window.cgxAlert = function(text, title = 'Cookie Grinder X') {
     Game.Notify(title, text, [16, 5], 3, false);
-}
+};
 
-// Initialize Dev Functions Safely
+// ============================================================
+// --- DEV FUNCTION OVERRIDES (wait for Game to be ready) ---
+// ============================================================
 function initDevFunctions() {
     if (typeof Game === 'undefined' || typeof Game.Upgrades === 'undefined') {
         setTimeout(initDevFunctions, 1000);
         return;
     }
 
-    Game.RuinTheFun=function(silent) {
-        Game.popups=0;
+    Game.RuinTheFun = function(silent) {
+        Game.popups = 0;
         Game.SetAllUpgrades(1);
         Game.SetAllAchievs(1);
         Game.Earn(999999999999999999999999999999);
         Game.MaxSpecials();
-        Game.nextResearch=0;
-        Game.researchT=-1;
-        Game.upgradesToRebuild=1;
-        Game.recalculateGains=1;
-        Game.popups=1;
+        Game.nextResearch = 0;
+        Game.researchT = -1;
+        Game.upgradesToRebuild = 1;
+        Game.recalculateGains = 1;
+        Game.popups = 1;
         for (var i in Game.Objects) {
-            var me=Game.Objects[i];
-            if (me.level<10) { me.level=9; me.levelUp(true); }
+            var me = Game.Objects[i];
+            if (me.level < 10) { me.level = 9; me.levelUp(true); }
             if (me.minigame && me.minigame.onRuinTheFun) me.minigame.onRuinTheFun();
         }
-        if (!silent) Game.Notify('Thou doth ruineth the fun!','You\'re free. Free at last.',[11,5]);
+        if (!silent) Game.Notify('Thou doth ruineth the fun!', 'You\'re free. Free at last.', [11, 5]);
         return 'You feel a bitter taste in your mouth...';
-    }
+    };
 
-    Game.SetAllUpgrades=function(on) {
-        Game.popups=0;
-        var leftout=['Magic shenanigans','Occult obstruction','Glucose-charged air'];
+    Game.SetAllUpgrades = function(on) {
+        Game.popups = 0;
+        var leftout = ['Magic shenanigans', 'Occult obstruction', 'Glucose-charged air'];
         for (var i in Game.Upgrades) {
-            if (on && (Game.Upgrades[i].pool=='toggle' || leftout.indexOf(Game.Upgrades[i].name)!=-1)) {}
+            if (on && (Game.Upgrades[i].pool == 'toggle' || leftout.indexOf(Game.Upgrades[i].name) != -1)) {}
             else if (on) Game.Upgrades[i].earn();
             else if (!on) Game.Upgrades[i].lose();
         }
-        Game.upgradesToRebuild=1;
-        Game.recalculateGains=1;
-        Game.popups=1;
-    }
+        Game.upgradesToRebuild = 1;
+        Game.recalculateGains = 1;
+        Game.popups = 1;
+    };
 
-    Game.SetAllAchievs=function(on) {
-        Game.popups=0;
+    Game.SetAllAchievs = function(on) {
+        Game.popups = 0;
         for (var i in Game.Achievements) {
-            if (on && Game.Achievements[i].pool!='dungeon') Game.Win(Game.Achievements[i].name);
+            if (on && Game.Achievements[i].pool != 'dungeon') Game.Win(Game.Achievements[i].name);
             else if (!on) Game.RemoveAchiev(Game.Achievements[i].name);
         }
-        Game.recalculateGains=1;
-        Game.popups=1;
-    }
+        Game.recalculateGains = 1;
+        Game.popups = 1;
+    };
 
-    Game.GetAllDebugs=function() {
-        Game.popups=0;
+    Game.GetAllDebugs = function() {
+        Game.popups = 0;
         for (var i in Game.Upgrades) {
-            if (Game.Upgrades[i].pool=='debug') Game.Upgrades[i].earn();
+            if (Game.Upgrades[i].pool == 'debug') Game.Upgrades[i].earn();
         }
-        Game.upgradesToRebuild=1;
-        Game.recalculateGains=1;
-        Game.popups=1;
-    }
+        Game.upgradesToRebuild = 1;
+        Game.recalculateGains = 1;
+        Game.popups = 1;
+    };
 
-    Game.MaxSpecials=function() {
-        Game.dragonLevel=Game.dragonLevels.length-1;
-        Game.santaLevel=Game.santaLevels.length-1;
-    }
+    Game.MaxSpecials = function() {
+        Game.dragonLevel = Game.dragonLevels.length - 1;
+        Game.santaLevel  = Game.santaLevels.length - 1;
+    };
 
-    Game.SesameReset=function() {
-        var name=Game.bakeryName;
+    Game.SesameReset = function() {
+        var name = Game.bakeryName;
         Game.HardReset(2);
-        Game.bakeryName=name;
+        Game.bakeryName = name;
         Game.bakeryNameRefresh();
-        Game.Achievements['Cheated cookies taste awful'].won=1;
-    }
+        Game.Achievements['Cheated cookies taste awful'].won = 1;
+    };
 
-    Game.debugTimersOn=0;
-    Game.sesame=0;
-    Game.OpenSesame=function() {
-        Game.sesame=1;
-        Game.Achievements['Cheated cookies taste awful'].won=1;
+    Game.debugTimersOn = 0;
+    Game.sesame = 0;
+    Game.OpenSesame = function() {
+        Game.sesame = 1;
+        Game.Achievements['Cheated cookies taste awful'].won = 1;
 
-        // Build full dev console panel
-        var str='';
-        str+='<div class="icon" style="position:absolute;left:-9px;top:-6px;background-position:'+(-10*48)+'px '+(-6*48)+'px;"></div>';
-        str+='<div id="devConsoleContent">';
-        str+='<div class="title" style="font-size:14px;margin:6px;">Dev tools</div>';
-        str+='<a class="option neato" '+Game.clickStr+'="Game.Ascend(1);">Ascend</a>';
-        str+='<div class="line"></div>';
-        str+='<a class="option neato" '+Game.clickStr+'="Game.cookies*=10;Game.cookiesEarned*=10;">x10</a>';
-        str+='<a class="option neato" '+Game.clickStr+'="Game.cookies/=10;Game.cookiesEarned/=10;">/10</a><br>';
-        str+='<a class="option neato" '+Game.clickStr+'="Game.cookies*=1000;Game.cookiesEarned*=1000;">x1k</a>';
-        str+='<a class="option neato" '+Game.clickStr+'="Game.cookies/=1000;Game.cookiesEarned/=1000;">/1k</a><br>';
-        str+='<a class="option neato" '+Game.clickStr+'="for (var i in Game.Objects){Game.Objects[i].buy(100);}">Buy 100 of all</a>';
-        str+='<a class="option neato" '+Game.clickStr+'="for (var i in Game.Objects){Game.Objects[i].sell(100);}">Sell 100 of all</a><br>';
-        str+='<a class="option neato" '+Game.clickStr+'="Game.gainLumps(10);">+10 lumps</a>';
-        str+='<a class="option neato" '+Game.clickStr+'="for (var i in Game.Objects){Game.Objects[i].level=0;Game.Objects[i].onMinigame=false;Game.Objects[i].refresh();}Game.recalculateGains=1;">Reset levels</a>';
-        str+='<a class="option neato" '+Game.clickStr+'="Game.cookiesReset+=Game.HowManyCookiesReset((Game.heavenlyChips||1)*1000);Game.EarnHeavenlyChips(0,true);Game.recalculateGains=1;">HC x1k</a>';
-        str+='<a class="option neato" '+Game.clickStr+'="Game.cookiesReset=(Game.heavenlyChips<100?0:Game.HowManyCookiesReset(Math.floor(Game.heavenlyChips*0.001)));Game.cookiesReset=Math.max(Game.cookiesReset,0);Game.EarnHeavenlyChips(0,true);if (Game.cookiesReset<=0){Game.heavenlyChips=0;}Game.recalculateGains=1;">HC /1k</a><br>';
-        str+='<a class="option neato" '+Game.clickStr+'="Game.cookiesEarned=0;Game.recalculateGains=1;">Reset cookies earned</a><br>';
-        str+='<div class="line"></div>';
-        str+='<a class="option warning" '+Game.clickStr+'="Game.RuinTheFun(1);">Ruin The Fun</a>';
-        str+='<a class="option warning" '+Game.clickStr+'="Game.SesameReset();">Wipe</a>';
-        str+='<a class="option neato" '+Game.clickStr+'="Game.GetAllDebugs();">All debugs</a>';
-        str+='<a class="option neato" '+Game.clickStr+'="Game.debugTimersOn=!Game.debugTimersOn;Game.OpenSesame();">Timers '+(Game.debugTimersOn?'On':'Off')+'</a><br>';
-        str+='<a class="option neato" '+Game.clickStr+'="Game.SetAllUpgrades(0);">No upgrades</a>';
-        str+='<a class="option neato" '+Game.clickStr+'="Game.SetAllUpgrades(1);">All upgrades</a><br>';
-        str+='<a class="option neato" '+Game.clickStr+'="Game.SetAllAchievs(0);">No achievs</a>';
-        str+='<a class="option neato" '+Game.clickStr+'="Game.SetAllAchievs(1);">All achievs</a><br>';
-        str+='<a class="option neato" '+Game.clickStr+'="Game.santaLevel=0;Game.dragonLevel=0;">Reset specials</a>';
-        str+='<a class="option neato" '+Game.clickStr+'="Game.MaxSpecials();">Max specials</a><br>';
-        str+='<a class="option neato" '+Game.clickStr+'="Game.lumpRefill=0;">Reset refills</a>';
-        str+='<a class="option neato" '+Game.clickStr+'="Game.EditAscend();">'+(Game.DebuggingPrestige?'Exit Ascend Edit':'Ascend Edit')+'</a>';
-        str+='<a class="option neato" '+Game.clickStr+'="Game.seed=Game.makeSeed();">Re-seed</a>';
-        str+='<a class="option neato" '+Game.clickStr+'="Game.heralds=100;l(\'heraldsAmount\').textContent=Game.heralds;Game.externalDataLoaded=true;Game.recalculateGains=1;">Max heralds</a>';
-        str+='<div class="line"></div>';
-        for (var i=0;i<Game.goldenCookieChoices.length/2;i++) {
-            str+='<a class="option neato" '+Game.clickStr+'="var newShimmer=new Game.shimmer(\'golden\');newShimmer.force=\''+Game.goldenCookieChoices[i*2+1]+'\';">'+Game.goldenCookieChoices[i*2]+'</a>';
+        var str = '';
+        str += '<div class="icon" style="position:absolute;left:-9px;top:-6px;background-position:' + (-10 * 48) + 'px ' + (-6 * 48) + 'px;"></div>';
+        str += '<div id="devConsoleContent">';
+        str += '<div class="title" style="font-size:14px;margin:6px;">Dev tools</div>';
+        str += '<a class="option neato" ' + Game.clickStr + '="Game.Ascend(1);">Ascend</a>';
+        str += '<div class="line"></div>';
+        str += '<a class="option neato" ' + Game.clickStr + '="Game.cookies*=10;Game.cookiesEarned*=10;">x10</a>';
+        str += '<a class="option neato" ' + Game.clickStr + '="Game.cookies/=10;Game.cookiesEarned/=10;">/10</a><br>';
+        str += '<a class="option neato" ' + Game.clickStr + '="Game.cookies*=1000;Game.cookiesEarned*=1000;">x1k</a>';
+        str += '<a class="option neato" ' + Game.clickStr + '="Game.cookies/=1000;Game.cookiesEarned/=1000;">/1k</a><br>';
+        str += '<a class="option neato" ' + Game.clickStr + '="for (var i in Game.Objects){Game.Objects[i].buy(100);}">Buy 100 of all</a>';
+        str += '<a class="option neato" ' + Game.clickStr + '="for (var i in Game.Objects){Game.Objects[i].sell(100);}">Sell 100 of all</a><br>';
+        str += '<a class="option neato" ' + Game.clickStr + '="Game.gainLumps(10);">+10 lumps</a>';
+        str += '<a class="option neato" ' + Game.clickStr + '="for (var i in Game.Objects){Game.Objects[i].level=0;Game.Objects[i].onMinigame=false;Game.Objects[i].refresh();}Game.recalculateGains=1;">Reset levels</a>';
+        str += '<a class="option neato" ' + Game.clickStr + '="Game.cookiesReset+=Game.HowManyCookiesReset((Game.heavenlyChips||1)*1000);Game.EarnHeavenlyChips(0,true);Game.recalculateGains=1;">HC x1k</a>';
+        str += '<a class="option neato" ' + Game.clickStr + '="Game.cookiesReset=(Game.heavenlyChips<100?0:Game.HowManyCookiesReset(Math.floor(Game.heavenlyChips*0.001)));Game.cookiesReset=Math.max(Game.cookiesReset,0);Game.EarnHeavenlyChips(0,true);if (Game.cookiesReset<=0){Game.heavenlyChips=0;}Game.recalculateGains=1;">HC /1k</a><br>';
+        str += '<a class="option neato" ' + Game.clickStr + '="Game.cookiesEarned=0;Game.recalculateGains=1;">Reset cookies earned</a><br>';
+        str += '<div class="line"></div>';
+        str += '<a class="option warning" ' + Game.clickStr + '="Game.RuinTheFun(1);">Ruin The Fun</a>';
+        str += '<a class="option warning" ' + Game.clickStr + '="Game.SesameReset();">Wipe</a>';
+        str += '<a class="option neato" ' + Game.clickStr + '="Game.GetAllDebugs();">All debugs</a>';
+        str += '<a class="option neato" ' + Game.clickStr + '="Game.debugTimersOn=!Game.debugTimersOn;Game.OpenSesame();">Timers ' + (Game.debugTimersOn ? 'On' : 'Off') + '</a><br>';
+        str += '<a class="option neato" ' + Game.clickStr + '="Game.SetAllUpgrades(0);">No upgrades</a>';
+        str += '<a class="option neato" ' + Game.clickStr + '="Game.SetAllUpgrades(1);">All upgrades</a><br>';
+        str += '<a class="option neato" ' + Game.clickStr + '="Game.SetAllAchievs(0);">No achievs</a>';
+        str += '<a class="option neato" ' + Game.clickStr + '="Game.SetAllAchievs(1);">All achievs</a><br>';
+        str += '<a class="option neato" ' + Game.clickStr + '="Game.santaLevel=0;Game.dragonLevel=0;">Reset specials</a>';
+        str += '<a class="option neato" ' + Game.clickStr + '="Game.MaxSpecials();">Max specials</a><br>';
+        str += '<a class="option neato" ' + Game.clickStr + '="Game.lumpRefill=0;">Reset refills</a>';
+        str += '<a class="option neato" ' + Game.clickStr + '="Game.EditAscend();">' + (Game.DebuggingPrestige ? 'Exit Ascend Edit' : 'Ascend Edit') + '</a>';
+        str += '<a class="option neato" ' + Game.clickStr + '="Game.seed=Game.makeSeed();">Re-seed</a>';
+        str += '<a class="option neato" ' + Game.clickStr + '="Game.heralds=100;l(\'heraldsAmount\').textContent=Game.heralds;Game.externalDataLoaded=true;Game.recalculateGains=1;">Max heralds</a>';
+        str += '<div class="line"></div>';
+        for (var i = 0; i < Game.goldenCookieChoices.length / 2; i++) {
+            str += '<a class="option neato" ' + Game.clickStr + '="var newShimmer=new Game.shimmer(\'golden\');newShimmer.force=\'' + Game.goldenCookieChoices[i * 2 + 1] + '\';">' + Game.goldenCookieChoices[i * 2] + '</a>';
         }
-        str+='</div>';
+        str += '</div>';
 
         if (l('devConsole')) {
-            l('devConsole').innerHTML=str;
-            l('debug').style.display='block';
+            l('devConsole').innerHTML = str;
+            l('debug').style.display = 'block';
         } else {
             cgxAlert("Dev tools unlocked! Look for the icon in the top left.");
         }
-    }
+    };
 
-    Game.EditAscend=function() {
+    Game.EditAscend = function() {
         if (!Game.DebuggingPrestige) {
             if (Game.loadAscendCalibrator) Game.loadAscendCalibrator();
-            Game.DebuggingPrestige=true;
-            Game.AscendTimer=0;
-            Game.OnAscend=1;
+            Game.DebuggingPrestige = true;
+            Game.AscendTimer = 0;
+            Game.OnAscend = 1;
             Game.removeClass('ascendIntro');
             Game.addClass('ascending');
         } else {
-            Game.DebuggingPrestige=false;
+            Game.DebuggingPrestige = false;
         }
         Game.BuildAscendTree();
         Game.OpenSesame();
-    }
+    };
 }
 initDevFunctions();
 
-// Enhanced, Organized UI  I prioritize functionality over styling
+// ============================================================
+// --- UI HTML ---
+// ============================================================
 const Buttons = `
-    <div id="cgx-menu-wrapper" style="position: fixed; top: 10px; right: 10px; z-index: 1000000000000; font-family: Tahoma, Arial, sans-serif;">
-        <button id="toggle-cgx-menu" style="display: block; width: 100%; margin-bottom: 5px; background-color: #ff9800; color: white; border: none; padding: 12px; cursor: pointer; font-weight: bold; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.3); font-size: 14px;">Toggle Menu ⚙️</button>
-        <div id="cgx-menu-content" style="background: rgba(0, 0, 0, 0.85); padding: 15px; border-radius: 8px; border: 2px solid #2196f3; max-height: 75vh; overflow-y: auto; -webkit-overflow-scrolling: touch; width: 240px; box-shadow: 0px 4px 10px rgba(0,0,0,0.5);">
-            <h3 style="color: #fff; margin: 0 0 15px 0; text-align: center; font-size: 18px;">Cookie Grinder X</h3>
+    <div id="cgx-menu-wrapper" style="position:fixed;top:10px;right:10px;z-index:1000000000000;font-family:Tahoma,Arial,sans-serif;">
+        <button id="toggle-cgx-menu" style="display:block;width:100%;margin-bottom:5px;background-color:#ff9800;color:white;border:none;padding:12px;cursor:pointer;font-weight:bold;border-radius:5px;box-shadow:0px 4px 6px rgba(0,0,0,0.3);font-size:14px;">Toggle Menu ⚙️</button>
+        <div id="cgx-menu-content" style="background:rgba(0,0,0,0.85);padding:15px;border-radius:8px;border:2px solid #2196f3;max-height:75vh;overflow-y:auto;-webkit-overflow-scrolling:touch;width:240px;box-shadow:0px 4px 10px rgba(0,0,0,0.5);">
+            <h3 style="color:#fff;margin:0 0 15px 0;text-align:center;font-size:18px;">Cookie Grinder X</h3>
 
             <h4 class="cgx-header">▶ Core Features</h4>
             <button class="cgx-btn" id="free-cookies-button">Free Cookies</button>
@@ -245,35 +308,53 @@ const Buttons = `
             <button class="cgx-btn cgx-dev" id="ascend-edit-button">Ascend Edit</button>
             <button class="cgx-btn cgx-danger" id="infinite-button">Infinite Cookies</button>
             <button class="cgx-btn cgx-danger" id="reset-button">Wipe / Reset Game</button>
+
+            <h4 class="cgx-header">▶ Config</h4>
+            <button class="cgx-btn cgx-config" id="load-config-button">📂 Load Config</button>
+            <button class="cgx-btn cgx-config" id="clear-config-button">🗑️ Clear Config</button>
+            <button class="cgx-btn cgx-config" id="auto-load-config-button">� Auto Load Config</button>
         </div>
     </div>
     <style>
         .cgx-btn {
-            display: block; width: 100%; margin-bottom: 8px; background-color: #2196f3;
-            color: white; border: none; padding: 12px 10px; border-radius: 5px;
-            cursor: pointer; font-size: 14px; text-align: left; transition: background 0.2s;
+            display:block; width:100%; margin-bottom:8px; background-color:#2196f3;
+            color:white; border:none; padding:12px 10px; border-radius:5px;
+            cursor:pointer; font-size:14px; text-align:left; transition:background 0.2s;
         }
-        .cgx-btn:active { transform: scale(0.98); }
-        .cgx-header { color: #aaa; margin: 12px 0 6px 0; font-size: 12px; text-transform: uppercase; }
-        .cgx-dev { background-color: #9c27b0; }
-        .cgx-danger { background-color: #f44336; }
-        /* Scrollbar styles for cleaner mobile view */
-        #cgx-menu-content::-webkit-scrollbar { width: 6px; }
-        #cgx-menu-content::-webkit-scrollbar-thumb { background: #555; border-radius: 4px; }
+        .cgx-btn:active { transform:scale(0.98); }
+        .cgx-btn-active { background-color:#4caf50 !important; }
+        .cgx-header { color:#aaa; margin:12px 0 6px 0; font-size:12px; text-transform:uppercase; }
+        .cgx-dev    { background-color:#9c27b0; }
+        .cgx-danger { background-color:#f44336; }
+        .cgx-config { background-color:#607d8b; }
+        #cgx-menu-content::-webkit-scrollbar       { width:6px; }
+        #cgx-menu-content::-webkit-scrollbar-thumb { background:#555; border-radius:4px; }
     </style>
 `;
 document.body.insertAdjacentHTML('beforeend', Buttons);
 
+// ============================================================
+// --- BUTTON LISTENERS ---
+// ============================================================
 function attachButtonListeners() {
 
+    // Capture the real Date.now ONCE, before any speed modification
+    const originalDateNow = Date.now;
+
+    // Track whether Infinite Cookies is currently active as a toggle
+    let infiniteEnabled = false;
+
+    // --- MENU TOGGLE ---
     document.getElementById('toggle-cgx-menu').addEventListener('click', () => {
         const content = document.getElementById('cgx-menu-content');
         content.style.display = content.style.display === 'none' ? 'block' : 'none';
     });
 
-    // OPEN SESAME HACK
+    // ============================================================
+    // DEV BUTTONS (press-and-go, no config saved)
+    // ============================================================
     document.getElementById('open-sesame-button').addEventListener('click', () => {
-        if(typeof Game.OpenSesame === 'function') Game.OpenSesame();
+        if (typeof Game.OpenSesame === 'function') Game.OpenSesame();
         else cgxAlert('Game not fully loaded yet!');
     });
 
@@ -284,26 +365,64 @@ function attachButtonListeners() {
     });
 
     document.getElementById('max-specials-button').addEventListener('click', () => {
-        if(typeof Game.MaxSpecials === 'function') {
+        if (typeof Game.MaxSpecials === 'function') {
             Game.MaxSpecials();
             cgxAlert('Specials maximized!');
         }
     });
 
     document.getElementById('ascend-edit-button').addEventListener('click', () => {
-        if(typeof Game.EditAscend === 'function') Game.EditAscend();
+        if (typeof Game.EditAscend === 'function') Game.EditAscend();
     });
 
-    document.getElementById('infinite-button').addEventListener('click', async () => {
-        if (await cgxConfirm('Are you sure you want Infinite Cookies?')) {
-            Game.cookies = Infinity;
-            Game.cookiesEarned = Infinity;
-            Game.cookiesd = Infinity;
-            cgxAlert('Infinite Cookies Enabled');
+    document.getElementById('reset-button').addEventListener('click', async () => {
+        if (await cgxConfirm('Are you sure you want to Wipe your save? (Preserves bakery name)')) {
+            Game.SesameReset ? Game.SesameReset() : Game.HardReset(2);
         }
     });
 
-    // CORE FEATURES from og script
+    // ============================================================
+    // INFINITE COOKIES — special toggle with cookie snapshot
+    // ============================================================
+    document.getElementById('infinite-button').addEventListener('click', async () => {
+        if (!infiniteEnabled) {
+            // --- ENABLE ---
+            if (await cgxConfirm('Enable Infinite Cookies? Your current cookie count will be saved so you can restore it later.')) {
+                // Snapshot current cookies before setting to Infinity
+                const snap = {
+                    enabled:        true,
+                    cookies:        isFinite(Game.cookies)        ? Game.cookies        : 0,
+                    cookiesEarned:  isFinite(Game.cookiesEarned)  ? Game.cookiesEarned  : 0,
+                    cookiesd:       isFinite(Game.cookiesd)       ? Game.cookiesd       : 0
+                };
+                cgxConfigSave('infiniteCookies', snap);
+                Game.cookies       = Infinity;
+                Game.cookiesEarned = Infinity;
+                Game.cookiesd      = Infinity;
+                infiniteEnabled    = true;
+                setButtonActive('infinite-button', true);
+                cgxAlert('Infinite Cookies enabled. Press again to restore original count.');
+            }
+        } else {
+            // --- DISABLE ---
+            if (await cgxConfirm('Disable Infinite Cookies and restore your original cookie count?')) {
+                const snap = cgxConfigRead('infiniteCookies');
+                if (snap) {
+                    Game.cookies       = snap.cookies;
+                    Game.cookiesEarned = snap.cookiesEarned;
+                    Game.cookiesd      = snap.cookiesd;
+                }
+                cgxConfigSave('infiniteCookies', null);
+                infiniteEnabled = false;
+                setButtonActive('infinite-button', false);
+                cgxAlert('Infinite Cookies disabled. Cookies restored.');
+            }
+        }
+    });
+
+    // ============================================================
+    // CORE FEATURES (press-and-go — no config saved)
+    // ============================================================
     document.getElementById('free-cookies-button').addEventListener('click', async () => {
         let ans = await cgxPrompt('How many cookies do you want to earn?', 'number');
         if (ans) {
@@ -312,184 +431,232 @@ function attachButtonListeners() {
         }
     });
 
+    document.getElementById('chip-button').addEventListener('click', async () => {
+        let ans = await cgxPrompt('How many heavenly chips?', 'number');
+        if (ans && Number(ans) > 0) {
+            Game.heavenlyChips += Number(ans);
+            cgxAlert('Heavenly chips added.');
+        }
+    });
+
     document.getElementById('spawn-golden-button').addEventListener('click', async () => {
         let ans = await cgxPrompt('How many golden cookies do you want to spawn?', 'number');
         if (ans && Number(ans) > 0) {
-            for (let i = 0; i < Number(ans); i++) {
-                new Game.shimmer("golden");
-            }
+            for (let i = 0; i < Number(ans); i++) new Game.shimmer('golden');
             cgxAlert(`Spawned ${ans} golden cookies.`);
         }
     });
 
-    // Click on Scroll (from v1.0)
-    document.getElementById('scroll-button').addEventListener('click', async () => {
-        if (!ScrollWheel.active) {
-            if (await cgxConfirm('Click on Scroll is disabled. Every scroll counts as a cookie click. Activate?')) {
-                ScrollWheel.active = true;
-                document.onmousewheel = clickcookie;
-                cgxAlert('Click on Scroll enabled.');
-            }
-        } else {
-            if (await cgxConfirm('Click on Scroll is enabled. Deactivate?')) {
-                ScrollWheel.active = false;
-                document.onmousewheel = null;
-                cgxAlert('Click on Scroll disabled.');
-            }
-        }
-    });
-
-    // Speed Up Game using Date.now spoofing (yes, this works in some other games as well, idk why LOL).
-    const originalDateNow = Date.now;
-    document.getElementById('speed-button').addEventListener('click', async () => {
-        if (speedEnabled) {
-            Date.now = originalDateNow;
-            cgxAlert("Speed increase disabled");
-            speedEnabled = false;
-        } else {
-            let ans = await cgxPrompt('How much do you want to speed up your game? (Multiplier)', 'number');
-            if (ans && Number(ans) > 0) {
-                Date.now = () => originalDateNow() * Number(ans);
-                cgxAlert(`Speed increased by ${ans}x`);
-                speedEnabled = true;
-            }
-        }
-    });
-
-    // Autoclicker
+    // ============================================================
+    // AUTOCLICKER — toggle + saves delay
+    // ============================================================
     document.getElementById('autoclicker-button').addEventListener('click', async () => {
         if (autoclickerinterval) {
             clearInterval(autoclickerinterval);
             autoclickerinterval = null;
+            cgxConfigSave('autoclicker', null);
+            setButtonActive('autoclicker-button', false);
             cgxAlert('Autoclicker disabled.');
         } else {
             let ans = await cgxPrompt('Enter click delay in ms (e.g., 10 for fast clicks)', 'number');
             if (ans && Number(ans) > 0) {
-                autoclickerinterval = setInterval(clickcookie, Number(ans));
+                const delay = Number(ans);
+                autoclickerinterval = setInterval(clickcookie, delay);
+                cgxConfigSave('autoclicker', { enabled: true, delay });
+                setButtonActive('autoclicker-button', true);
                 cgxAlert('Autoclicker enabled.');
             }
         }
     });
 
-    // AUTOMATION 
+    // ============================================================
+    // CLICK ON SCROLL — simple toggle
+    // ============================================================
+    document.getElementById('scroll-button').addEventListener('click', async () => {
+        if (!ScrollWheel.active) {
+            if (await cgxConfirm('Every scroll will count as a cookie click. Activate?')) {
+                ScrollWheel.active    = true;
+                document.onmousewheel = clickcookie;
+                cgxConfigSave('scroll', { enabled: true });
+                setButtonActive('scroll-button', true);
+                cgxAlert('Click on Scroll enabled.');
+            }
+        } else {
+            if (await cgxConfirm('Click on Scroll is enabled. Deactivate?')) {
+                ScrollWheel.active    = false;
+                document.onmousewheel = null;
+                cgxConfigSave('scroll', null);
+                setButtonActive('scroll-button', false);
+                cgxAlert('Click on Scroll disabled.');
+            }
+        }
+    });
 
-    // Auto Spawn Golden Cookies (from v1.1)
-    let spawnGoldenCount = 1;
+    // ============================================================
+    // AUTO SPAWN GOLDEN COOKIES — toggle + saves count & interval
+    // ============================================================
+    let spawnGoldenCount    = 1;
     let spawnGoldenInterval = 1000;
     document.getElementById('auto-spawn-golden-button').addEventListener('click', async () => {
         if (autospawngoldencookieinterval) {
             clearInterval(autospawngoldencookieinterval);
             autospawngoldencookieinterval = null;
+            cgxConfigSave('autoSpawnGolden', null);
+            setButtonActive('auto-spawn-golden-button', false);
             cgxAlert('Auto Spawn Golden Cookies disabled.');
         } else {
             let countAns = await cgxPrompt('How many golden cookies to spawn per interval?', 'number');
             if (countAns && Number(countAns) > 0) {
                 spawnGoldenCount = Number(countAns);
-                let intervalAns = await cgxPrompt('Spawn interval in ms (e.g., 1000 = every 1 second)?', 'number');
-                if (intervalAns && Number(intervalAns) > 0) {
-                    spawnGoldenInterval = Number(intervalAns);
-                }
+                let intAns = await cgxPrompt('Spawn interval in ms (e.g., 1000 = every 1 second)?', 'number');
+                if (intAns && Number(intAns) > 0) spawnGoldenInterval = Number(intAns);
                 autospawngoldencookieinterval = setInterval(() => {
-                    for (let i = 0; i < spawnGoldenCount; i++) new Game.shimmer("golden");
+                    for (let i = 0; i < spawnGoldenCount; i++) new Game.shimmer('golden');
                 }, spawnGoldenInterval);
+                cgxConfigSave('autoSpawnGolden', { enabled: true, count: spawnGoldenCount, interval: spawnGoldenInterval });
+                setButtonActive('auto-spawn-golden-button', true);
                 cgxAlert(`Auto Spawn enabled: ${spawnGoldenCount} cookie(s) every ${spawnGoldenInterval}ms.`);
             }
         }
     });
 
-    // Auto Buy Upgrades
+    // ============================================================
+    // AUTO BUY UPGRADES — simple toggle
+    // ============================================================
     document.getElementById('upgrade-button').addEventListener('click', () => {
         BuyUPGS.active = !BuyUPGS.active;
         if (BuyUPGS.active) {
             autobuyupginterval = setInterval(buyUpgrades, 200);
+            cgxConfigSave('autoBuyUpgrades', { enabled: true });
+            setButtonActive('upgrade-button', true);
             cgxAlert('Auto Buy Upgrades enabled.');
         } else {
             clearInterval(autobuyupginterval);
+            cgxConfigSave('autoBuyUpgrades', null);
+            setButtonActive('upgrade-button', false);
             cgxAlert('Auto Buy Upgrades disabled.');
         }
     });
 
-    // Auto Buy Heavenly Upgrades (from v1.0)
+    // ============================================================
+    // AUTO BUY HEAVENLY UPGRADES — simple toggle
+    // ============================================================
     document.getElementById('heavenly-upgrade-button').addEventListener('click', () => {
         BuyHeavenlyUPGS.active = !BuyHeavenlyUPGS.active;
         if (BuyHeavenlyUPGS.active) {
             autobuyheavenlyupgsinterval = setInterval(buyHeavenlyUpgrades, 200);
+            cgxConfigSave('autoBuyHeavenly', { enabled: true });
+            setButtonActive('heavenly-upgrade-button', true);
             cgxAlert('Auto Buy Heavenly Upgrades enabled. Press E to toggle.');
         } else {
             clearInterval(autobuyheavenlyupgsinterval);
             autobuyheavenlyupgsinterval = null;
+            cgxConfigSave('autoBuyHeavenly', null);
+            setButtonActive('heavenly-upgrade-button', false);
             cgxAlert('Auto Buy Heavenly Upgrades disabled.');
         }
     });
 
-    // Auto Buy Buildings
+    // ============================================================
+    // AUTO BUY BUILDINGS (all) — simple toggle
+    // ============================================================
     document.getElementById('item-button').addEventListener('click', () => {
         BuyItems.active = !BuyItems.active;
         if (BuyItems.active) {
             autobuyiteminterval = setInterval(buyItems, 200);
+            cgxConfigSave('autoBuyBuildings', { enabled: true });
+            setButtonActive('item-button', true);
             cgxAlert('Auto Buy Buildings enabled.');
         } else {
             clearInterval(autobuyiteminterval);
+            cgxConfigSave('autoBuyBuildings', null);
+            setButtonActive('item-button', false);
             cgxAlert('Auto Buy Buildings disabled.');
         }
     });
 
-    // Auto Buy Custom Building — DOM-based (matches by visible name in the store)
+    // ============================================================
+    // AUTO BUY CUSTOM BUILDING — toggle + saves building name
+    // ============================================================
     document.getElementById('item-custom-button').addEventListener('click', async () => {
         if (BuyItemsCustom.active) {
             BuyItemsCustom.active = false;
             clearInterval(autobuyitemcustominterval);
             autobuyitemcustominterval = null;
+            cgxConfigSave('autoBuyCustom', null);
+            setButtonActive('item-custom-button', false);
             cgxAlert('Auto Buy Custom Building disabled.');
         } else {
             let itemName = await cgxPrompt('Enter the building name to auto-buy (e.g., Grandma, Farm, Wizard tower...):');
             if (itemName) {
-                BuyItemsCustom.active = true;
-                autobuyitemcustominterval = setInterval(() => autoBuyItemsCustom(itemName), 100);
+                BuyItemsCustom.active         = true;
+                autobuyitemcustominterval     = setInterval(() => autoBuyItemsCustom(itemName), 100);
+                cgxConfigSave('autoBuyCustom', { enabled: true, itemName });
+                setButtonActive('item-custom-button', true);
                 cgxAlert(`Auto Buy "${itemName}" enabled.`);
             }
         }
     });
 
-    // Auto Buy Most Expensive Building (from v1.0)
+    // ============================================================
+    // AUTO BUY MOST EXPENSIVE — simple toggle
+    // ============================================================
     document.getElementById('item-expensive-button').addEventListener('click', () => {
         BuyItemsE.active = !BuyItemsE.active;
         if (BuyItemsE.active) {
             autobuyitemEinterval = setInterval(autobuyMostExpensiveItem, 100);
+            cgxConfigSave('autoBuyExpensive', { enabled: true });
+            setButtonActive('item-expensive-button', true);
             cgxAlert('Auto Buy Most Expensive enabled.');
         } else {
             clearInterval(autobuyitemEinterval);
             autobuyitemEinterval = null;
+            cgxConfigSave('autoBuyExpensive', null);
+            setButtonActive('item-expensive-button', false);
             cgxAlert('Auto Buy Most Expensive disabled.');
         }
     });
 
-    // Auto Buy Cheapest Building (from v1.0)
+    // ============================================================
+    // AUTO BUY CHEAPEST — simple toggle
+    // ============================================================
     document.getElementById('item-cheap-button').addEventListener('click', () => {
         BuyItemsC.active = !BuyItemsC.active;
         if (BuyItemsC.active) {
             autobuyitemCinterval = setInterval(autobuyCheapestItem, 100);
+            cgxConfigSave('autoBuyCheapest', { enabled: true });
+            setButtonActive('item-cheap-button', true);
             cgxAlert('Auto Buy Cheapest enabled.');
         } else {
             clearInterval(autobuyitemCinterval);
             autobuyitemCinterval = null;
+            cgxConfigSave('autoBuyCheapest', null);
+            setButtonActive('item-cheap-button', false);
             cgxAlert('Auto Buy Cheapest disabled.');
         }
     });
 
-    // Auto Kill Wrinklers
+    // ============================================================
+    // AUTO KILL WRINKLERS — simple toggle
+    // ============================================================
     document.getElementById('wrinkler-button').addEventListener('click', () => {
         Wrinkler.active = !Wrinkler.active;
         if (Wrinkler.active) {
             autokillwrinklersinterval = setInterval(killwrinklers, 500);
+            cgxConfigSave('autoKillWrinklers', { enabled: true });
+            setButtonActive('wrinkler-button', true);
             cgxAlert('Auto Kill Wrinklers enabled.');
         } else {
             clearInterval(autokillwrinklersinterval);
+            cgxConfigSave('autoKillWrinklers', null);
+            setButtonActive('wrinkler-button', false);
             cgxAlert('Auto Kill Wrinklers disabled.');
         }
     });
 
-    // No Bad Effects
+    // ============================================================
+    // NO BAD EFFECTS — simple toggle
+    // ============================================================
     document.getElementById('effect-button').addEventListener('click', () => {
         removebadeffects.active = !removebadeffects.active;
         if (removebadeffects.active) {
@@ -501,16 +668,61 @@ function attachButtonListeners() {
                     }
                 }
             }, 500);
+            cgxConfigSave('noBadEffects', { enabled: true });
+            setButtonActive('effect-button', true);
             cgxAlert('No Bad Effects enabled.');
         } else {
             clearInterval(autoremovebadeffectsinterval);
+            cgxConfigSave('noBadEffects', null);
+            setButtonActive('effect-button', false);
             cgxAlert('No Bad Effects disabled.');
         }
     });
 
-    // UTILITY & BUFFS 
+    // ============================================================
+    // SPEED UP GAME — toggle + saves multiplier
+    // ============================================================
+    document.getElementById('speed-button').addEventListener('click', async () => {
+        if (speedEnabled) {
+            Date.now    = originalDateNow;
+            speedEnabled = false;
+            cgxConfigSave('speedUp', null);
+            setButtonActive('speed-button', false);
+            cgxAlert('Speed increase disabled.');
+        } else {
+            let ans = await cgxPrompt('Speed multiplier? (e.g., 10 = 10× faster)', 'number');
+            if (ans && Number(ans) > 0) {
+                const multiplier = Number(ans);
+                Date.now    = () => originalDateNow() * multiplier;
+                speedEnabled = true;
+                cgxConfigSave('speedUp', { enabled: true, multiplier });
+                setButtonActive('speed-button', true);
+                cgxAlert(`Speed increased by ${multiplier}×.`);
+            }
+        }
+    });
 
-    // Buy for Free
+    // ============================================================
+    // HIDE NOTIFICATIONS — simple toggle
+    // ============================================================
+    document.getElementById('notes-button').addEventListener('click', () => {
+        notes.active = !notes.active;
+        const notesEl = document.getElementById('notes');
+        if (notesEl) notesEl.style.display = notes.active ? 'none' : 'block';
+        if (notes.active) {
+            cgxConfigSave('hideNotifications', { enabled: true });
+            setButtonActive('notes-button', true);
+            cgxAlert('Notifications hidden.');
+        } else {
+            cgxConfigSave('hideNotifications', null);
+            setButtonActive('notes-button', false);
+            cgxAlert('Notifications shown.');
+        }
+    });
+
+    // ============================================================
+    // UTILITY & BUFFS (press-and-go — no config saved)
+    // ============================================================
     document.getElementById('buy-free-button').addEventListener('click', async () => {
         let ans = await cgxPrompt('Enter building name (e.g., Cursor, Grandma, Farm...):');
         if (ans && Game.Objects[ans]) {
@@ -524,7 +736,6 @@ function attachButtonListeners() {
         }
     });
 
-    // Sugar Lumps
     document.getElementById('sugar-lumps-button').addEventListener('click', async () => {
         let ans = await cgxPrompt('How many sugar lumps?', 'number');
         if (ans && Number(ans) > 0) {
@@ -533,42 +744,38 @@ function attachButtonListeners() {
         }
     });
 
-    // Custom Multiplier (extended with all buff types from v1.0)
     document.getElementById('multiplier-button').addEventListener('click', async () => {
         let durationAns = await cgxPrompt('How long (in seconds) should the multiplier last?', 'number');
         if (durationAns && Number(durationAns) > 0) {
             let multiplierAns = await cgxPrompt('Multiplier amount?', 'number');
             if (multiplierAns && Number(multiplierAns) > 0) {
-                let d = Number(durationAns);
-                let m = Number(multiplierAns);
-                Game.gainBuff('frenzy', d, m);
-                Game.gainBuff('click frenzy', d, m);
-                Game.gainBuff('devastation', d, m);
+                const d = Number(durationAns), m = Number(multiplierAns);
+                Game.gainBuff('frenzy',         d, m);
+                Game.gainBuff('click frenzy',   d, m);
+                Game.gainBuff('devastation',    d, m);
                 Game.gainBuff('dragon harvest', d, m);
-                Game.gainBuff('sugar frenzy', d, m);
+                Game.gainBuff('sugar frenzy',   d, m);
                 Game.gainBuff('sugar blessing', d, m);
                 cgxAlert('All buffs applied!');
             }
         }
     });
 
-    // Grimoire Hacks (from v1.0, updated)
     document.getElementById('grimoire-hacks-button').addEventListener('click', async () => {
-        if (!Game.Objects["Wizard tower"] || Game.Objects["Wizard tower"].amount <= 0 || Game.Objects["Wizard tower"].level < 2) {
+        if (!Game.Objects['Wizard tower'] || Game.Objects['Wizard tower'].amount <= 0 || Game.Objects['Wizard tower'].level < 2) {
             cgxAlert('You haven\'t unlocked the Grimoire yet!');
             return;
         }
         let ans = await cgxPrompt('Grimoire Hacks:<br>1) Set backfire chance to 0%<br>2) Restore normal backfire chance', 'number');
         if (ans === '1') {
-            Game.Objects["Wizard tower"].minigame.getFailChance = CookiePatcher.patchedGrimoireBackfire;
+            Game.Objects['Wizard tower'].minigame.getFailChance = CookiePatcher.patchedGrimoireBackfire;
             cgxAlert('Grimoire backfire chance set to 0%.');
         } else if (ans === '2') {
-            Game.Objects["Wizard tower"].minigame.getFailChance = CookiePatcher.originalGrimoireBackfire;
+            Game.Objects['Wizard tower'].minigame.getFailChance = CookiePatcher.originalGrimoireBackfire;
             cgxAlert('Grimoire backfire chance restored to normal.');
         }
     });
 
-    // Gain Buffs — individual buff selection with custom duration & power (from v1.0)
     document.getElementById('gain-buffs-button').addEventListener('click', async () => {
         const buffList = [
             'frenzy', 'blood frenzy', 'clot', 'dragon harvest', 'everything must go',
@@ -591,127 +798,106 @@ function attachButtonListeners() {
         let pow = await cgxPrompt(`Power for "${buffName}"?<br><small>e.g. power 7 = 7× CpS multiplier</small>`, 'number');
         if (!pow || isNaN(Number(pow))) { cgxAlert('Invalid power.'); return; }
         Game.gainBuff(buffName, Number(dur), Number(pow));
-        cgxAlert(`"${buffName}" buff applied for ${dur}s at ${pow}× power.`);
+        cgxAlert(`"${buffName}" applied for ${dur}s at ${pow}× power.`);
     });
 
-    // Hide Notifications
-    document.getElementById('notes-button').addEventListener('click', () => {
-        notes.active = !notes.active;
-        document.getElementById('notes').style.display = notes.active ? 'none' : 'block';
-        cgxAlert(notes.active ? 'Notifications Hidden' : 'Notifications Shown');
+    // ============================================================
+    // CONFIG BUTTONS
+    // ============================================================
+    document.getElementById('load-config-button').addEventListener('click', () => {
+        const restored = loadConfig(true); // true = show alert
+        if (restored === 0) cgxAlert('No config saved yet.');
     });
 
-    // Heavenly Chips
-    document.getElementById('chip-button').addEventListener('click', async () => {
-        let ans = await cgxPrompt('How many heavenly chips?', 'number');
-        if (ans && Number(ans) > 0) {
-            Game.heavenlyChips += Number(ans);
-            cgxAlert('Heavenly chips added.');
+    document.getElementById('clear-config-button').addEventListener('click', async () => {
+        if (await cgxConfirm('Clear all saved config? This will not disable active features, only forget the saved state.')) {
+            localStorage.removeItem(CGX_KEY);
+            cgxAlert('Config cleared.');
         }
     });
 
-    // Reset
-    document.getElementById('reset-button').addEventListener('click', async () => {
-        if(await cgxConfirm('Are you sure you want to Wipe your save? (Preserves bakery name)')) {
-            Game.SesameReset ? Game.SesameReset() : Game.HardReset(2);
-        }
-    });
+    // ============================================================
+    // --- AUTOMATION HELPER FUNCTIONS ---
+    // ============================================================
 
-    // OPTIMIZED AUTOMATION FUNCTIONS
-
-    // Auto Clicker via "Game" API
     function clickcookie() {
         Game.ClickCookie();
-        Game.shimmers.forEach(s => { if(s.type === 'golden') s.pop(); });
+        Game.shimmers.forEach(s => { if (s.type === 'golden') s.pop(); });
     }
 
-    // Auto Buy Upgrades via "Game" API
     function buyUpgrades() {
         for (let i in Game.UpgradesInStore) {
-            let upg = Game.UpgradesInStore[i];
+            const upg = Game.UpgradesInStore[i];
             if (!upg.isVaulted() && upg.canBuy()) upg.buy();
         }
     }
 
-    // Auto Buy Heavenly Upgrades via "Game" API (from v1.0)
     function buyHeavenlyUpgrades() {
         for (let i in Game.Upgrades) {
-            let upg = Game.Upgrades[i];
+            const upg = Game.Upgrades[i];
             if (upg.pool === 'prestige' && upg.canBuy && upg.canBuy()) upg.buy();
         }
     }
 
-    // Auto Buy Buildings via "Game" API
     function buyItems() {
         for (let i in Game.ObjectsById) {
-            let obj = Game.ObjectsById[i];
+            const obj = Game.ObjectsById[i];
             if (obj.locked === 0 && Game.cookies >= obj.bulkPrice) obj.buy();
         }
     }
 
-    // Auto Kill Wrinklers via "Game" API
-    function killwrinklers(){
-        Game.wrinklers.forEach(w => {
-            if (w.phase === 2 && w.hp > 0) w.pop();
-        });
+    function killwrinklers() {
+        Game.wrinklers.forEach(w => { if (w.phase === 2 && w.hp > 0) w.hp = -10; });
     }
 
-    // DOM-BASED AUTO-BUY HELPERS (from v1.0) 
-
-    // Buy a specific building by its visible store name
+    // DOM-based: buy by visible store name
     function autoBuyItemsCustom(itemName) {
-        const items = document.getElementsByClassName('title productName');
+        const items       = document.getElementsByClassName('title productName');
         const storeBulkMax = document.getElementById('storeBulkMax');
         for (let i = 0; i < items.length; i++) {
             if (storeBulkMax && storeBulkMax.style.visibility === 'hidden') {
-                if (items[i].textContent.trim() === itemName.trim()) {
-                    items[i].click();
-                }
+                if (items[i].textContent.trim() === itemName.trim()) items[i].click();
             }
         }
     }
 
-    // Buy the most expensive affordable building (price shown in green = rgb(102,255,102))
+    // DOM-based: buy the most expensive affordable building (green price)
     function autobuyMostExpensiveItem() {
-        const items = document.getElementsByClassName('product unlocked enabled');
+        const items        = document.getElementsByClassName('product unlocked enabled');
         const storeBulkMax = document.getElementById('storeBulkMax');
-        let mostExpensiveItem = null;
-        let highestPrice = 0;
+        let mostExpensive  = null, highest = 0;
         for (let i = 0; i < items.length; i++) {
             if (storeBulkMax && storeBulkMax.style.visibility === 'hidden') {
                 const priceEl = items[i].getElementsByClassName('price')[0];
                 if (!priceEl) continue;
-                const priceColor = window.getComputedStyle(priceEl).color;
-                if (priceColor === 'rgb(102, 255, 102)') {
+                if (window.getComputedStyle(priceEl).color === 'rgb(102, 255, 102)') {
                     const val = parsePriceToNumber(priceEl.textContent.trim());
-                    if (val > highestPrice) { highestPrice = val; mostExpensiveItem = items[i]; }
+                    if (val > highest) { highest = val; mostExpensive = items[i]; }
                 }
             }
         }
-        if (mostExpensiveItem) mostExpensiveItem.click();
+        if (mostExpensive) mostExpensive.click();
     }
 
-    // Buy the cheapest affordable building (price shown in green)
+    // DOM-based: buy the cheapest affordable building (green price)
     function autobuyCheapestItem() {
-        const items = document.getElementsByClassName('product unlocked enabled');
+        const items        = document.getElementsByClassName('product unlocked enabled');
         const storeBulkMax = document.getElementById('storeBulkMax');
-        let cheapestItem = null;
-        let lowestPrice = Infinity;
+        let cheapest       = null, lowest = Infinity;
         for (let i = 0; i < items.length; i++) {
             if (storeBulkMax && storeBulkMax.style.visibility === 'hidden') {
                 const priceEl = items[i].getElementsByClassName('price')[0];
                 if (!priceEl) continue;
-                const priceColor = window.getComputedStyle(priceEl).color;
-                if (priceColor === 'rgb(102, 255, 102)') {
+                if (window.getComputedStyle(priceEl).color === 'rgb(102, 255, 102)') {
                     const val = parsePriceToNumber(priceEl.textContent.trim());
-                    if (val < lowestPrice) { lowestPrice = val; cheapestItem = items[i]; }
+                    if (val < lowest) { lowest = val; cheapest = items[i]; }
                 }
             }
         }
-        if (cheapestItem) cheapestItem.click();
+        if (cheapest) cheapest.click();
     }
 
-    // Convert Cookie Clicker's formatted price text (e.g. "6.7 trillion") to a plain number
+    // Convert Cookie Clicker price strings ("3.2 trillion") to a plain number
     function parsePriceToNumber(priceText) {
         const scaleMap = {
             "million":1e6,"billion":1e9,"trillion":1e12,"quadrillion":1e15,"quintillion":1e18,
@@ -750,31 +936,186 @@ function attachButtonListeners() {
             "quinnonagintillion":1e288,"senonagintillion":1e291,"septenonagintillion":1e294,
             "octononagintillion":1e297,"novenonagintillion":1e300,"centillion":1e303
         };
-        let multiplier = 1;
-        let numberPart = priceText;
+        let multiplier = 1, numberPart = priceText;
         for (const [key, value] of Object.entries(scaleMap)) {
             if (priceText.includes(key)) {
-                multiplier = value;
-                numberPart = priceText.replace(key, '').trim();
+                multiplier  = value;
+                numberPart  = priceText.replace(key, '').trim();
                 break;
             }
         }
         return parseFloat(numberPart.replace(/,/g, '')) * multiplier;
     }
+
+    // ============================================================
+    // --- LOAD CONFIG (defined last so it can call all helpers above) ---
+    // ============================================================
+    // Reads localStorage and re-activates everything that was saved as enabled.
+    // Returns the number of items restored.
+    // showAlert=true is used by the manual "Load Config" button press.
+    function loadConfig(showAlert = false) {
+        const config  = cgxConfigGet();
+        const keys    = Object.keys(config);
+        let   restored = 0;
+
+        // Autoclicker
+        if (config.autoclicker?.enabled && !autoclickerinterval) {
+            autoclickerinterval = setInterval(clickcookie, config.autoclicker.delay);
+            setButtonActive('autoclicker-button', true);
+            restored++;
+        }
+
+        // Click on Scroll
+        if (config.scroll?.enabled && !ScrollWheel.active) {
+            ScrollWheel.active    = true;
+            document.onmousewheel = clickcookie;
+            setButtonActive('scroll-button', true);
+            restored++;
+        }
+
+        // Auto Spawn Golden Cookies
+        if (config.autoSpawnGolden?.enabled && !autospawngoldencookieinterval) {
+            spawnGoldenCount    = config.autoSpawnGolden.count    || 1;
+            spawnGoldenInterval = config.autoSpawnGolden.interval || 1000;
+            autospawngoldencookieinterval = setInterval(() => {
+                for (let i = 0; i < spawnGoldenCount; i++) new Game.shimmer('golden');
+            }, spawnGoldenInterval);
+            setButtonActive('auto-spawn-golden-button', true);
+            restored++;
+        }
+
+        // Auto Buy Upgrades
+        if (config.autoBuyUpgrades?.enabled && !BuyUPGS.active) {
+            BuyUPGS.active    = true;
+            autobuyupginterval = setInterval(buyUpgrades, 200);
+            setButtonActive('upgrade-button', true);
+            restored++;
+        }
+
+        // Auto Buy Heavenly Upgrades
+        if (config.autoBuyHeavenly?.enabled && !BuyHeavenlyUPGS.active) {
+            BuyHeavenlyUPGS.active         = true;
+            autobuyheavenlyupgsinterval    = setInterval(buyHeavenlyUpgrades, 200);
+            setButtonActive('heavenly-upgrade-button', true);
+            restored++;
+        }
+
+        // Auto Buy Buildings
+        if (config.autoBuyBuildings?.enabled && !BuyItems.active) {
+            BuyItems.active    = true;
+            autobuyiteminterval = setInterval(buyItems, 200);
+            setButtonActive('item-button', true);
+            restored++;
+        }
+
+        // Auto Buy Custom Building
+        if (config.autoBuyCustom?.enabled && !BuyItemsCustom.active) {
+            const itemName            = config.autoBuyCustom.itemName;
+            BuyItemsCustom.active     = true;
+            autobuyitemcustominterval = setInterval(() => autoBuyItemsCustom(itemName), 100);
+            setButtonActive('item-custom-button', true);
+            restored++;
+        }
+
+        // Auto Buy Most Expensive
+        if (config.autoBuyExpensive?.enabled && !BuyItemsE.active) {
+            BuyItemsE.active     = true;
+            autobuyitemEinterval = setInterval(autobuyMostExpensiveItem, 100);
+            setButtonActive('item-expensive-button', true);
+            restored++;
+        }
+
+        // Auto Buy Cheapest
+        if (config.autoBuyCheapest?.enabled && !BuyItemsC.active) {
+            BuyItemsC.active     = true;
+            autobuyitemCinterval = setInterval(autobuyCheapestItem, 100);
+            setButtonActive('item-cheap-button', true);
+            restored++;
+        }
+
+        // Auto Kill Wrinklers
+        if (config.autoKillWrinklers?.enabled && !Wrinkler.active) {
+            Wrinkler.active           = true;
+            autokillwrinklersinterval = setInterval(killwrinklers, 500);
+            setButtonActive('wrinkler-button', true);
+            restored++;
+        }
+
+        // No Bad Effects
+        if (config.noBadEffects?.enabled && !removebadeffects.active) {
+            removebadeffects.active = true;
+            const badBuffs = ['clot', 'building debuff'];
+            autoremovebadeffectsinterval = setInterval(() => {
+                for (let i in Game.buffs) {
+                    if (badBuffs.includes(Game.buffs[i].type?.name?.toLowerCase() || Game.buffs[i].name.toLowerCase())) {
+                        Game.buffs[i].time = 0;
+                    }
+                }
+            }, 500);
+            setButtonActive('effect-button', true);
+            restored++;
+        }
+
+        // Speed Up Game
+        if (config.speedUp?.enabled && !speedEnabled) {
+            const multiplier = config.speedUp.multiplier;
+            Date.now         = () => originalDateNow() * multiplier;
+            speedEnabled     = true;
+            setButtonActive('speed-button', true);
+            restored++;
+        }
+
+        // Hide Notifications
+        if (config.hideNotifications?.enabled && !notes.active) {
+            notes.active = true;
+            const notesEl = document.getElementById('notes');
+            if (notesEl) notesEl.style.display = 'none';
+            setButtonActive('notes-button', true);
+            restored++;
+        }
+
+        // Infinite Cookies (re-enable the toggle flag; Game.cookies is already Infinity from the game save)
+        if (config.infiniteCookies?.enabled && !infiniteEnabled) {
+            Game.cookies       = Infinity;
+            Game.cookiesEarned = Infinity;
+            Game.cookiesd      = Infinity;
+            infiniteEnabled    = true;
+            setButtonActive('infinite-button', true);
+            restored++;
+        }
+
+        if (showAlert) {
+            cgxAlert(restored > 0
+                ? `Config loaded — ${restored} feature${restored === 1 ? '' : 's'} restored.`
+                : 'No config saved yet.');
+        } else if (restored > 0) {
+            // Silent auto-load: just a small toast so the user knows it happened
+            cgxAlert(`CGX: ${restored} saved feature${restored === 1 ? '' : 's'} auto-restored.`);
+        }
+
+        return restored;
+    }
+
+    // Auto-load config once the game is ready
+    //waitForGame(() => loadConfig(false));
 }
 
 attachButtonListeners();
 
-// KEYBOARD SHORTCUTS (from v1.0), will continue to update
-// C = disable autoclicker | E = toggle heavenly upgrade auto-buy
+// ============================================================
+// --- KEYBOARD SHORTCUTS ---
+// C = disable autoclicker | E = toggle heavenly upgrades
+// ============================================================
 document.onkeydown = function(e) {
     e = e || window.event;
-    let key = e.which || e.keyCode;
-    if (key === 67 && autoclickerinterval) { // C key
+    const key = e.which || e.keyCode;
+    if (key === 67 && autoclickerinterval) {   // C
         clearInterval(autoclickerinterval);
         autoclickerinterval = null;
+        cgxConfigSave('autoclicker', null);
+        setButtonActive('autoclicker-button', false);
         cgxAlert('Autoclicker disabled (hotkey C).');
-    } else if (key === 69) { // E key
+    } else if (key === 69) {                   // E
         document.getElementById('heavenly-upgrade-button').click();
     }
 };
