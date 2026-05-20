@@ -1240,7 +1240,7 @@ function cgxImportFromText() {
         const parsed = JSON.parse(text);
         processImportedConfig(parsed);
     } catch(e) {
-        cgxAlert("Failed to parse config. Ensure it's valid JSON. " + JSON.parse(text));
+        cgxAlert("Failed to parse config. Ensure it's valid JSON. " + (text));
     }
 }
 
