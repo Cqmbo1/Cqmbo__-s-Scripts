@@ -40,6 +40,7 @@ var BuyItemsC = { active: false, active2: false };
 var getFree = { itemName: '', wrongItem: false };
 
 var autoLoad = { active: false, active2: false };
+var particles = { active: false, active2: false };
 
 var CookiePatcher = {
     patchedGrimoireBackfire: function (spell) { return 0; },
@@ -1115,6 +1116,14 @@ function attachButtonListeners() {
             const notesEl = document.getElementById('notes');
             if (notesEl) notesEl.style.display = 'none';
             setButtonActive('notes-button', true);
+            restored++;
+        }
+
+        if (config.hideParticles?.enabled && !particles.active) {
+            particles.active = true;
+            const particlesEl = document.getElementById('particles');
+            if (particlesEl) particlesEl.style.display = 'none';
+            setButtonActive('particles-button', true);
             restored++;
         }
 
