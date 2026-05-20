@@ -39,6 +39,8 @@ var BuyItemsE = { active: false, active2: false };
 var BuyItemsC = { active: false, active2: false };
 var getFree = { itemName: '', wrongItem: false };
 
+var autoLoad = { active: false, active2: false};
+
 var CookiePatcher = {
     patchedGrimoireBackfire: function(spell) { return 0; },
     originalGrimoireBackfire: function(spell) {
@@ -312,7 +314,7 @@ const Buttons = `
             <h4 class="cgx-header">▶ Config</h4>
             <button class="cgx-btn cgx-config" id="load-config-button">📂 Load Config</button>
             <button class="cgx-btn cgx-config" id="clear-config-button">🗑️ Clear Config</button>
-            <button class="cgx-btn cgx-config" id="auto-load-config-button">� Auto Load Config</button>
+            <button class="cgx-btn cgx-config" id="auto-load-config-button">⚙️ Auto Load Config</button>
         </div>
     </div>
     <style>
@@ -652,6 +654,19 @@ function attachButtonListeners() {
             setButtonActive('wrinkler-button', false);
             cgxAlert('Auto Kill Wrinklers disabled.');
         }
+    });
+
+    document.getElementById('auto-load-config-button').addEventListener('click', () => {
+       autoLoad.active = !autoLoad.active;
+        if (autoLoad.active) {
+            cgxConfigSave('autoLoad', { enabled: true });
+            setButtonActive('auto-load-config-button', true);
+            cgxAlert('Auto Load Config enabled.');
+        } else {
+            cgxConfigSave('autoLoad', null);
+            setButtonActive('auto-load-config-button', false);
+            cgxAlert('Auto Load Config disabled.');
+        };
     });
 
     // ============================================================
@@ -1096,10 +1111,22 @@ function attachButtonListeners() {
         return restored;
     }
 
+
+    function tryAutoLoad() {
+        const config = cgxConfigGet();
+        const keys = Object.keys(config);
+        if (config.autoLoad?.enabled && !autoLoad.active) {
+            loadConfig(false)
+            autoLoad.active = true;
+            cgxConfigSave('autoLoad', { enabled: true });
+            setButtonActive('auto-load-config-button', true);
+        }
+    }
+
     // Auto-load config once the game is ready
+    waitForGame(() => tryAutoLoad());
     //waitForGame(() => loadConfig(false));
 }
-
 attachButtonListeners();
 
 // ============================================================
