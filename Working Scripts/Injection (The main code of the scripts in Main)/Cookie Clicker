@@ -122,6 +122,7 @@ window.cgxConfirm = function (text) {
 };
 window.cgxAlert = function (text, title = 'Cookie Grinder X') {
     Game.Notify(title, text, [16, 5], 3, false);
+    document.getElementById('logs').textContent = text;
 };
 
 // ============================================================
@@ -324,6 +325,7 @@ const Buttons = `
             <button id="cgx-export-file" class="cgx-btn" style="margin: 2px; padding: 4px 8px;">Export (.json File)</button>
             <button id="cgx-import-text" class="cgx-btn" style="margin: 2px; padding: 4px 8px;">Import (Paste JSON)</button>
             <button id="cgx-import-file" class="cgx-btn" style="margin: 2px; padding: 4px 8px;">Import (.json File)</button>
+            <p id="logs">Logs go here...</p>
             </div>
         </div>
     </div>
