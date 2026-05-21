@@ -319,7 +319,7 @@ const Buttons = `
             <button class="cgx-btn cgx-config" id="clear-config-button">🗑️ Clear Config</button>
             <button class="cgx-btn cgx-config" id="auto-load-config-button">⚙️ Auto Load Config</button>
             <div class="cgx-menu-section" style="border-top: 1px solid #444; padding-top: 10px; margin-top: 10px;">
-            
+
             <div style="font-weight: bold; margin-bottom: 8px; color: #ccc;">Configuration Sharing</div>
             <button id="cgx-export-clip" class="cgx-btn" style="margin: 2px; padding: 4px 8px;">Export (Clipboard)</button>
             <button id="cgx-export-file" class="cgx-btn" style="margin: 2px; padding: 4px 8px;">Export (.json File)</button>
@@ -759,13 +759,13 @@ function attachButtonListeners() {
         if (particles.active) {
             cgxConfigSave('hideParticles', { enabled: true });
             setButtonActive('particles-button', true);
-            cgxAlert('Particles hidden.')           
+            cgxAlert('Particles hidden.')
         } else {
             cgxConfigSave('hideParticles', null);
             setButtonActive('particles-button', false);
             cgxAlert('Particles shown.');
         }
-    });    
+    });
 
     // ============================================================
     // UTILITY & BUFFS (press-and-go — no config saved)
@@ -1165,7 +1165,7 @@ function clearAllCgxIntervals() {
         { val: autobuyitemEinterval, setter: (v) => autobuyitemEinterval = v },
         { val: autobuyitemCinterval, setter: (v) => autobuyitemCinterval = v },
         { val: autokillwrinklersinterval, setter: (v) => autokillwrinklersinterval = v },
-        { val: autremovebadeffectsinterval, setter: (v) => autremovebadeffectsinterval = v }
+        { val: autoremovebadeffectsinterval, setter: (v) => autoremovebadeffectsinterval = v }
     ];
     intervals.forEach(item => {
         if (item.val) {
@@ -1178,7 +1178,7 @@ function clearAllCgxIntervals() {
 // Overwrite entire configuration in localStorage
 function saveFullConfigObject(configObj) {
     // Falls back to the standard storage key structure used by cgxConfigGet
-    localStorage.setItem('cgx_config', JSON.stringify(configObj)); 
+    localStorage.setItem('cgx_config', JSON.stringify(configObj));
 }
 
 // Export options
@@ -1214,7 +1214,7 @@ function processImportedConfig(configObj) {
     }
 
     const loadNow = confirm("Would you like to load this configuration right now? (No-refresh, updates features instantly)\n\nClick 'Cancel' to save it for your next refresh instead.");
-    
+
     if (loadNow) {
         // Clear runtime state to prevent overlapping intervals
         clearAllCgxIntervals();
@@ -1222,7 +1222,7 @@ function processImportedConfig(configObj) {
         saveFullConfigObject(configObj);
         // Dynamically restart UI and load changes live
         if (typeof loadConfig === 'function') {
-            loadConfig(true); 
+            loadConfig(true);
         }
         cgxAlert('Configuration imported and activated live!');
     } else {
@@ -1272,7 +1272,7 @@ function checkPendingImportsOnLoad() {
         try {
             const pendingConfig = JSON.parse(pendingData);
             const useImported = confirm("An imported configuration is waiting to be processed.\n\nClick 'OK' to load the NEWLY IMPORTED config.\nClick 'Cancel' to keep your PREVIOUS config.");
-            
+
             if (useImported) {
                 saveFullConfigObject(pendingConfig);
                 cgxAlert("Loaded the imported config successfully!");
