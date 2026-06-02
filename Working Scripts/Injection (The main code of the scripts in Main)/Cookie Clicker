@@ -809,7 +809,7 @@ function attachButtonListeners() {
     });
 
     document.getElementById('grimoire-hacks-button').addEventListener('click', async () => {
-        if (!Game.Objects['Wizard tower'] || Game.Objects['Wizard tower'].amount <= 0 || Game.Objects['Wizard tower'].level < 2) {
+        if (!Game.Objects['Wizard tower'] || Game.Objects['Wizard tower'].amount <= 0 || Game.Objects['Wizard tower'].level < 1) {
             cgxAlert('You haven\'t unlocked the Grimoire yet!');
             return;
         }
