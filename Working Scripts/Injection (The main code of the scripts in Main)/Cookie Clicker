@@ -875,21 +875,21 @@ function attachButtonListeners() {
     function buyUpgrades() {
         for (let i in Game.UpgradesInStore) {
             const upg = Game.UpgradesInStore[i];
-            if (!upg.isVaulted() && upg.canBuy()) upg.buy();
+            if (!upg.isVaulted() && upg.canBuy() && isFinite(upg.getPrice())) upg.buy();
         }
     }
 
     function buyHeavenlyUpgrades() {
         for (let i in Game.Upgrades) {
             const upg = Game.Upgrades[i];
-            if (upg.pool === 'prestige' && upg.canBuy && upg.canBuy()) upg.buy();
+            if (upg.pool === 'prestige' && upg.canBuy && upg.canBuy() && isFinite(upg.getPrice())) upg.buy();
         }
     }
 
     function buyItems() {
         for (let i in Game.ObjectsById) {
             const obj = Game.ObjectsById[i];
-            if (obj.locked === 0 && Game.cookies >= obj.bulkPrice) obj.buy();
+            if (obj.locked === 0 && Game.cookies >= obj.bulkPrice && isFinite(obj.bulkPrice)) obj.buy();
         }
     }
 
@@ -919,7 +919,8 @@ function attachButtonListeners() {
                 if (!priceEl) continue;
                 if (window.getComputedStyle(priceEl).color === 'rgb(102, 255, 102)') {
                     const val = parsePriceToNumber(priceEl.textContent.trim());
-                    if (val > highest) { highest = val; mostExpensive = items[i]; }
+                    if (isFinite(val) && val > highest) { highest = val; mostExpensive = items[i];
+                    }
                 }
             }
         }
@@ -937,7 +938,8 @@ function attachButtonListeners() {
                 if (!priceEl) continue;
                 if (window.getComputedStyle(priceEl).color === 'rgb(102, 255, 102)') {
                     const val = parsePriceToNumber(priceEl.textContent.trim());
-                    if (val < lowest) { lowest = val; cheapest = items[i]; }
+                    if (isFinite(val) && val < lowest) { lowest = val; cheapest = items[i];
+                    }
                 }
             }
         }
